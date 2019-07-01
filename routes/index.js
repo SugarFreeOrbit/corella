@@ -21,6 +21,9 @@ router.post('/login', function (res, req) {
 						jwt.sign({id: user.id}, CONFIG.secret, { expiresIn: 7200 }, function (token, err) {
 							if (err) {
 								logger.error(err.toString());
+								res.status(500);
+								res.end();
+							} else {
 								res.end({jwt: token});
 							}
 						})

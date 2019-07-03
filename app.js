@@ -24,8 +24,18 @@ const dbUser = CONFIG.mongodb.user;
 const dbPwd = CONFIG.mongodb.pwd;
 const dbHost = CONFIG.mongodb.host;
 const dbName = CONFIG.mongodb.dbName;
-mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then(() => {
+mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) => {
 	logger.log('info', 'Connected to database!');
+	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
+		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {$set: {
+			username: "superadmin",
+			password: hash,
+			email: CONFIG.superadmin.email,
+			isAdmin: true
+		}}, {upsert: true}).then(() => {
+			logger.log('debug', 'Assured superadmin user')
+		});
+	});
 }).catch(err => {
 	logger.error('Failed to connect to db!');
 });
@@ -35,18 +45,19 @@ const jwtStrategy = require('./utils/jwtStrategy');
 passport.use(jwtStrategy);
 
 //Assure superadmin user
-const User = require('./models/user');
-bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
-	User.findOneAndUpdate({username: "superadmin"}, {
-		username: "superadmin",
-		password: hash,
-		email: CONFIG.superadmin.email
-	}, {upsert: true}).then(() => {
-		logger.log('debug', 'Assured superadmin user')
-	});
-});
+// const User = require('./models/user');
+// bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
+// 	User.findOneAndUpdate({username: "superadmin"}, {
+// 		username: "superadmin",
+// 		password: hash,
+// 		email: CONFIG.superadmin.email,
+// 		isAdmin: true
+// 	}, {upsert: true}).then(() => {
+// 		logger.log('debug', 'Assured superadmin user')
+// 	});
+// });
 
-//Initialize route
+//Initialize routes
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
 

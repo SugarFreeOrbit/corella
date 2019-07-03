@@ -5,16 +5,27 @@ const userSchema = new Schema({
 	username: {
 		type: String,
 		unique: true,
-		required: true
+		required: [true, 'Username is required']
 	},
 	email: {
 		type: String,
 		unique: true,
-		required: true
+		required: [true, 'E-mail is required']
 	},
 	password: {
 		type: String,
-		required: true
+		required: [true, 'Password is required']
+	},
+	isAdmin: {
+		type: Boolean,
+		required: [true, 'Type is required']
+	}
+});
+userSchema.post('save', function (err, doc, next) {
+	if (err.code === 11000) {
+		next(new Error('User already exists'));
+	} else {
+		next();
 	}
 });
 

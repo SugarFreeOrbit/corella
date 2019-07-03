@@ -6,7 +6,6 @@
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configuration.json" beforeDir="false" afterPath="$PROJECT_DIR$/configuration.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/users.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -32,8 +31,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="45" column="7" lean-forward="true" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
+            <state relative-caret-position="488">
+              <caret line="39" column="45" lean-forward="true" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -41,35 +40,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/configuration.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
+            <state relative-caret-position="84">
+              <caret line="4" column="23" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/responseMiddleware.js">
+        <entry file="file://$PROJECT_DIR$/routes/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="42">
-              <caret line="2" column="8" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/user.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
+            <state relative-caret-position="399">
+              <caret line="28" column="55" lean-forward="true" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/routes/index.js">
+        <entry file="file://$PROJECT_DIR$/models/user.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+            <state relative-caret-position="357">
+              <caret line="35" column="21" selection-start-line="35" selection-start-column="21" selection-end-line="35" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -77,8 +67,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/jwtStrategy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="6" column="30" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
+            <state relative-caret-position="105">
+              <caret line="5" column="48" selection-start-line="5" selection-start-column="48" selection-end-line="5" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -86,8 +76,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/users.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="42">
-              <caret line="2" column="39" selection-start-line="2" selection-start-column="39" selection-end-line="2" selection-end-column="39" />
+            <state relative-caret-position="425">
+              <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="47" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -112,11 +102,11 @@
         <option value="$PROJECT_DIR$/utils/loggerConfig.js" />
         <option value="$PROJECT_DIR$/utils/responseMiddleware.js" />
         <option value="$PROJECT_DIR$/utils/jwtStrategy.js" />
-        <option value="$PROJECT_DIR$/models/user.js" />
-        <option value="$PROJECT_DIR$/configuration.json" />
-        <option value="$PROJECT_DIR$/routes/users.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/routes/index.js" />
+        <option value="$PROJECT_DIR$/configuration.json" />
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/models/user.js" />
+        <option value="$PROJECT_DIR$/routes/users.js" />
       </list>
     </option>
   </component>
@@ -131,7 +121,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -139,10 +128,16 @@
               <item name="corella" type="b2602c69:ProjectViewProjectNode" />
               <item name="corella" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="corella" type="b2602c69:ProjectViewProjectNode" />
+              <item name="corella" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -186,15 +181,18 @@
       <workItem from="1561786847934" duration="2813000" />
       <workItem from="1561877231833" duration="7905000" />
       <workItem from="1561888527379" duration="12782000" />
-      <workItem from="1561964916069" duration="15821000" />
+      <workItem from="1561964916069" duration="16799000" />
+      <workItem from="1562056479479" duration="1558000" />
+      <workItem from="1562130124359" duration="15702000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="40043000" />
+    <option name="totallyTimeSpent" value="58281000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1053" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info id="DB Browser" order="1" weight="0.3295302" />
@@ -202,14 +200,14 @@
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="1" weight="0.32941177" />
-      <window_info anchor="bottom" id="Terminal" order="2" weight="0.32969433" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="2" visible="true" weight="0.32969433" />
       <window_info anchor="bottom" id="Event Log" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="4" />
       <window_info anchor="bottom" id="DB Execution Console" order="5" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" />
       <window_info anchor="bottom" id="Run" order="8" weight="0.3286026" />
-      <window_info active="true" anchor="bottom" id="Debug" order="9" visible="true" weight="0.3995633" />
+      <window_info anchor="bottom" id="Debug" order="9" weight="0.3995633" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="12" />
@@ -226,15 +224,8 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/routes/index.js</url>
-          <line>22</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/utils/responseMiddleware.js</url>
           <line>2</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
@@ -282,48 +273,6 @@
         <state relative-caret-position="-1595" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" column="21" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/jwtStrategy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="6" column="30" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="45" column="7" lean-forward="true" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/users.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" column="39" selection-start-line="2" selection-start-column="39" selection-end-line="2" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/responseMiddleware.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
@@ -331,10 +280,52 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="21" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/jwtStrategy.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="48" selection-start-line="5" selection-start-column="48" selection-end-line="5" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/users.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="47" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="488">
+          <caret line="39" column="45" lean-forward="true" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="4" column="23" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/routes/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+        <state relative-caret-position="399">
+          <caret line="28" column="55" lean-forward="true" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="35" column="21" selection-start-line="35" selection-start-column="21" selection-end-line="35" selection-end-column="21" />
         </state>
       </provider>
     </entry>

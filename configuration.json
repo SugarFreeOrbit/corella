@@ -1,13 +1,14 @@
 {
-  "superadmin": {
-    "password": "superadmin",
-    "email": "none@nowhere.com"
-  },
-  "mongodb": {
-    "host": "63.142.250.14",
-    "user": "corellaAdmin",
-    "pwd": "bc5a6b33b659af8e426cdd4a141beaf3",
-    "dbName": "corella"
-  },
-  "secret": "/CM%e4Sp<Zguv893\\_g_h%Wnjc5zsc7hdDJG`Y<fU3CS_sYa49"
+	"superadmin": {
+		"password": "superadmin",
+		"email": "none@nowhere.com",
+		"isAdmin": true
+	},
+	"mongodb": {
+		"host": "63.142.250.14",
+		"user": "corellaAdmin",
+		"pwd": "bc5a6b33b659af8e426cdd4a141beaf3",
+		"dbName": "corella"
+	},
+	"secret": "/CM%e4Sp<Zguv893\\_g_h%Wnjc5zsc7hdDJG`Y<fU3CS_sYa49"
 }

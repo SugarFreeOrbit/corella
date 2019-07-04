@@ -30,8 +30,14 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (req, r
 		let limit = parseInt(req.query.limit);
 		let page = parseInt(req.query.page);
 		User.find({}, {username: 1, isAdmin: 1, email: 1}, {limit: limit, skip: (limit * (page - 1))}).then(users => {
-			res.status(200);
-			res.json(users);
+			User.estimatedDocumentCount().then(count => {
+				res.status(200);
+				res.json({total: count, page: users});
+			}).catch(err => {
+				res.status(500);
+				res.json({message: err.message});
+				logger.error(err.message);
+			});
 		}).catch(err => {
 			res.status(500);
 			res.json({message: err.message});
@@ -44,9 +50,15 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (req, r
 });
 
 router.delete('/:userId', passport.authenticate('jwt', {session: false}), function (req, res) {
-	// User.deleteOne({_id: req.params.userId}).then(() => {
-	//
-	// });
+	User.deleteOne({_id: req.params.userId}).then(() => {
+		res.status(200);
+		res.end();
+	}).catch(err => {
+		res.status(400);
+		res.json({message: err.message});
+	});
 });
+
+
 
 module.exports = router;

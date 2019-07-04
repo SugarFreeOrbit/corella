@@ -21,6 +21,20 @@ const userSchema = new Schema({
 		required: [true, 'Type is required']
 	}
 });
+userSchema.pre('save', function (next) {
+	if(this.id === CONFIG.superadmin.id) {
+		next(new Error('Operations on the superadmin user are prohibited'));
+	} else {
+		next();
+	}
+});
+userSchema.pre('remove', {document: true, query: false}, function (next) {
+	if(this.id === CONFIG.superadmin.id) {
+		next(new Error('Operations on the superadmin user are prohibited'));
+	} else {
+		next();
+	}
+});
 userSchema.post('save', function (err, doc, next) {
 	if (err.code === 11000) {
 		next(new Error('User already exists'));

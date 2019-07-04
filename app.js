@@ -32,7 +32,8 @@ mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) =
 			password: hash,
 			email: CONFIG.superadmin.email,
 			isAdmin: true
-		}}, {upsert: true}).then(() => {
+		}}, {upsert: true}).then((superUser) => {
+			global.CONFIG.superadmin.id = superUser.id;
 			logger.log('debug', 'Assured superadmin user')
 		});
 	});

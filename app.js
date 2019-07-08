@@ -20,6 +20,9 @@ global.logger = logger;
 const app = express();
 
 //Init global db connection
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
 const dbUser = CONFIG.mongodb.user;
 const dbPwd = CONFIG.mongodb.pwd;
 const dbHost = CONFIG.mongodb.host;
@@ -33,7 +36,8 @@ mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) =
 			email: CONFIG.superadmin.email,
 			isAdmin: true
 		}}, {upsert: true}).then((superUser) => {
-			global.CONFIG.superadmin.id = superUser.id;
+			console.log(superUser);
+			global.CONFIG.superadmin.id = superUser.value._id;
 			logger.log('debug', 'Assured superadmin user')
 		});
 	});
@@ -42,7 +46,7 @@ mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) =
 });
 
 //Require and attach JWT parsing middleware
-const jwtStrategy = require('./utils/jwtStrategy');
+const jwtStrategy = require('./security/jwtStrategy');
 passport.use(jwtStrategy);
 
 //Assure superadmin user

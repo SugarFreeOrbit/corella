@@ -16,21 +16,17 @@ router.post('/login', function (req, res) {
 			]
 		}).then(user => {
 			if(user) {
-				console.log(user);
 				bcrypt.compare(req.body.password, user.password).then(isEqual => {
 					if (isEqual) {
 						jwt.sign({id: user.id}, CONFIG.secret, { expiresIn: 7200 }, function (err, token) {
-							console.log(token);
 							if (err) {
 								res.status(500);
 								res.end();
 							} else {
-								console.log('token');
 								res.json({jwt: token});
 							}
 						})
 					} else {
-						console.log('2');
 						res.status(401);
 						res.end();
 					}

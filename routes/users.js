@@ -6,19 +6,24 @@ const User = require('../models/user');
 
 router.put('/', passport.authenticate('jwt', {session: false}), function (req, res) {
 	if (req.body.username && req.body.password && req.body.email && typeof req.body.isAdmin === 'boolean') {
-		let newUser = new User({
-			username: req.body.username,
-			password: req.body.password,
-			isAdmin: req.body.isAdmin,
-			email: req.body.email
-		}).save().then(() => {
-			res.status(201);
-			res.end();
+		bcrypt.hash(req.body.password, 10).then(hash => {
+			let newUser = new User({
+				username: req.body.username,
+				password: hash,
+				isAdmin: req.body.isAdmin,
+				email: req.body.email
+			}).save().then(() => {
+				res.status(201);
+				res.end();
+			}).catch(err => {
+				res.status(400);
+				res.json({message: err.message});
+			});
 		}).catch(err => {
-			res.status(400);
-			res.json({message: err.message});
+			logger.error(err.message);
+			res.status(500);
+			res.end();
 		});
-
 	} else {
 		res.status(400);
 		res.end();
@@ -50,15 +55,37 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (req, r
 });
 
 router.delete('/:userId', passport.authenticate('jwt', {session: false}), function (req, res) {
-	User.deleteOne({_id: req.params.userId}).then(() => {
-		res.status(200);
+	if(req.user.isAdmin) {
+		User.deleteOne({_id: req.params.userId}).then(() => {
+			res.status(200);
+			res.end();
+		}).catch(err => {
+			res.status(400);
+			res.json({message: err.message});
+		});
+	} else {
+		res.status(403);
 		res.end();
-	}).catch(err => {
-		res.status(400);
-		res.json({message: err.message});
-	});
+	}
 });
 
-
+router.patch('/:userId', passport.authenticate('jwt', {session: false}), function (req, res) {
+	if(req.user.isAdmin || req.user._id === req.params.userId) {
+		let update = req.body;
+		if(update._id) {
+			delete update._id;
+		}
+		User.findByIdAndUpdate(req.params.userId, update).then(() => {
+			res.status(200);
+			res.end();
+		}).catch(err => {
+			res.status(400);
+			res.json({message: err.message});
+		});
+	} else {
+		res.status(403);
+		res.end();
+	}
+});
 
 module.exports = router;

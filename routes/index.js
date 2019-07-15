@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const User = require('../models/user').User;
 
 router.post('/login', function (req, res) {
 	if (req.body.username && req.body.password) {

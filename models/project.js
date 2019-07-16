@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const userSchema = require('./user').userSchema;
-const boardSchema = require('./board').boardSchema;
+
+const columnSchema = new Schema({
+
+});
 
 const projectRoleSchema = new Schema({
 	name: {
@@ -24,9 +27,12 @@ const projectRoleSchema = new Schema({
 	isDestroyer: {
 		type: Boolean,
 		required: true
-	}
+	},
+	members: [{
+		type: ObjectId,
+		ref: userSchema
+	}]
 });
-projectRoleSchema.index({name: 1});
 
 const projectMemberSchema = new Schema({
 	user: {
@@ -40,19 +46,15 @@ const projectMemberSchema = new Schema({
 		ref: projectRoleSchema,
 		required: true
 	}
-}, {_id: false});
-projectMemberSchema.index({user: 1});
+});
 
 const projectSchema = new Schema({
 	name: {
 		type: String,
 		required: true
 	},
-	boards: [{
-		re
-	}],
 	roles: [projectRoleSchema],
-	users: [projectMemberSchema]
+	columns: []
 });
 
 const Project = mongoose.model('Project', projectSchema, 'projects');

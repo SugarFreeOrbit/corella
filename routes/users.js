@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const User = require('../models/user').User;
+const User = require('../models/user');
 
 
 router.put('/', passport.authenticate('jwt', {session: false}), function (req, res) {

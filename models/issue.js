@@ -38,4 +38,4 @@ const issueSchema = new Schema({
 });
 
 const Issue = mongoose.model('Issue', issueSchema, 'issues');
-module.exports = {Issue, issueSchema};
+module.exports = Issue;

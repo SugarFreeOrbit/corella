@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/models/issue.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/board.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/models/project.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/project.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/projectRole.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/projectRole.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -48,7 +47,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/users.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="21">
+            <state relative-caret-position="63">
               <caret line="3" column="44" selection-start-line="3" selection-start-column="44" selection-end-line="3" selection-end-column="44" />
             </state>
           </provider>
@@ -63,11 +62,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/project.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
+            <state>
+              <caret selection-end-line="2" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/models/issue.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="525">
+              <caret line="40" column="38" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -111,6 +119,7 @@
         <option value="$PROJECT_DIR$/models/board.js" />
         <option value="$PROJECT_DIR$/models/projectRole.js" />
         <option value="$PROJECT_DIR$/models/project.js" />
+        <option value="$PROJECT_DIR$/models/issue.js" />
       </list>
     </option>
   </component>
@@ -207,12 +216,13 @@
       <workItem from="1562742084346" duration="4072000" />
       <workItem from="1562827476604" duration="6976000" />
       <workItem from="1563173770191" duration="5049000" />
-      <workItem from="1563259714103" duration="10312000" />
+      <workItem from="1563259714103" duration="10408000" />
+      <workItem from="1563346583213" duration="3543000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="108151000" />
+    <option name="totallyTimeSpent" value="111790000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -233,7 +243,7 @@
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="1" weight="0.32941177" />
-      <window_info anchor="bottom" id="Terminal" order="2" weight="0.32969433" />
+      <window_info anchor="bottom" id="Terminal" order="2" visible="true" weight="0.32969433" />
       <window_info anchor="bottom" id="Event Log" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="4" />
       <window_info anchor="bottom" id="DB Execution Console" order="5" />
@@ -317,6 +327,7 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/models/board.js" />
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
@@ -340,7 +351,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/users.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
+        <state relative-caret-position="63">
           <caret line="3" column="44" selection-start-line="3" selection-start-column="44" selection-end-line="3" selection-end-column="44" />
         </state>
       </provider>
@@ -349,13 +360,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
           <caret line="18" column="34" lean-forward="true" selection-start-line="18" selection-start-column="34" selection-end-line="18" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/board.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -368,8 +372,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/project.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
+        <state>
+          <caret selection-end-line="2" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/issue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="40" column="38" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
         </state>
       </provider>
     </entry>

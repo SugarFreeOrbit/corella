@@ -2,9 +2,26 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const userSchema = require('./user').userSchema;
+const issueSchema = require('./issue').issueSchema;
 
 const columnSchema = new Schema({
-
+	name: {
+		type: String,
+		required: true
+	},
+	isStarting: {
+		type: Boolean,
+		required: true
+	},
+	isClosing: {
+		type: Boolean,
+		required: true
+	},
+	issues: {
+		required: true,
+		type: [ObjectId],
+		ref: issueSchema
+	}
 });
 
 const projectRoleSchema = new Schema({
@@ -28,24 +45,14 @@ const projectRoleSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
+	isEditor: {
+		type: Boolean,
+		required: true
+	},
 	members: [{
 		type: ObjectId,
 		ref: userSchema
 	}]
-});
-
-const projectMemberSchema = new Schema({
-	user: {
-		type: ObjectId,
-		required: true,
-		ref: userSchema,
-		index: true
-	},
-	role: {
-		type: ObjectId,
-		ref: projectRoleSchema,
-		required: true
-	}
 });
 
 const projectSchema = new Schema({
@@ -54,7 +61,7 @@ const projectSchema = new Schema({
 		required: true
 	},
 	roles: [projectRoleSchema],
-	columns: []
+	columns: [columnSchema]
 });
 
 const Project = mongoose.model('Project', projectSchema, 'projects');

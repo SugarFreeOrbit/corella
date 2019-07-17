@@ -36,7 +36,6 @@ mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) =
 			email: CONFIG.superadmin.email,
 			isAdmin: true
 		}}, {upsert: true}).then((superUser) => {
-			console.log(superUser);
 			global.CONFIG.superadmin.id = superUser.value._id;
 			logger.log('debug', 'Assured superadmin user')
 		});
@@ -65,11 +64,13 @@ passport.use(jwtStrategy);
 //Initialize routes
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
+const projectsRouter = require('./routes/projects');
 
 //Add middleware and start the HTTP listener
 app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', usersRouter);
+app.use('/projects', projectsRouter);
 app.use('/', indexRouter);
 app.listen(8080);

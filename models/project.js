@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
-const userSchema = require('./user').userSchema;
-const issueSchema = require('./issue').issueSchema;
+const User = require('./user');
+const Issue = require('./issue');
 
 const columnSchema = new Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		index: true
 	},
 	isStarting: {
 		type: Boolean,
@@ -20,14 +21,15 @@ const columnSchema = new Schema({
 	issues: {
 		required: true,
 		type: [ObjectId],
-		ref: issueSchema
+		ref: Issue
 	}
 });
 
 const projectRoleSchema = new Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		index: true
 	},
 	isManager: {
 		type: Boolean,
@@ -35,7 +37,8 @@ const projectRoleSchema = new Schema({
 	},
 	issueTransitionMatrix: {
 		type: Map,
-		of: [ObjectId]
+		of: [ObjectId],
+		required: true
 	},
 	isCreator: {
 		type: Boolean,
@@ -51,18 +54,19 @@ const projectRoleSchema = new Schema({
 	},
 	members: [{
 		type: ObjectId,
-		ref: userSchema
+		ref: User
 	}]
 });
 
 const projectSchema = new Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	},
 	roles: [projectRoleSchema],
 	columns: [columnSchema]
 });
 
 const Project = mongoose.model('Project', projectSchema, 'projects');
-module.exports = {Project, projectSchema};
+module.exports = Project;

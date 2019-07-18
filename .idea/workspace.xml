@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/utils/validation/validationSchemas.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/validation/validator.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/projects.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/projects.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/validationSchemas.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/validation/validator.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validation/validator.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -25,8 +21,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+            <state relative-caret-position="336">
+              <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -34,8 +30,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/projects.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="5" column="76" lean-forward="true" selection-start-line="5" selection-start-column="76" selection-end-line="5" selection-end-column="76" />
+            <state relative-caret-position="168">
+              <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -43,8 +39,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils/validation/validator.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="8" column="81" selection-start-line="8" selection-start-column="81" selection-end-line="8" selection-end-column="81" />
+            <state relative-caret-position="210">
+              <caret line="10" column="39" lean-forward="true" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -52,8 +48,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/validation/validationSchemas.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="42">
-              <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+            <state relative-caret-position="1323">
+              <caret line="63" column="2" selection-start-line="63" selection-start-column="2" selection-end-line="63" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -61,7 +57,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/project.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="588">
+            <state relative-caret-position="147">
               <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
             </state>
           </provider>
@@ -99,12 +95,12 @@
         <option value="$PROJECT_DIR$/utils/validationChains.js" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/utils/validationSchemas.js" />
-        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/utils/validation/validationMiddlewares.js" />
         <option value="$PROJECT_DIR$/utils/validation/validationMiddleware.js" />
-        <option value="$PROJECT_DIR$/utils/validation/validationSchemas.js" />
         <option value="$PROJECT_DIR$/utils/validation/validate.js" />
         <option value="$PROJECT_DIR$/routes/projects.js" />
+        <option value="$PROJECT_DIR$/utils/validation/validationSchemas.js" />
+        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/utils/validation/validator.js" />
       </list>
     </option>
@@ -142,12 +138,6 @@
               <item name="corella" type="b2602c69:ProjectViewProjectNode" />
               <item name="corella" type="462c0819:PsiDirectoryNode" />
               <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="corella" type="b2602c69:ProjectViewProjectNode" />
-              <item name="corella" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-              <item name="validation" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -212,12 +202,12 @@
       <workItem from="1563173770191" duration="5049000" />
       <workItem from="1563259714103" duration="10408000" />
       <workItem from="1563346583213" duration="15739000" />
-      <workItem from="1563430761322" duration="11543000" />
+      <workItem from="1563430761322" duration="14688000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="135529000" />
+    <option name="totallyTimeSpent" value="138674000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -233,12 +223,12 @@
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info id="DB Browser" order="1" weight="0.3295302" />
-      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.25882974" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.25882974" />
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="TypeScript" order="0" />
       <window_info anchor="bottom" id="Docker" order="1" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="2" weight="0.32941177" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" weight="0.3657205" />
+      <window_info anchor="bottom" id="Terminal" order="3" visible="true" weight="0.3657205" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="5" />
       <window_info anchor="bottom" id="DB Execution Console" order="6" />
@@ -479,38 +469,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/project.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
+        <state relative-caret-position="147">
           <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/projects.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="76" lean-forward="true" selection-start-line="5" selection-start-column="76" selection-end-line="5" selection-end-column="76" />
+        <state relative-caret-position="168">
+          <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/validation/validationSchemas.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+        <state relative-caret-position="1323">
+          <caret line="63" column="2" selection-start-line="63" selection-start-column="2" selection-end-line="63" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/validation/validator.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="8" column="81" selection-start-line="8" selection-start-column="81" selection-end-line="8" selection-end-column="81" />
+        <state relative-caret-position="210">
+          <caret line="10" column="39" lean-forward="true" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
         </state>
       </provider>
     </entry>

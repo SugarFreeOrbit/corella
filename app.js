@@ -9,9 +9,6 @@ const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-//Load miscellaneous utils
-const responseMiddleware = require('./utils/responseMiddleware');
-
 //Load and export the logger configuration
 const logger = require('./utils/loggerConfig');
 global.logger = logger;

@@ -1,14 +1,12 @@
 const router = require('express').Router();
-const bcrypt = require('bcrypt');
 const passport = require('passport');
-const validationChains = require('../utils/validationSchemas');
+const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 
-router.put('/', passport.authenticate('jwt', {sessions: false}),  function (req, res) {
+router.put('/', [passport.authenticate('jwt', {session: false}), validator.check('newProfile')],  function (req, res) {
 	if(req.user.isAdmin) {
-		let newProject = new Project({
-
-		});
+		res.status(200);
+		res.end();
 	} else {
 		res.status(403);
 		res.end();

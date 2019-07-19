@@ -1,4 +1,4 @@
-const newProfile = {
+const newProject = {
 	type: "object",
 	properties: {
 		name: {
@@ -63,4 +63,4 @@ const newProfile = {
 	}
 };
 
-module.exports = {newProfile};
+module.exports = {newProject};

@@ -37,8 +37,7 @@ const projectRoleSchema = new Schema({
 	},
 	issueTransitionMatrix: {
 		type: Map,
-		of: [ObjectId],
-		required: true
+		of: [ObjectId]
 	},
 	isCreator: {
 		type: Boolean,
@@ -66,6 +65,15 @@ const projectSchema = new Schema({
 	},
 	roles: [projectRoleSchema],
 	columns: [columnSchema]
+});
+projectSchema.post('save', function (error, doc , next) {
+	if (error.name === 'MongoError' && error.code === 11000) {
+		let err = new Error('There was a duplicate key error');
+		err.name = 'ValidationError';
+		next(err);
+	} else {
+		next();
+	}
 });
 
 const Project = mongoose.model('Project', projectSchema, 'projects');

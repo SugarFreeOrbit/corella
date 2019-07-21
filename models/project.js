@@ -64,7 +64,12 @@ const projectSchema = new Schema({
 		unique: true
 	},
 	roles: [projectRoleSchema],
-	columns: [columnSchema]
+	columns: [columnSchema],
+	isArchived: {
+		type: Boolean,
+		required: true
+	},
+	description: String
 });
 projectSchema.post('save', function (error, doc , next) {
 	if (error.name === 'MongoError' && error.code === 11000) {

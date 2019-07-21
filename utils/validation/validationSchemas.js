@@ -59,6 +59,9 @@ const newProject = {
 					}
 				}
 			}
+		},
+		description: {
+			type: "string"
 		}
 	}
 };

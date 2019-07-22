@@ -1,3 +1,4 @@
+//TODO: consider attaching the jwt middleware in app.js
 const router = require('express').Router();
 const passport = require('passport');
 const validator = require('../utils/validation/validator');
@@ -75,5 +76,54 @@ router.delete('/:projectId', [passport.authenticate('jwt', {session: false})], f
 		res.end();
 	}
 });
+
+router.get('/:projectId/roles', [passport.authenticate('jwt', {session: false})], function (req, res) {
+	if(req.user.isAdmin) {
+		Project.findOne({_id: req.params.projectId}, {roles: 1}).then(roleList => {
+			if(roleList) {
+				res.status(200);
+				res.json(roleList);
+			} else {
+				res.status(404);
+				res.end();
+			}
+		}).catch(err => {
+			logger.debug(err.toString());
+			if (err.name === 'ValidationError'){
+				res.status(400);
+			} else {
+				res.status(500);
+			}
+			res.json(err.message);
+		});
+	} else {
+		let permissionQuery = Project.findOne({_id: req.params, roles: {members: req.user._id, isManager: true}}, {"roles.isManager": 1});
+		let dataQuery = Project.findOne({_id: req.params, roles: {members: req.user._id, isManager: true}}, {roles: 1});
+		Promise.all([permissionQuery, dataQuery]).then(results => {
+			if(results[0] && results[1]) {
+				res.status(200);
+				res.json(results[1]);
+			} else {
+				if(!results[0]) {
+					res.status(403);
+					res.end();
+				} else {
+					res.status(404);
+					res.end();
+				}
+			}
+		}).catch(err => {
+			logger.debug(err.toString());
+			if (err.name === 'ValidationError'){
+				res.status(400);
+			} else {
+				res.status(500);
+			}
+			res.json(err.message);
+		});
+	}
+});
+
+//route.patch('/:projectId/roles', [passport.authenticate('jwt', {session: false}), validator.check('roles')])
 
 module.exports = router;

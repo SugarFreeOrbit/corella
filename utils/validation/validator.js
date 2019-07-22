@@ -4,12 +4,12 @@ const Validator = require('jsonschema').Validator;
 const validationSchemas = require('./validationSchemas');
 
 Validator.prototype.customFormats.objectId = function(input) {
-	return (/^![a-z0-9]+$/i.test(input) && input.length !== 24);
+	return (/^[a-z0-9]+$/i.test(input) && input.length !== 24);
 };
 
 const validator = function () {
 	this.v = new Validator();
-	this.check = ((schema) => {
+	this.checkBody = ((schema) => {
 		return ((req, res, next) => {
 			let validationResult = this.v.validate(req.body, validationSchemas[schema]);
 			if (validationResult.errors.length) {

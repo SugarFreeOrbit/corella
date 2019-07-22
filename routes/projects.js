@@ -4,7 +4,7 @@ const passport = require('passport');
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 
-router.put('/', [passport.authenticate('jwt', {session: false}), validator.check('newProject')],  function (req, res) {
+router.put('/', [passport.authenticate('jwt', {session: false}), validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
 		let newProject = new Project({
 			name: req.body.name,
@@ -124,6 +124,49 @@ router.get('/:projectId/roles', [passport.authenticate('jwt', {session: false})]
 	}
 });
 
-//route.patch('/:projectId/roles', [passport.authenticate('jwt', {session: false}), validator.check('roles')])
+router.patch('/:projectId/roles', [passport.authenticate('jwt', {session: false}), validator.checkBody('roles')], function (req, res, next) {
+	if(req.user.isAdmin) {
+		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+			res.status(200);
+			res.end();
+		}).catch(err => {
+			logger.debug(err.toString());
+			if (err.name === 'ValidationError'){
+				res.status(400);
+			} else {
+				res.status(500);
+			}
+			res.json(err.message);
+		});
+	} else {
+		Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1}).then(isPermitted => {
+			if(isPermitted) {
+				Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+					res.status(200);
+					res.end();
+				}).catch(err => {
+					logger.debug(err.toString());
+					if (err.name === 'ValidationError'){
+						res.status(400);
+					} else {
+						res.status(500);
+					}
+					res.json(err.message);
+				});
+			} else {
+				res.status(403);
+				res.end();
+			}
+		}).catch(err => {
+			logger.debug(err.toString());
+			if (err.name === 'ValidationError'){
+				res.status(400);
+			} else {
+				res.status(500);
+			}
+			res.json(err.message);
+		});
+	}
+});
 
 module.exports = router;

@@ -66,14 +66,43 @@ const newProject = {
 	}
 };
 
-// const Roles = {
-// 	type: "array",
-// 	items: {
-// 		type: "object",
-// 		properties: {
-//
-// 		}
-// 	}
-// };
+const roles = {
+	type: "array",
+	items: {
+		type: "object",
+		properties: {
+			name: {
+				type: "string",
+				required: true
+			},
+				isManager: {
+				type: "boolean",
+				required: true
+			},
+			isCreator: {
+				type: "boolean",
+				required: true
+			},
+			isDestroyer: {
+				type: "boolean",
+				required: true
+			},
+			isEditor: {
+				type: "boolean",
+				required: true
+			},
+			issueTransitionMatrix: {
+				type: "array"
+			},
+			members: {
+				type: "array",
+				items: {
+					type: "string",
+					format: "objectId"
+				}
+			}
+		}
+	}
+};
 
-module.exports = {newProject};
+module.exports = {newProject, roles};

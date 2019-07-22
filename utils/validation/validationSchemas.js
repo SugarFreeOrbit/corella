@@ -66,4 +66,14 @@ const newProject = {
 	}
 };
 
+// const Roles = {
+// 	type: "array",
+// 	items: {
+// 		type: "object",
+// 		properties: {
+//
+// 		}
+// 	}
+// };
+
 module.exports = {newProject};

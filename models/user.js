@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 
+const ObjectId = require('mongoose').Schema.Types.ObjectId;
+
 const userSchema = new Schema({
 	username: {
 		type: String,
@@ -19,6 +21,9 @@ const userSchema = new Schema({
 	isAdmin: {
 		type: Boolean,
 		required: [true, 'Type is required']
+	},
+	avatar: {
+		type: ObjectId
 	}
 });
 // TODO: Figure out how to protect superadmin on model level
@@ -42,6 +47,11 @@ userSchema.post('save', function (err, doc, next) {
 		next(new Error('User already exists'));
 	} else {
 		next();
+	}
+});
+userSchema.pre('save', function (next) {
+	if(!this.avatar) {
+
 	}
 });
 

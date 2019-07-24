@@ -92,7 +92,10 @@ const roles = {
 				required: true
 			},
 			issueTransitionMatrix: {
-				type: "array"
+				type: "array",
+				items: {
+					type: "object"
+				}
 			},
 			members: {
 				type: "array",
@@ -101,6 +104,25 @@ const roles = {
 					format: "objectId"
 				}
 			}
+		}
+	}
+};
+
+const newIssue = {
+	type: "object",
+	properties: {
+		project: {
+			type: "string",
+			format: "objectId",
+			required: true
+		},
+		title: {
+			type: "string",
+			required: true
+		},
+		description: {
+			type: "string",
+			required: "true"
 		}
 	}
 };

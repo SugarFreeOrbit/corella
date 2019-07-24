@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
-
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
+const generateRandomAvatar = require('../utils/randomAvatars');
 
 const userSchema = new Schema({
 	username: {
@@ -49,11 +49,11 @@ userSchema.post('save', function (err, doc, next) {
 		next();
 	}
 });
-userSchema.pre('save', function (next) {
-	if(!this.avatar) {
+ userSchema.pre('save', function (next) {
+ 	if(!this.avatar) {
 
-	}
-});
+ 	}
+ });
 
 const User = mongoose.model('User', userSchema, 'users');
 module.exports = User;

@@ -62,6 +62,7 @@ passport.use(jwtStrategy);
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
 const projectsRouter = require('./routes/projects');
+const issuesRouter = require('./routes/issues');
 
 //Add middleware and start the HTTP listener
 app.use(bodyParser.json());
@@ -69,5 +70,6 @@ app.use(cors());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
+app.use('/issues', issuesRouter);
 app.use('/', indexRouter);
 app.listen(8080);

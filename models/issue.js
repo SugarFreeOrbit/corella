@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
+const User = require('./user');
 
 const historyEntrySchema = new Schema({
 	timestamp: {
@@ -24,6 +25,22 @@ const checklistItemSchema = new Schema({
 	}
 });
 
+const commentSchema = new Schema({
+	author: {
+		type: ObjectId,
+		required: true,
+		ref: User
+	},
+	content: {
+		type: String,
+		required: true
+	},
+	timestamp: {
+		type: Number,
+		required: true
+	}
+});
+
 const issueSchema = new Schema({
 	title: {
 		type: String,
@@ -34,7 +51,9 @@ const issueSchema = new Schema({
 		required: true
 	},
 	history: [historyEntrySchema],
-	checklist: [checklistItemSchema]
+	checklist: [checklistItemSchema],
+	comments: [commentSchema],
+	files: [ObjectId]
 });
 
 const Issue = mongoose.model('Issue', issueSchema, 'issues');

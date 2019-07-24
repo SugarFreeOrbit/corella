@@ -42,7 +42,7 @@ router.get('/', [passport.authenticate('jwt', {session: false})], function (req,
 			res.end();
 		});
 	} else {
-		Project.find({isArchived: false, "roles.$.members": req.user.id}, {name: 1, description: 1}).then(projects => {
+		Project.find({isArchived: false, roles: {$elemMatch: {members: req.user._id}}}, {name: 1, description: 1}).then(projects => {
 			res.status(200);
 			res.json(projects);
 		}).catch((err)=> {
@@ -97,8 +97,8 @@ router.get('/:projectId/roles', [passport.authenticate('jwt', {session: false})]
 			res.json(err.message);
 		});
 	} else {
-		let permissionQuery = Project.findOne({_id: req.params, roles: {members: req.user._id, isManager: true}}, {"roles.isManager": 1});
-		let dataQuery = Project.findOne({_id: req.params, roles: {members: req.user._id, isManager: true}}, {roles: 1});
+		let permissionQuery = Project.findOne({_id: req.params.projectId, roles: {$elemMatch: {members: req.user._id, isManager: true}}}, {"roles.isManager": 1});
+		let dataQuery = Project.findOne({_id: req.params.projectId, roles: {$elemMatch: {members: req.user._id, isManager: true}}}, {roles: 1});
 		Promise.all([permissionQuery, dataQuery]).then(results => {
 			if(results[0] && results[1]) {
 				res.status(200);
@@ -168,5 +168,4 @@ router.patch('/:projectId/roles', [passport.authenticate('jwt', {session: false}
 		});
 	}
 });
-
 module.exports = router;

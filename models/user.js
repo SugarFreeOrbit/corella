@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
+const GridFsBucket = require('mongodb').GridFSBucket;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
+const ReadableStream = require('stream').Readable;
 const generateRandomAvatar = require('../utils/randomAvatars');
 
 const userSchema = new Schema({
@@ -49,11 +51,26 @@ userSchema.post('save', function (err, doc, next) {
 		next();
 	}
 });
- userSchema.pre('save', function (next) {
- 	if(!this.avatar) {
-
- 	}
- });
+userSchema.methods.setAvatar = async function (avatar, size=200) {
+	let readableStream = new ReadableStream();
+	let newAvatar;
+	if(!avatar) {
+		newAvatar = generateRandomAvatar(this._id.toString(), size);
+	} else {
+		newAvatar = avatar;
+	}
+	readableStream.push(newAvatar);
+	readableStream.push(null);
+	let bucket = new GridFsBucket(mongoose.connection.db, {
+		bucketName: 'avatars'
+	});
+	let uploadStream = bucket.openUploadStream("avatar.png");
+	readableStream.pipe(uploadStream);
+	uploadStream.on('finish', async () => {
+		this.avatar = uploadStream.id;
+		await this.save();
+	});
+};
 
 const User = mongoose.model('User', userSchema, 'users');
 module.exports = User;

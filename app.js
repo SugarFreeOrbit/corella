@@ -70,6 +70,6 @@ app.use(cors());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
-app.use('/issues', issuesRouter);
+//app.use('/issues', issuesRouter);
 app.use('/', indexRouter);
 app.listen(8080);

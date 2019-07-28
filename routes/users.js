@@ -12,9 +12,15 @@ router.put('/', passport.authenticate('jwt', {session: false}), function (req, r
 				password: hash,
 				isAdmin: req.body.isAdmin,
 				email: req.body.email
-			}).save().then(() => {
-				res.status(201);
-				res.end();
+			});
+			newUser.save().then(() => {
+			res.status(201);
+			res.end();
+			newUser.setAvatar().then(err => {
+				console.log('We did it!');
+			}).catch(err => {
+				console.log(err);
+			});
 			}).catch(err => {
 				res.status(400);
 				res.json({message: err.message});

@@ -14,13 +14,13 @@ router.put('/', passport.authenticate('jwt', {session: false}), function (req, r
 				email: req.body.email
 			});
 			newUser.save().then(() => {
-			res.status(201);
-			res.end();
-			newUser.setAvatar().then(err => {
-				console.log('We did it!');
-			}).catch(err => {
-				console.log(err);
-			});
+				res.status(201);
+				res.end();
+				newUser.setAvatar().then(() => {
+					logger.debug('Avatar generated');
+				}).catch(err => {
+					logger.error(err.message);
+				});
 			}).catch(err => {
 				res.status(400);
 				res.json({message: err.message});
@@ -92,6 +92,19 @@ router.patch('/:userId', passport.authenticate('jwt', {session: false}), functio
 		res.status(403);
 		res.end();
 	}
+});
+
+router.get('/:userId/avatar', passport.authenticate('jwt', {session: false}), async function (req, res) {
+	let downloadStream = await User.downloadAvatarByUserId(req.params.userId);
+	downloadStream.on('file', file => {
+		res.type(file.contentType || 'image/png');
+	});
+	downloadStream.on('data', chunk => {
+		res.write(chunk);
+	});
+	downloadStream.on('end', () => {
+		res.end();
+	});
 });
 
 module.exports = router;

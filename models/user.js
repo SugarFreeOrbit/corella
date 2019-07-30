@@ -51,7 +51,7 @@ userSchema.post('save', function (err, doc, next) {
 		next();
 	}
 });
-userSchema.methods.setAvatar = async function (avatar, size=200) {
+userSchema.methods.setAvatar = async function (avatar, size=200, contentType='image/png', filename='avatar.png') {
 	let readableStream = new ReadableStream();
 	let newAvatar;
 	if(!avatar) {
@@ -64,12 +64,20 @@ userSchema.methods.setAvatar = async function (avatar, size=200) {
 	let bucket = new GridFsBucket(mongoose.connection.db, {
 		bucketName: 'avatars'
 	});
-	let uploadStream = bucket.openUploadStream("avatar.png");
+	let uploadStream = bucket.openUploadStream(filename, {contentType});
 	readableStream.pipe(uploadStream);
 	uploadStream.on('finish', async () => {
 		this.avatar = uploadStream.id;
 		await this.save();
 	});
+};
+userSchema.statics.downloadAvatarByUserId = async function (id) {
+	let readableStream = new ReadableStream();
+	let user = await this.findById(id, {avatar: 1});
+	let bucket = new GridFsBucket(mongoose.connection.db, {
+		bucketName: 'avatars'
+	});
+	return bucket.openDownloadStream(user.avatar);
 };
 
 const User = mongoose.model('User', userSchema, 'users');

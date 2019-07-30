@@ -19,7 +19,21 @@ const validator = function () {
 				next();
 			}
 		})
-	})
+	});
+	this.checkParamsForObjectIds = function (excludedParams=[]) {
+		return ((req, res, next) => {
+			let params = Object.entries(req.params);
+			for (let param of params) {
+				if(!excludedParams.includes(param[0])) {
+					if(!/^[a-z0-9]+$/i.test(param[1]) || param[1].length !== 24) {
+						res.status(400);
+						return res.end();
+					}
+				}
+			}
+			next();
+		});
+	}
 };
 
 module.exports = new validator();

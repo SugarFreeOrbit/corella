@@ -55,7 +55,7 @@ userSchema.methods.setAvatar = async function (avatar, size=200, contentType='im
 	let readableStream = new ReadableStream();
 	let newAvatar;
 	if(!avatar) {
-		newAvatar = generateRandomAvatar(this._id.toString(), size);
+		newAvatar = generateRandomAvatar(this.username, size);
 	} else {
 		newAvatar = avatar;
 	}

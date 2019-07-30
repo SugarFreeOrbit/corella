@@ -1,10 +1,9 @@
-//TODO: consider attaching the jwt middleware in app.js
 const router = require('express').Router();
 const passport = require('passport');
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 
-router.put('/', [passport.authenticate('jwt', {session: false}), validator.checkBody('newProject')],  function (req, res) {
+router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
 		let newProject = new Project({
 			name: req.body.name,
@@ -30,8 +29,7 @@ router.put('/', [passport.authenticate('jwt', {session: false}), validator.check
 	}
 });
 
-//TODO: Test for non-admin users
-router.get('/', [passport.authenticate('jwt', {session: false})], function (req, res, next) {
+router.get('/', function (req, res, next) {
 	if(req.user.isAdmin) {
 		Project.find({isArchived: false}, {name: 1, description: 1}).then(projects => {
 			res.status(200);
@@ -57,7 +55,7 @@ router.get('/', [passport.authenticate('jwt', {session: false})], function (req,
 	}
 });
 
-router.delete('/:projectId', [passport.authenticate('jwt', {session: false})], function (req, res ,next) {
+router.delete('/:projectId', [validator.checkParamsForObjectIds()], function (req, res ,next) {
 	if(req.user.isAdmin) {
 		Project.deleteOne({_id: req.params.projectId}).then(() => {
 			res.status(200);
@@ -77,7 +75,7 @@ router.delete('/:projectId', [passport.authenticate('jwt', {session: false})], f
 	}
 });
 
-router.get('/:projectId/roles', [passport.authenticate('jwt', {session: false})], function (req, res) {
+router.get('/:projectId/roles', [validator.checkParamsForObjectIds()], function (req, res) {
 	if(req.user.isAdmin) {
 		Project.findOne({_id: req.params.projectId}, {roles: 1}).then(roleList => {
 			if(roleList) {
@@ -124,7 +122,7 @@ router.get('/:projectId/roles', [passport.authenticate('jwt', {session: false})]
 	}
 });
 
-router.patch('/:projectId/roles', [passport.authenticate('jwt', {session: false}), validator.checkBody('roles')], function (req, res, next) {
+router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.checkParamsForObjectIds()], function (req, res, next) {
 	if(req.user.isAdmin) {
 		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
 			res.status(200);

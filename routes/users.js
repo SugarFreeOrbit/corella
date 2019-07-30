@@ -4,7 +4,7 @@ const passport = require('passport');
 const User = require('../models/user');
 
 
-router.put('/', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.put('/', function (req, res) {
 	if (req.body.username && req.body.password && req.body.email && typeof req.body.isAdmin === 'boolean') {
 		bcrypt.hash(req.body.password, 10).then(hash => {
 			let newUser = new User({
@@ -36,7 +36,7 @@ router.put('/', passport.authenticate('jwt', {session: false}), function (req, r
 	}
 });
 
-router.get('/', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/', function (req, res) {
 	if (typeof parseInt(req.query.limit) === 'number' && typeof parseInt(req.query.page) === 'number') {
 		let limit = parseInt(req.query.limit);
 		let page = parseInt(req.query.page);
@@ -60,7 +60,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (req, r
 	}
 });
 
-router.delete('/:userId', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.delete('/:userId', function (req, res) {
 	if(req.user.isAdmin) {
 		User.deleteOne({_id: req.params.userId}).then(() => {
 			res.status(200);
@@ -75,7 +75,7 @@ router.delete('/:userId', passport.authenticate('jwt', {session: false}), functi
 	}
 });
 
-router.patch('/:userId', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.patch('/:userId', function (req, res) {
 	if(req.user.isAdmin || req.user._id === req.params.userId) {
 		let update = req.body;
 		if(update._id) {
@@ -94,17 +94,27 @@ router.patch('/:userId', passport.authenticate('jwt', {session: false}), functio
 	}
 });
 
-router.get('/:userId/avatar', passport.authenticate('jwt', {session: false}), async function (req, res) {
-	let downloadStream = await User.downloadAvatarByUserId(req.params.userId);
-	downloadStream.on('file', file => {
-		res.type(file.contentType || 'image/png');
-	});
-	downloadStream.on('data', chunk => {
-		res.write(chunk);
-	});
-	downloadStream.on('end', () => {
-		res.end();
-	});
+router.get('/:userId/avatar', async function (req, res) {
+	try {
+		let downloadStream = await User.downloadAvatarByUserId(req.params.userId);
+		downloadStream.on('file', file => {
+			res.type(file.contentType || 'image/png');
+		});
+		downloadStream.on('data', chunk => {
+			res.write(chunk);
+		});
+		downloadStream.on('end', () => {
+			res.end();
+		});
+	} catch (err) {
+		if(err.name === 'CastError') {
+			res.status(404);
+			res.end();
+		} else {
+			res.status(500);
+			res.end();
+		}
+	}
 });
 
 module.exports = router;

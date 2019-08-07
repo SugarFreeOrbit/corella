@@ -70,6 +70,6 @@ app.use(cors());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 app.use('/projects', passport.authenticate('jwt', {session: false}), projectsRouter);
-//app.use('/issues', issuesRouter);
+app.use('/issues', passport.authenticate('jwt', {session: false}), issuesRouter);
 app.use('/', indexRouter);
 app.listen(8080);

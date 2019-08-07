@@ -166,4 +166,5 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 		});
 	}
 });
+
 module.exports = router;

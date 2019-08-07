@@ -80,6 +80,30 @@ projectSchema.post('save', function (error, doc , next) {
 		next();
 	}
 });
+projectSchema.statics.checkPermission = async function (projectId, userId, permission) {
+	let permissionTest = await this.findOne({
+		_id: projectId,
+		roles: {
+			$elemMatch: {
+				members: userId,
+				[permission]: true
+			}
+		}
+	}, {projectName: 1});
+	return !!permissionTest;
+};
+projectSchema.statics.checkCreatorPermission = async function (projectId, userId) {
+	return await this.checkPermission(projectId, userId, 'isCreator');
+};
+projectSchema.statics.checkDestroyerPermission = async function (projectId, userId) {
+	return await this.checkPermission(projectId, userId, 'isDestroyer');
+};
+projectSchema.statics.checkEditorPermission = async function (projectId, userId) {
+	return await this.checkPermission(projectId, userId, 'isEditor');
+};
+projectSchema.statics.checkManagerPermission = async function (projectId, userId) {
+	return await this.checkPermission(projectId, userId, 'isManager');
+};
 
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

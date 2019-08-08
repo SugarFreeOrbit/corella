@@ -123,6 +123,22 @@ const newIssue = {
 		description: {
 			type: "string",
 			required: "true"
+		},
+		checklist: {
+			type: "array",
+			items: {
+				type: "object",
+				properties: {
+					description: {
+						type: "string",
+						required: true
+					},
+					isDone: {
+						type: "boolean",
+						required: true
+					}
+				}
+			}
 		}
 	}
 };

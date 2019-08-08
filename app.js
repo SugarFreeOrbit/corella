@@ -72,4 +72,12 @@ app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 app.use('/projects', passport.authenticate('jwt', {session: false}), projectsRouter);
 app.use('/issues', passport.authenticate('jwt', {session: false}), issuesRouter);
 app.use('/', indexRouter);
+app.use(function (err, req, res, next) {
+	if(err.name === 'ValidationError' || err.name === 'CastError') {
+		res.status(400);
+		res.json(err.message);
+	} else {
+		next(err);
+	}
+});
 app.listen(8080);

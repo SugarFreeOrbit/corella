@@ -12,7 +12,7 @@ const historyEntrySchema = new Schema({
 		type: String,
 		required: true
 	}
-});
+}, {_id: false});
 
 const checklistItemSchema = new Schema({
 	description: {
@@ -23,7 +23,7 @@ const checklistItemSchema = new Schema({
 		type: Boolean,
 		required: true
 	}
-});
+}, {_id: false});
 
 const commentSchema = new Schema({
 	author: {

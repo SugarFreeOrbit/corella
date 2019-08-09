@@ -83,12 +83,24 @@ projectSchema.post('save', function (error, doc , next) {
 projectSchema.statics.checkPermission = async function (projectId, userId, permission) {
 	let permissionTest = await this.findOne({
 		_id: projectId,
-		roles: {
-			$elemMatch: {
-				members: userId,
-				[permission]: true
+		$or: [
+			{
+				roles: {
+					$elemMatch: {
+						members: userId,
+						[permission]: true
+					}
+				}
+			},
+			{
+				roles: {
+					$elemMatch: {
+						members: userId,
+						isManager: true
+					}
+				}
 			}
-		}
+		]
 	}, {projectName: 1});
 	return !!permissionTest;
 };

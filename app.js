@@ -77,7 +77,9 @@ app.use(function (err, req, res, next) {
 		res.status(400);
 		res.json(err.message);
 	} else {
-		next(err);
+		res.status(500);
+		res.json({message: err.message});
+		logger.error(err.stack);
 	}
 });
 app.listen(8080);

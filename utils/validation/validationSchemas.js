@@ -143,4 +143,4 @@ const newIssue = {
 	}
 };
 
-module.exports = {newProject, roles};
+module.exports = {newProject, roles, newIssue};

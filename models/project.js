@@ -18,11 +18,11 @@ const columnSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
-	issues: {
+	issues: [{
 		required: true,
-		type: [ObjectId],
+		type: ObjectId,
 		ref: Issue
-	}
+	}]
 });
 
 const projectRoleSchema = new Schema({
@@ -116,6 +116,12 @@ projectSchema.statics.checkEditorPermission = async function (projectId, userId)
 projectSchema.statics.checkManagerPermission = async function (projectId, userId) {
 	return await this.checkPermission(projectId, userId, 'isManager');
 };
-
+projectSchema.statics.checkReaderPermission = async function (projectId, userId) {
+	let permissionTest = await this.findOne({
+		_id: projectId,
+		'roles.members': userId
+	}, {projectName: 1});
+	return !!permissionTest;
+};
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

@@ -31,5 +31,4 @@ router.put('/', [validator.checkBody('newIssue')], async function (req, res, nex
 		next(e);
 	}
 });
-
 module.exports = router;

@@ -167,4 +167,20 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 	}
 });
 
+router.get('/:projectId/columns', async function (req, res) {
+	if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+		let project = await Project.findById(req.params.projectId, {
+			columns: 1
+		});
+		await project.populate({
+			path: 'columns.issues',
+			select: 'title'
+		}).execPopulate();
+		res.json(project);
+	} else {
+		res.status(403);
+		res.end()
+	}
+});
+
 module.exports = router;

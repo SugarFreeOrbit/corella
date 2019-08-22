@@ -2,8 +2,63 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
-const Issue = require('./issue');
+//const Issue = require('./issue');
 
+//Issue object and it's components
+const historyEntrySchema = new Schema({
+	timestamp: {
+		type: Number,
+		required: true
+	},
+	message: {
+		type: String,
+		required: true
+	}
+}, {_id: false});
+
+const checklistItemSchema = new Schema({
+	description: {
+		type: String,
+		required: true
+	},
+	isDone: {
+		type: Boolean,
+		required: true
+	}
+}, {_id: false});
+
+const commentSchema = new Schema({
+	author: {
+		type: ObjectId,
+		required: true,
+		ref: User
+	},
+	content: {
+		type: String,
+		required: true
+	},
+	timestamp: {
+		type: Number,
+		required: true
+	}
+});
+
+const issueSchema = new Schema({
+	title: {
+		type: String,
+		required: true
+	},
+	description: {
+		type: String,
+		required: true
+	},
+	history: [historyEntrySchema],
+	checklist: [checklistItemSchema],
+	comments: [commentSchema],
+	files: [ObjectId]
+});
+
+//Project object and it's components
 const columnSchema = new Schema({
 	name: {
 		type: String,
@@ -18,11 +73,7 @@ const columnSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
-	issues: [{
-		required: true,
-		type: ObjectId,
-		ref: Issue
-	}]
+	issues: [issueSchema]
 });
 
 const projectRoleSchema = new Schema({

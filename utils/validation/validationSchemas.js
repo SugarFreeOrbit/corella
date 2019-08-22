@@ -111,11 +111,6 @@ const roles = {
 const newIssue = {
 	type: "object",
 	properties: {
-		project: {
-			type: "string",
-			format: "objectId",
-			required: true
-		},
 		title: {
 			type: "string",
 			required: true

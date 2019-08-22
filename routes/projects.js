@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const passport = require('passport');
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 
@@ -167,15 +166,43 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 	}
 });
 
+//issue manipulations go here
+router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+			let newIssue = {
+				title: req.body.title,
+				description: req.body.description,
+				checklist: req.body.checklist
+			};
+			await Project.findOneAndUpdate({
+				_id: req.params.projectId,
+				"columns.isStarting": true
+			}, {
+				$push: {
+					"columns.$.issues": newIssue
+				}
+			});
+			res.status(201);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.get('/:projectId/columns', async function (req, res) {
 	if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
 		let project = await Project.findById(req.params.projectId, {
 			columns: 1
 		});
-		await project.populate({
-			path: 'columns.issues',
-			select: 'title'
-		}).execPopulate();
+		// await project.populate({
+		// 	path: 'columns.issues',
+		// 	select: 'title'
+		// }).execPopulate();
 		res.json(project);
 	} else {
 		res.status(403);

@@ -1,13 +1,18 @@
 const router = require('express').Router();
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
+const md5 = require('md5');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
+		let preparedColumns = req.body.columns.map(column => {
+			column.id = md5(req.body.name + column.name);
+			return column;
+		});
 		let newProject = new Project({
 			name: req.body.name,
 			roles: req.body.roles,
-			columns: req.body.columns,
+			columns: preparedColumns,
 			isArchived: false
 		});
 		newProject.save().then(() => {
@@ -199,14 +204,19 @@ router.get('/:projectId/columns', async function (req, res) {
 		let project = await Project.findById(req.params.projectId, {
 			columns: 1
 		});
-		// await project.populate({
-		// 	path: 'columns.issues',
-		// 	select: 'title'
-		// }).execPopulate();
 		res.json(project);
 	} else {
 		res.status(403);
 		res.end()
+	}
+});
+
+router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res) {
+	if(req.user.isAdmin) {
+
+	} else {
+		res.status(403);
+		res.end();
 	}
 });
 

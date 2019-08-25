@@ -138,4 +138,30 @@ const newIssue = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue};
+const moveOperation = {
+	type: 'object',
+	properties: {
+		originalColumn: {
+			type: "integer",
+			minimum: 0,
+			required: true
+		},
+		originalPosition: {
+			type: "integer",
+			minimum: 0,
+			required: true
+		},
+		targetColumn: {
+			type: "integer",
+			minimum: 0,
+			required: true
+		},
+		targetPosition: {
+			type: "integer",
+			minimum: 0,
+			required: true
+		}
+	}
+};
+
+module.exports = {newProject, roles, newIssue, moveOperation};

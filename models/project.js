@@ -65,6 +65,11 @@ const columnSchema = new Schema({
 		required: true,
 		index: true
 	},
+	id: {
+		type: String,
+		required: true,
+		unique: true
+	},
 	isStarting: {
 		type: Boolean,
 		required: true
@@ -74,7 +79,7 @@ const columnSchema = new Schema({
 		required: true
 	},
 	issues: [issueSchema]
-});
+}, {_id: false});
 
 const projectRoleSchema = new Schema({
 	name: {
@@ -173,6 +178,9 @@ projectSchema.statics.checkReaderPermission = async function (projectId, userId)
 		'roles.members': userId
 	}, {projectName: 1});
 	return !!permissionTest;
+};
+projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
+
 };
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

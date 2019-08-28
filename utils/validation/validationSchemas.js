@@ -33,7 +33,7 @@ const newProject = {
 						required: true
 					},
 					issueTransitionMatrix: {
-						type: "array"
+						type: "object"
 					}
 				}
 			}

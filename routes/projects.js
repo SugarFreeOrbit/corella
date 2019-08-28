@@ -211,12 +211,16 @@ router.get('/:projectId/columns', async function (req, res) {
 	}
 });
 
-router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res) {
-	if(req.user.isAdmin) {
+router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if (req.user.isAdmin || await Project.checkMovePermission(req.params.projectId, req.user._id, req.body)) {
 
-	} else {
-		res.status(403);
-		res.end();
+		} else {
+			res.status(403);
+			res.end()
+		}
+	} catch (e) {
+		next(e);
 	}
 });
 

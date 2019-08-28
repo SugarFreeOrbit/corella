@@ -93,7 +93,7 @@ const projectRoleSchema = new Schema({
 	},
 	issueTransitionMatrix: {
 		type: Map,
-		of: [ObjectId]
+		of: [String]
 	},
 	isCreator: {
 		type: Boolean,
@@ -180,7 +180,26 @@ projectSchema.statics.checkReaderPermission = async function (projectId, userId)
 	return !!permissionTest;
 };
 projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
-
+	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
+		let role = await this.findOne({
+			_id: projectId,
+			"roles.members": userId
+		}, {
+			"roles.issueTransitionMatrix": 1,
+			"roles.isManager": 1
+		});
+		if(role[0].issueTransitionMatrix) {
+			return (role[0].issueTransitionMatrix[moveOperation.originalColumn].find(moveOperation.targetColumn) || role[0].isManager)
+		} else {
+			return role[0].isManager
+		}
+	} else {
+		let permissionTest = await this.findOne({
+			_id: projectId,
+			'roles.members': userId
+		}, {projectName: 1});
+		return !!permissionTest;
+	}
 };
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

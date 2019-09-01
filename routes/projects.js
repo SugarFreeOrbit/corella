@@ -127,50 +127,50 @@ router.get('/:projectId/roles', [validator.checkParamsForObjectIds()], function 
 	}
 });
 
-router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.checkParamsForObjectIds()], function (req, res, next) {
-	if(req.user.isAdmin) {
-		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
-			res.status(200);
-			res.end();
-		}).catch(err => {
-			logger.debug(err.toString());
-			if (err.name === 'ValidationError'){
-				res.status(400);
-			} else {
-				res.status(500);
-			}
-			res.json(err.message);
-		});
-	} else {
-		Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1}).then(isPermitted => {
-			if(isPermitted) {
-				Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
-					res.status(200);
-					res.end();
-				}).catch(err => {
-					logger.debug(err.toString());
-					if (err.name === 'ValidationError'){
-						res.status(400);
-					} else {
-						res.status(500);
-					}
-					res.json(err.message);
-				});
-			} else {
-				res.status(403);
-				res.end();
-			}
-		}).catch(err => {
-			logger.debug(err.toString());
-			if (err.name === 'ValidationError'){
-				res.status(400);
-			} else {
-				res.status(500);
-			}
-			res.json(err.message);
-		});
-	}
-});
+// router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.checkParamsForObjectIds()], function (req, res, next) {
+// 	if(req.user.isAdmin) {
+// 		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+// 			res.status(200);
+// 			res.end();
+// 		}).catch(err => {
+// 			logger.debug(err.toString());
+// 			if (err.name === 'ValidationError'){
+// 				res.status(400);
+// 			} else {
+// 				res.status(500);
+// 			}
+// 			res.json(err.message);
+// 		});
+// 	} else {
+// 		Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1}).then(isPermitted => {
+// 			if(isPermitted) {
+// 				Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+// 					res.status(200);
+// 					res.end();
+// 				}).catch(err => {
+// 					logger.debug(err.toString());
+// 					if (err.name === 'ValidationError'){
+// 						res.status(400);
+// 					} else {
+// 						res.status(500);
+// 					}
+// 					res.json(err.message);
+// 				});
+// 			} else {
+// 				res.status(403);
+// 				res.end();
+// 			}
+// 		}).catch(err => {
+// 			logger.debug(err.toString());
+// 			if (err.name === 'ValidationError'){
+// 				res.status(400);
+// 			} else {
+// 				res.status(500);
+// 			}
+// 			res.json(err.message);
+// 		});
+// 	}
+// });
 
 //issue manipulations go here
 router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
@@ -206,6 +206,11 @@ router.get('/:projectId/columns', async function (req, res) {
 		let project = await Project.findById(req.params.projectId, {
 			columns: 1
 		});
+		project.populate({
+			path: "columns",
+			select: "name"
+		});
+		await project.execPopulate();
 		res.json(project);
 	} else {
 		res.status(403);

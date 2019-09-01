@@ -5,39 +5,6 @@ const newProject = {
 			type: "string",
 			required: true
 		},
-		roles: {
-			type: "array",
-			minLength: 1,
-			required: true,
-			items: {
-				type: "object",
-				properties: {
-					name: {
-						type: "string",
-						required: true
-					},
-					isManager: {
-						type: "boolean",
-						required: true
-					},
-					isCreator: {
-						type: "boolean",
-						required: true
-					},
-					isDestroyer: {
-						type: "boolean",
-						required: true
-					},
-					isEditor: {
-						type: "boolean",
-						required: true
-					},
-					issueTransitionMatrix: {
-						type: "object"
-					}
-				}
-			}
-		},
 		columns: {
 			type: "array",
 			minLength: 2,
@@ -67,42 +34,39 @@ const newProject = {
 };
 
 const roles = {
-	type: "array",
-	items: {
-		type: "object",
-		properties: {
-			name: {
+	type: "object",
+	properties: {
+		name: {
+			type: "string",
+			required: true
+		},
+			isManager: {
+			type: "boolean",
+			required: true
+		},
+		isCreator: {
+			type: "boolean",
+			required: true
+		},
+		isDestroyer: {
+			type: "boolean",
+			required: true
+		},
+		isEditor: {
+			type: "boolean",
+			required: true
+		},
+		issueTransitionMatrix: {
+			type: "array",
+			items: {
+				type: "object"
+			}
+		},
+		members: {
+			type: "array",
+			items: {
 				type: "string",
-				required: true
-			},
-				isManager: {
-				type: "boolean",
-				required: true
-			},
-			isCreator: {
-				type: "boolean",
-				required: true
-			},
-			isDestroyer: {
-				type: "boolean",
-				required: true
-			},
-			isEditor: {
-				type: "boolean",
-				required: true
-			},
-			issueTransitionMatrix: {
-				type: "array",
-				items: {
-					type: "object"
-				}
-			},
-			members: {
-				type: "array",
-				items: {
-					type: "string",
-					format: "objectId"
-				}
+				format: "objectId"
 			}
 		}
 	}

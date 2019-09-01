@@ -90,6 +90,11 @@ const projectRoleSchema = new Schema({
 		required: true,
 		index: true
 	},
+	id: {
+		type: String,
+		required: true,
+		unique: true
+	},
 	isManager: {
 		type: Boolean,
 		required: true
@@ -114,7 +119,7 @@ const projectRoleSchema = new Schema({
 		type: ObjectId,
 		ref: User
 	}]
-});
+}, {_id: false});
 
 const projectSchema = new Schema({
 	name: {

@@ -142,9 +142,8 @@ const moveOperation = {
 	type: 'object',
 	properties: {
 		originalColumn: {
-			type: "integer",
-			minimum: 0,
-			required: true
+			type: "string",
+			format: "md5"
 		},
 		originalPosition: {
 			type: "integer",
@@ -153,8 +152,7 @@ const moveOperation = {
 		},
 		targetColumn: {
 			type: "integer",
-			minimum: 0,
-			required: true
+			format: "md5"
 		},
 		targetPosition: {
 			type: "integer",

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
+const Issue = require('../models/issue');
 const md5 = require('md5');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
@@ -175,11 +176,12 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
-			let newIssue = {
+			let newIssue = new Issue({
 				title: req.body.title,
 				description: req.body.description,
 				checklist: req.body.checklist
-			};
+			});
+			await newIssue.save();
 			await Project.findOneAndUpdate({
 				_id: req.params.projectId,
 				"columns.isStarting": true

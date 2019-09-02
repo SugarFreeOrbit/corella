@@ -12,7 +12,6 @@ router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 		});
 		let newProject = new Project({
 			name: req.body.name,
-			roles: req.body.roles,
 			columns: preparedColumns,
 			isArchived: false
 		});
@@ -124,6 +123,89 @@ router.get('/:projectId/roles', [validator.checkParamsForObjectIds()], function 
 			}
 			res.json(err.message);
 		});
+	}
+});
+
+router.put('/:projectId/roles', [validator.checkBody('role'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(req.user.isAdmin) {
+			let authorizedProject = await Project.findOne({_id: req.params.projectId}, {name: 1});
+			if(authorizedProject) {
+				let newRole = req.body;
+				newRole.id = md5(authorizedProject.name.toString() + req.body.name);
+				await Project.findOneAndUpdate({
+					_id: req.params.projectId
+				}, {
+					$push: {
+						roles: newRole
+					}
+				});
+				res.status(201);
+				res.end();
+			} else {
+				res.status(404);
+				res.end()
+			}
+		} else {
+			let authorizedProject = await Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1});
+			if(authorizedProject) {
+				let newRole = req.body;
+				newRole.id = md5(authorizedProject.name.toString() + req.body.name);
+				await Project.findOneAndUpdate({
+					_id: req.params.projectId
+				}, {
+					$push: {
+						roles: newRole
+					}
+				});
+				res.status(201);
+				res.end();
+			} else {
+				res.status(403);
+				res.end()
+			}
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+router.delete('/:projectId/roles/:roleId', [validator.checkParamsForObjectIds(['roleId'])], async function (req, res, next) {
+	try {
+		if(req.user.isAdmin) {
+			let authorizedProject = await Project.findOne({_id: req.params.projectId}, {name: 1});
+			if(authorizedProject) {
+				await Project.findOneAndDelete({
+					_id: req.params.projectId,
+					"roles.id": req.params.roleId
+				}, {
+					"roles.$": 1
+				});
+			} else {
+				res.status(404);
+				res.end()
+			}
+		} else {
+			let authorizedProject = await Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1});
+			if(authorizedProject) {
+				let newRole = req.body;
+				newRole.id = md5(authorizedProject.name.toString() + req.body.name);
+				await Project.findOneAndUpdate({
+					_id: req.params.projectId
+				}, {
+					$push: {
+						roles: newRole
+					}
+				});
+				res.status(201);
+				res.end();
+			} else {
+				res.status(403);
+				res.end()
+			}
+		}
+	} catch (e) {
+		next(e);
 	}
 });
 

@@ -33,7 +33,7 @@ const newProject = {
 	}
 };
 
-const roles = {
+const role = {
 	type: "object",
 	properties: {
 		name: {
@@ -126,4 +126,4 @@ const moveOperation = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation};
+module.exports = {newProject, role, newIssue, moveOperation};

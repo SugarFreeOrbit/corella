@@ -33,40 +33,79 @@ const newProject = {
 	}
 };
 
-const role = {
-	type: "object",
-	properties: {
-		name: {
-			type: "string",
-			required: true
-		},
-			isManager: {
-			type: "boolean",
-			required: true
-		},
-		isCreator: {
-			type: "boolean",
-			required: true
-		},
-		isDestroyer: {
-			type: "boolean",
-			required: true
-		},
-		isEditor: {
-			type: "boolean",
-			required: true
-		},
-		issueTransitionMatrix: {
-			type: "array",
-			items: {
-				type: "object"
-			}
-		},
-		members: {
-			type: "array",
-			items: {
+// const role = {
+// 	type: "object",
+// 	properties: {
+// 		name: {
+// 			type: "string",
+// 			required: true
+// 		},
+// 			isManager: {
+// 			type: "boolean",
+// 			required: true
+// 		},
+// 		isCreator: {
+// 			type: "boolean",
+// 			required: true
+// 		},
+// 		isDestroyer: {
+// 			type: "boolean",
+// 			required: true
+// 		},
+// 		isEditor: {
+// 			type: "boolean",
+// 			required: true
+// 		},
+// 		issueTransitionMatrix: {
+// 			type: "array",
+// 			items: {
+// 				type: "object"
+// 			}
+// 		},
+// 		members: {
+// 			type: "array",
+// 			items: {
+// 				type: "string",
+// 				format: "objectId"
+// 			}
+// 		}
+// 	}
+// };
+
+const roles = {
+	type: "array",
+	items: {
+		type: "object",
+		properties: {
+			name: {
 				type: "string",
-				format: "objectId"
+				required: true
+			},
+			isManager: {
+				type: "boolean",
+				required: true
+			},
+			isCreator: {
+				type: "boolean",
+				required: true
+			},
+			isDestroyer: {
+				type: "boolean",
+				required: true
+			},
+			isEditor: {
+				type: "boolean",
+				required: true
+			},
+			issueTransitionMatrix: {
+				type: "object"
+			},
+			members: {
+				type: "array",
+				items: {
+					type: "string",
+					format: "objectId"
+				}
 			}
 		}
 	}
@@ -115,7 +154,7 @@ const moveOperation = {
 			required: true
 		},
 		targetColumn: {
-			type: "integer",
+			type: "string",
 			format: "md5"
 		},
 		targetPosition: {
@@ -126,4 +165,4 @@ const moveOperation = {
 	}
 };
 
-module.exports = {newProject, role, newIssue, moveOperation};
+module.exports = {newProject, roles, newIssue, moveOperation};

@@ -90,11 +90,6 @@ const projectRoleSchema = new Schema({
 		required: true,
 		index: true
 	},
-	id: {
-		type: String,
-		required: true,
-		unique: true
-	},
 	isManager: {
 		type: Boolean,
 		required: true
@@ -119,7 +114,7 @@ const projectRoleSchema = new Schema({
 		type: ObjectId,
 		ref: User
 	}]
-}, {_id: false});
+});
 
 const projectSchema = new Schema({
 	name: {
@@ -189,17 +184,19 @@ projectSchema.statics.checkReaderPermission = async function (projectId, userId)
 };
 projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
 	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
-		let role = await this.findOne({
+		let project = await this.findOne({
 			_id: projectId,
 			"roles.members": userId
 		}, {
 			"roles.issueTransitionMatrix": 1,
-			"roles.isManager": 1
+			"roles.isManager": 1,
+			_id: -1
 		});
-		if(role[0].issueTransitionMatrix) {
-			return (role[0].issueTransitionMatrix[moveOperation.originalColumn].find(moveOperation.targetColumn) || role[0].isManager)
+		let role = project.roles[0];
+		if(role.issueTransitionMatrix) {
+			return (role.issueTransitionMatrix[moveOperation.originalColumn].find(moveOperation.targetColumn) || role.isManager)
 		} else {
-			return role[0].isManager
+			return role.isManager
 		}
 	} else {
 		let permissionTest = await this.findOne({

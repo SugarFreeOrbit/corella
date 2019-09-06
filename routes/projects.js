@@ -220,6 +220,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if (req.user.isAdmin || await Project.checkMovePermission(req.params.projectId, req.user._id, req.body)) {
+			await Project
 			res.status(200);
 			res.end();
 		} else {

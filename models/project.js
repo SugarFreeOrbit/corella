@@ -182,29 +182,61 @@ projectSchema.statics.checkReaderPermission = async function (projectId, userId)
 	}, {projectName: 1});
 	return !!permissionTest;
 };
+// projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
+// 	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
+// 		let project = await this.findOne({
+// 			_id: projectId,
+// 			"roles.members": userId
+// 		}, {
+// 			"roles.issueTransitionMatrix": 1,
+// 			"roles.isManager": 1,
+// 			_id: -1
+// 		});
+// 		let role = project.roles[0];
+// 		if(role.issueTransitionMatrix) {
+// 			return (role.issueTransitionMatrix[moveOperation.originalColumn].find(moveOperation.targetColumn) || role.isManager)
+// 		} else {
+// 			return role.isManager
+// 		}
+// 	} else {
+// 		let permissionTest = await this.findOne({
+// 			_id: projectId,
+// 			'roles.members': userId
+// 		}, {projectName: 1});
+// 		return !!permissionTest;
+// 	}
+// };
 projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
-	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
-		let project = await this.findOne({
-			_id: projectId,
-			"roles.members": userId
-		}, {
-			"roles.issueTransitionMatrix": 1,
-			"roles.isManager": 1,
-			_id: -1
-		});
-		let role = project.roles[0];
-		if(role.issueTransitionMatrix) {
-			return (role.issueTransitionMatrix[moveOperation.originalColumn].find(moveOperation.targetColumn) || role.isManager)
+	let roleQuery = this.findOne({
+		_id: projectId,
+		"roles.members": userId
+	}, {
+		"roles.$.issueTransitionMatrix": 1,
+		"roles.isManager": 1
+	});
+	let columnQuery = this.findOne({
+		_id: projectId,
+		"columns.issues": moveOperation.issueId
+	}, {
+		"columns.$.id": 1
+	});
+	let results = await Promise.all([roleQuery, columnQuery]);
+	if(results[1].columns && results[0].roles) {
+		let originalColumn = results[1].columns[0].id;
+		let role = results[0].roles[0];
+		if(originalColumn !== moveOperation.targetColumn) {
+			if(role.issueTransitionMatrix) {
+				return (role.issueTransitionMatrix[originalColumn].find(moveOperation.targetColumn) || role.isManager)
+			} else {
+				return role.isManager
+			}
 		} else {
-			return role.isManager
+			return true;
 		}
 	} else {
-		let permissionTest = await this.findOne({
-			_id: projectId,
-			'roles.members': userId
-		}, {projectName: 1});
-		return !!permissionTest;
+		return false;
 	}
+
 };
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

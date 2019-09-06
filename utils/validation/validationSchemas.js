@@ -144,9 +144,9 @@ const newIssue = {
 const moveOperation = {
 	type: 'object',
 	properties: {
-		originalColumn: {
+		issueId: {
 			type: "string",
-			format: "md5"
+			format: "objectId"
 		},
 		originalPosition: {
 			type: "integer",

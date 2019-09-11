@@ -219,8 +219,27 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		if (req.user.isAdmin || await Project.checkMovePermission(req.params.projectId, req.user._id, req.body)) {
-			await Project
+		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body);
+		if (req.user.isAdmin || originalColumn) {
+			await Project.findOneAndUpdate({
+				_id: req.params.projectId,
+				"columns.id": originalColumn
+			}, {
+				$pull: {
+					"columns.$.issues": req.body.issueId
+				}
+			});
+			await Project.findOneAndUpdate({
+				_id: req.params.projectId,
+				"columns.id": req.body.targetColumn
+			}, {
+				$push: {
+					"columns.$.issues": {
+						$each: [req.body.issueId],
+						$position: req.body.targetPosition
+					}
+				}
+			});
 			res.status(200);
 			res.end();
 		} else {

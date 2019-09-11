@@ -200,20 +200,24 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 	}
 });
 
-router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async function (req, res) {
-	if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
-		let project = await Project.findById(req.params.projectId, {
-			columns: 1
-		});
-		project.populate({
-			path: "columns.issues",
-			select: "title"
-		});
-		await project.execPopulate();
-		res.json(project);
-	} else {
-		res.status(403);
-		res.end()
+router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+			let project = await Project.findById(req.params.projectId, {
+				columns: 1
+			});
+			project.populate({
+				path: "columns.issues",
+				select: "title"
+			});
+			await project.execPopulate();
+			res.json(project);
+		} else {
+			res.status(403);
+			res.end()
+		}
+	} catch (e) {
+		next(e);
 	}
 });
 
@@ -221,7 +225,26 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body);
 		if (req.user.isAdmin || originalColumn) {
-			await Project.findOneAndUpdate({
+			// await Project.findOneAndUpdate({
+			// 	_id: req.params.projectId,
+			// 	"columns.id": originalColumn
+			// }, {
+			// 	$pull: {
+			// 		"columns.$.issues": req.body.issueId
+			// 	}
+			// });
+			// await Project.findOneAndUpdate({
+			// 	_id: req.params.projectId,
+			// 	"columns.id": req.body.targetColumn
+			// }, {
+			// 	$push: {
+			// 		"columns.$.issues": {
+			// 			$each: [req.body.issueId],
+			// 			$position: req.body.targetPosition
+			// 		}
+			// 	}
+			// });
+			let detach = Project.findOneAndUpdate({
 				_id: req.params.projectId,
 				"columns.id": originalColumn
 			}, {
@@ -229,7 +252,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 					"columns.$.issues": req.body.issueId
 				}
 			});
-			await Project.findOneAndUpdate({
+			let attach = Project.findOneAndUpdate({
 				_id: req.params.projectId,
 				"columns.id": req.body.targetColumn
 			}, {
@@ -240,6 +263,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 					}
 				}
 			});
+			await Promise.all([detach, attach]);
 			res.status(200);
 			res.end();
 		} else {

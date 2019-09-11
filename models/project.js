@@ -226,9 +226,9 @@ projectSchema.statics.checkMovePermission = async function (projectId, userId, m
 		let role = results[0].roles[0];
 		if(originalColumn !== moveOperation.targetColumn) {
 			if(role.issueTransitionMatrix) {
-				return (originalColumn ? (role.issueTransitionMatrix[originalColumn].find(moveOperation.targetColumn) || role.isManager) : false);
+				return ((role.issueTransitionMatrix.get(originalColumn).includes(moveOperation.targetColumn) || role.isManager) ? originalColumn : false);
 			} else {
-				return (originalColumn ? role.isManager : false);
+				return (role.isManager ? originalColumn : false);
 			}
 		} else {
 			return originalColumn;

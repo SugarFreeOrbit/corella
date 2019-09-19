@@ -31,6 +31,19 @@
 					password: ""
 				}
 			}
+		},
+		methods: {
+			login: async function () {
+				try {
+					let res = await this.$http.post("/login", {
+						username: this.loginForm.username,
+						password: this.loginForm.password
+					});
+
+				} catch (e) {
+					console.log(e);
+				}
+			}
 		}
 	}
 </script>

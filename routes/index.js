@@ -24,7 +24,11 @@ router.post('/login', function (req, res) {
 								res.status(500);
 								res.end();
 							} else {
-								res.json({jwt: token});
+								res.json({
+									jwt: token,
+									username: user.username,
+									isAdmin: user.isAdmin
+								});
 							}
 						});
 					} else {
@@ -49,7 +53,7 @@ router.get('/refresh-token', passport.authenticate('jwt'), async function (req, 
 			res.status(500);
 			res.end();
 		} else {
-			res.json({jwt: token});
+			res.json({jwt: token, user: req.user});
 		}
 	})
 });

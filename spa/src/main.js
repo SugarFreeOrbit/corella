@@ -7,10 +7,12 @@ import { LayoutPlugin } from 'bootstrap-vue'
 import 'element-ui/lib/theme-chalk/index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import Vuex from 'vuex';
 
 Vue.use(axios);
 Vue.use(ElementUI);
 Vue.use(LayoutPlugin);
+Vue.use(Vuex);
 
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -37,6 +39,48 @@ Vue.prototype.$http = axios;
 import lang from 'element-ui/lib/locale/lang/en';
 import locale from 'element-ui/lib/locale';
 locale.use(lang);
+
+//Initialize store
+let loggedIn;
+let jwt = localStorage.getItem('jwt');
+let isAdmin = localStorage.getItem('isAdmin');
+let username = localStorage.getItem('username');
+if (username && isAdmin !== undefined && jwt) {
+	loggedIn = true;
+} else {
+	loggedIn = false;
+	isAdmin = false;
+	username = '';
+	jwt = '';
+}
+const store = new Vuex.Store({
+	state: {
+		user: {
+			loggedIn,
+			jwt,
+			isAdmin,
+			username
+		}
+	}, mutations: {
+		logIn({jwt, username, isAdmin}) {
+			localStorage.setItem('jwt', jwt);
+			localStorage.setItem('username', username);
+			localStorage.setItem('isAdmin', isAdmin);
+			state.user.loggedIn = true;
+			state.user.jwt = jwt;
+			state.user.isAdmin = isAdmin;
+			state.user.username = username;
+		},
+		logOut() {
+			localStorage.removeItem('jwt');
+			localStorage.removeItem('username');
+			localStorage.removeItem('isAdmin');
+			state.user.jwt = '';
+			state.user.isAdmin = false;
+			state.user.username = '';
+		}
+	}
+});
 
 Vue.config.productionTip = false;
 new Vue({

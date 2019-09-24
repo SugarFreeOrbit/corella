@@ -53,7 +53,16 @@ const issueSchema = new Schema({
 	history: [historyEntrySchema],
 	checklist: [checklistItemSchema],
 	comments: [commentSchema],
-	files: [ObjectId]
+	files: [ObjectId],
+	author: {
+		type: ObjectId,
+		ref: User,
+		required: true
+	},
+	assignee: {
+		type: ObjectId,
+		ref: User
+	}
 });
 
 const Issue = mongoose.model('Issue', issueSchema, 'issues');

@@ -178,7 +178,8 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 			let newIssue = new Issue({
 				title: req.body.title,
 				description: req.body.description,
-				checklist: req.body.checklist
+				checklist: req.body.checklist,
+				author: req.user._id
 			});
 			await newIssue.save();
 			await Project.findOneAndUpdate({

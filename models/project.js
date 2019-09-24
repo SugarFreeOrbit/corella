@@ -78,6 +78,9 @@ const columnSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
+	limit: {
+		type: Number
+	},
 	issues: [{
 		type: ObjectId,
 		ref: Issue

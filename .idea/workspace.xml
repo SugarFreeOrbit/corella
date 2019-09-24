@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spa/src/store.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/components/Navbar.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/views/Projects.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/project.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/project.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/spa/.env.development" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/router.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/App.vue" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Vue Single File Component" />
         <option value="JavaScript File" />
+        <option value="Vue Single File Component" />
       </list>
     </option>
   </component>

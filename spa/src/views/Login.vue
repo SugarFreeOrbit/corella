@@ -12,7 +12,7 @@
 							<el-input v-model="loginForm.password" show-password></el-input>
 						</el-form-item>
 						<el-form-item>
-							<el-button type="primary">Log in</el-button>
+							<el-button type="primary" @click="login">Log in</el-button>
 						</el-form-item>
 					</el-form>
 				</div>
@@ -39,7 +39,12 @@
 						username: this.loginForm.username,
 						password: this.loginForm.password
 					});
-
+					this.$store.commit('logIn', {
+						username: res.data.username,
+						isAdmin: res.data.isAdmin,
+						jwt: res.data.jwt
+					});
+					this.$router.push('/');
 				} catch (e) {
 					console.log(e);
 				}
@@ -75,9 +80,20 @@
 		background-color: #FFE059;
 		color: black;
 		font-weight: bold;
-		border: none;
+		border: none !important;
 	}
 	.el-button:hover {
 		background-color: #cfb24f;
+		color: #000000;
+	}
+	.el-button:active {
+		background-color: #b4974e;
+		outline: none;
+		color: #000000;
+	}
+	.el-button:focus {
+		background-color: #e8ca55;
+		outline: none;
+		color: #000000;
 	}
 </style>

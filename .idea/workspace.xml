@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/store.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/validation/validationSchemas.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validation/validationSchemas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/project.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/project.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/spa/.env.development" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Login.vue" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,12 +27,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="296" />
-    <option name="y" value="135" />
-    <option name="width" value="1440" />
-    <option name="height" value="1050" />
   </component>
   <component name="ProjectId" id="1OP9mVuDZGxIe1xv4ugdxfN4OpD" />
   <component name="PropertiesComponent">

@@ -23,6 +23,10 @@ const newProject = {
 					isClosing: {
 						type: "boolean",
 						required: true
+					},
+					limit: {
+						type: "integer",
+						minimum: 0
 					}
 				}
 			}

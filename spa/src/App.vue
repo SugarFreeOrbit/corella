@@ -28,6 +28,27 @@
 	body {
 		margin: 0;
 	}
+
+	.el-button {
+		background-color: #FFE059;
+		color: black;
+		font-weight: bold;
+		border: none !important;
+	}
+	.el-button:hover {
+		background-color: #cfb24f;
+		color: #000000;
+	}
+	.el-button:active {
+		background-color: #b4974e;
+		outline: none;
+		color: #000000;
+	}
+	.el-button:focus {
+		background-color: #e8ca55;
+		outline: none;
+		color: #000000;
+	}
 	#app {
 		height: 100%;
 	}

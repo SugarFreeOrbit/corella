@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 let loggedIn;
 let jwt = localStorage.getItem('jwt');
-let isAdmin = localStorage.getItem('isAdmin');
+let isAdmin = (localStorage.getItem('isAdmin') === "true");
 let username = localStorage.getItem('username');
 if (username && isAdmin !== undefined && jwt) {
 	loggedIn = true;

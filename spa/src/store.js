@@ -45,7 +45,7 @@ const store = new Vuex.Store({
 	}, actions: {
 		logOut({commit}) {
 			commit('logOut');
-			router.push('/spa/login');
+			router.push('/login');
 		}
 	}
 });

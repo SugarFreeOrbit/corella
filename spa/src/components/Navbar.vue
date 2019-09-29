@@ -11,9 +11,9 @@
 		<div class="navbar__currentUser">
 			Logged in as: {{username}}
 		</div>
-		<div>
+		<button class="navbar__logOut" @click="logout">
 			Log out
-		</div>
+		</button>
 		<div>
 		</div>
 	</div>
@@ -28,6 +28,11 @@
 			},
 			userIsAdmin: function () {
 				return this.$store.state.user.isAdmin;
+			}
+		},
+		methods: {
+			logout: function () {
+				this.$store.dispatch('logOut');
 			}
 		}
 	}
@@ -59,6 +64,7 @@
 		background-color: #87A330;
 		text-decoration: none;
 		font-weight: bold;
+		text-align: right;
 
 		&__logo {
 			background-image: url("../assets/birb.svg");
@@ -69,6 +75,25 @@
 		}
 		&__menu {
 			float: left;
+		}
+		&__currentUser {
+			float: right;
+			text-align: center;
+			padding: 14px 16px;
+		}
+		&__logOut {
+			float: right;
+			text-align: center;
+			padding: 14px 16px;
+			font-weight: bold;
+			border: none;
+			background-color: #FFE059;
+			:hover {
+				background-color: #cfb24f;
+			}
+			:active {
+				background-color: #b4974e;
+			}
 		}
 	}
 </style>

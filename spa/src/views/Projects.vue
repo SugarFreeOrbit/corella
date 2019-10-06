@@ -20,9 +20,12 @@
 		methods: {
 			loadProjects: async function() {
 				let res = await this.$http.get('/projects');
-				this.data.projects = res.data;
-				this.data.loading = false;
+				this.projects = res.data;
+				this.loading = false;
 			}
+		},
+		mounted() {
+			this.loadProjects();
 		}
 	}
 </script>

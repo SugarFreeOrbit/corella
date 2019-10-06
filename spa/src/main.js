@@ -4,6 +4,7 @@ import store from "./store";
 import router from './router'
 import axios from 'axios';
 import ElementUI from 'element-ui';
+import VueDataTables from 'vue-data-tables';
 import { LayoutPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -12,6 +13,7 @@ import './element-variable.scss';
 Vue.use(axios);
 Vue.use(ElementUI);
 Vue.use(LayoutPlugin);
+Vue.use(VueDataTables);
 
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;
 axios.defaults.headers.common['Content-Type'] = 'application/json';

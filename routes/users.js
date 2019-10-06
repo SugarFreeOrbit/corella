@@ -35,24 +35,23 @@ router.put('/', function (req, res) {
 	}
 });
 
-router.get('/', function (req, res) {
+router.get('/', async function (req, res, next) {
 	if (typeof parseInt(req.query.limit) === 'number' && typeof parseInt(req.query.page) === 'number') {
-		let limit = parseInt(req.query.limit);
-		let page = parseInt(req.query.page);
-		User.find({}, {username: 1, isAdmin: 1, email: 1}, {limit: limit, skip: (limit * (page - 1))}).then(users => {
-			User.estimatedDocumentCount().then(count => {
-				res.status(200);
-				res.json({total: count, page: users});
-			}).catch(err => {
-				res.status(500);
-				res.json({message: err.message});
-				logger.error(err.message);
+		try {
+			let limit = parseInt(req.query.limit);
+			let page = parseInt(req.query.page);
+			let query = await Promise.all([
+				User.find({}, {username: 1, email: 1}).skip((page - 1) * limit).limit(limit),
+				User.estimatedDocumentCount()
+			]);
+			res.json({
+				total: query[1],
+				pageCount: Math.ceil(query[1] / limit),
+				data: query[0]
 			});
-		}).catch(err => {
-			res.status(500);
-			res.json({message: err.message});
-			logger.error(err.message);
-		});
+		} catch (e) {
+			next(e);
+		}
 	} else {
 		res.status(400);
 		res.end();

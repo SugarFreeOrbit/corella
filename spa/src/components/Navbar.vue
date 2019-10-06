@@ -5,7 +5,7 @@
 		<div class="navbar__menu">
 			<ul>
 				<li><router-link to="/">Projects</router-link></li>
-				<li v-if="userIsAdmin"><router-link to="/">User management</router-link></li>
+				<li v-if="userIsAdmin"><router-link to="/user-management">User management</router-link></li>
 			</ul>
 		</div>
 		<div class="navbar__currentUser">
@@ -88,11 +88,11 @@
 			font-weight: bold;
 			border: none;
 			background-color: #FFE059;
-			:hover {
-				background-color: #cfb24f;
+			&:hover {
+				background-color: #e4c654;
 			}
-			:active {
-				background-color: #b4974e;
+			&:active {
+				background-color: #c6a952;
 			}
 		}
 	}

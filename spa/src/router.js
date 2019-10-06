@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Projects from "./views/Projects";
+import UserManagement from './views/UserManagement';
 import Login from './views/Login'
 import store from './store'
 
@@ -17,6 +18,15 @@ const router = new Router({
 			component: Projects,
 			meta: {
 				requiresAuth: true
+			}
+		},
+		{
+			path: '/user-management',
+			name: 'userManagement',
+			component: UserManagement,
+			meta: {
+				requiresAuth: true,
+				requiresAdmin: true
 			}
 		},
 		{
@@ -40,7 +50,18 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
 	if(to.matched.some(record => record.meta.requiresAuth)) {
 		if(store.state.user.loggedIn) {
-			next();
+			if (to.matched.some(record => record.meta.requiresAdmin)) {
+				if (store.state.user.isAdmin) {
+					next();
+				} else {
+					next({
+						path: '/login',
+						query: {redirect: to.fullPath}
+					});
+				}
+			} else {
+				next();
+			}
 		} else {
 			next({
 				path: '/login',

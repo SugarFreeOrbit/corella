@@ -22,7 +22,8 @@ const userSchema = new Schema({
 	},
 	isAdmin: {
 		type: Boolean,
-		required: [true, 'Type is required']
+		required: [true, 'Type is required'],
+		index: 1
 	},
 	avatar: {
 		type: ObjectId

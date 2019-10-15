@@ -36,6 +36,7 @@
 				this.loading = false;
 			},
 			handleQueryChange: async function(queryInfo) {
+				console.log(queryInfo);
 				this.limit = queryInfo.pageSize;
 				this.page = queryInfo.page;
 				this.loadUsers();

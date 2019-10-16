@@ -8,7 +8,7 @@ const opts = {
 };
 
 module.exports = new JwtStrategy(opts, (jwt, done) => {
-	User.findById(jwt.id, {password: -1}).then(user => {
+	User.findById(jwt.id).then(user => {
 		if(user) {
 			done(null, user);
 		} else {

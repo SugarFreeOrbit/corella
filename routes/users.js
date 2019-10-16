@@ -41,7 +41,7 @@ router.get('/', async function (req, res, next) {
 			let limit = parseInt(req.query.limit);
 			let page = parseInt(req.query.page);
 			let query = await Promise.all([
-				User.find({}, {username: 1, email: 1}).skip((page - 1) * limit).limit(limit),
+				User.find({}, {username: 1, email: 1, isAdmin: 1}).skip((page - 1) * limit).limit(limit),
 				User.estimatedDocumentCount()
 			]);
 			res.json({

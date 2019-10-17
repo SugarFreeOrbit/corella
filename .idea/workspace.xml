@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/users.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/security/jwtStrategy.js" beforeDir="false" afterPath="$PROJECT_DIR$/security/jwtStrategy.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spa/src/views/UserManagement.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/UserManagement.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/validation/validationSchemas.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validation/validationSchemas.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -142,6 +141,7 @@
       <workItem from="1570255411090" duration="1196000" />
       <workItem from="1570293987711" duration="3140000" />
       <workItem from="1570339603838" duration="11047000" />
+      <workItem from="1571297737759" duration="6828000" />
     </task>
     <servers />
   </component>
@@ -174,17 +174,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/routes/users.js</url>
-          <line>76</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

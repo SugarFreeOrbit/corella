@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-
+const validator = require('../utils/validation/validator');
 
 router.put('/', function (req, res) {
 	if (req.body.username && req.body.password && req.body.email && typeof req.body.isAdmin === 'boolean') {
@@ -73,7 +73,7 @@ router.delete('/:userId', function (req, res) {
 	}
 });
 
-router.patch('/:userId', function (req, res) {
+router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res) {
 	if(req.user.isAdmin || req.user._id === req.params.userId) {
 		let update = req.body;
 		if(update._id) {

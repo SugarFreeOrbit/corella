@@ -169,4 +169,22 @@ const moveOperation = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation};
+const updateUser = {
+	type: 'object',
+	properties: {
+		username: {
+			type: "string"
+		},
+		email: {
+			type: "string"
+		},
+		password: {
+			type: "string"
+		},
+		isAdmin: {
+			type: "boolean"
+		}
+	}
+};
+
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser};

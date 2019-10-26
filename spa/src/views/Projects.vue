@@ -2,6 +2,9 @@
 	<div style="height: 100%">
 		<navbar></navbar>
 		<div class="projects" v-loading="loading">
+			<div class="projects__tools">
+				<el-button round icon="el-icon-plus" type="primary">Create new project</el-button>
+			</div>
 			<el-card v-for="project in projects" class="project" v-bind:key="project._id">
 				<div slot="header" class="clearfix">
 					<span><router-link to="/" class="project__name">{{project.name}}</router-link></span>
@@ -41,6 +44,12 @@
 <style scoped lang="scss">
 	.projects {
 		height: 100%;
+		&__tools {
+			display: flex;
+			justify-content: center;
+			padding-top: 25px;
+			box-sizing: border-box;
+		}
 	}
 	.project {
 		width: 350px;

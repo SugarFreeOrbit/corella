@@ -52,7 +52,9 @@
 				</el-table-column>
 				<el-table-column custom width="auto">
 					<template slot="header" slot-scope="scope">
-						<el-button type="primary" round icon="el-icon-plus" @click="addModalVisible = true">Add user</el-button>
+						<el-tooltip class="item" effect="dark" content="Add a new user" placement="top">
+							<el-button type="primary" circle icon="el-icon-plus" @click="addModalVisible = true"></el-button>
+						</el-tooltip>
 					</template>
 					<template slot-scope="props">
 						<el-button type="danger" icon="el-icon-delete" @click="deleteUser(props.row._id)" circle></el-button>

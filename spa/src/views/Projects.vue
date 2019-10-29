@@ -20,6 +20,15 @@
 						<el-button type="primary" @click="processNaming">Next</el-button>
 					</el-form-item>
 				</el-form>
+				<div class="projectBuilder__content__columns" v-if="projectBuilder.step === 1">
+					<div class="projectBuilder__content__columns__column" v-for="column in projectBuilder.columns">
+						<div class="projectBuilder__content__columns__column__header">{{column.name}}<br>WIP limit: {{column.limit}}</div>
+					</div>
+					<div class="projectBuilder__content__columns__add">
+						<el
+					</div>
+				</div>
+				<div class="projectBuilder__content__control"></div>
 			</div>
 		</div>
 		<div class="projects" v-loading="loading" v-else>
@@ -53,6 +62,22 @@
 					naming: {
 						name: '',
 						description: ''
+					},
+					columns: [
+						{
+							name: 'column',
+							isStarting: true,
+							isClosing: false
+						},
+						{
+							name: 'column1',
+							isStarting: false,
+							isClosing: false
+						}
+					],
+					newColumn: {
+						name: '',
+						limit: 0
 					}
 				}
 			}

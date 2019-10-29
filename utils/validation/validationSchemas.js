@@ -33,6 +33,38 @@ const newProject = {
 		},
 		description: {
 			type: "string"
+		},
+		roles: {
+			type: "array",
+			minLength: 1,
+			items: {
+				type: "object",
+				properties: {
+					name: {
+						type: "string",
+						required: true
+					},
+					isManager: {
+						type: "boolean",
+						required: true
+					},
+					isCreator: {
+						type: "boolean",
+						required: true
+					},
+					isDestroyer: {
+						type: "boolean",
+						required: true
+					},
+					isEditor: {
+						type: "boolean",
+						required: true
+					},
+					issueTransitionMatrix: {
+						type: "object"
+					}
+				}
+			}
 		}
 	}
 };

@@ -21,14 +21,27 @@
 					</el-form-item>
 				</el-form>
 				<div class="projectBuilder__content__columns" v-if="projectBuilder.step === 1">
-					<div class="projectBuilder__content__columns__column" v-for="column in projectBuilder.columns">
-						<div class="projectBuilder__content__columns__column__header">{{column.name}}<br>WIP limit: {{column.limit}}</div>
-					</div>
-					<div class="projectBuilder__content__columns__add">
-						<el
-					</div>
+					<el-card class="projectBuilder__content__columns__column" v-for="column in projectBuilder.columns" v-bind:key="column.name">
+						<div class="projectBuilder__content__columns__column__header" slot="header"><p>{{column.name}}</p><p v-if="column.limit">WIP limit: {{column.limit}}</p></div>
+					</el-card>
+					<el-card class="projectBuilder__content__columns__add" v-if="projectBuilder.columns.length <= 6">
+						<div slot="header">
+							Add new column
+						</div>
+						<el-form :model="projectBuilder.newColumn">
+							<el-form-item label="Column name" required>
+								<el-input v-model="projectBuilder.newColumn.name"></el-input>
+							</el-form-item>
+							<el-form-item label="WIP limit:">
+								<el-input-number v-model="projectBuilder.newColumn.limit" size="mini"></el-input-number>
+							</el-form-item>
+							<el-form-item style="text-align: center">
+								<el-button circle icon="el-icon-plus" type="primary" @click="addColumn"></el-button>
+							</el-form-item>
+						</el-form>
+					</el-card>
+					<div class="projectBuilder__content__control"></div>
 				</div>
-				<div class="projectBuilder__content__control"></div>
 			</div>
 		</div>
 		<div class="projects" v-loading="loading" v-else>
@@ -77,7 +90,8 @@
 					],
 					newColumn: {
 						name: '',
-						limit: 0
+						limit: 0,
+						isClosing: false
 					}
 				}
 			}
@@ -90,6 +104,22 @@
 			},
 			processNaming: async function() {
 				this.projectBuilder.step++;
+			},
+			addColumn: function() {
+				if (this.projectBuilder.newColumn.limit <= 0) {
+					this.projectBuilder.columns.push({
+						name: this.projectBuilder.newColumn.name,
+						isStarting: this.projectBuilder.columns.length === 0,
+						isClosing: false
+					})
+				} else {
+					this.projectBuilder.columns.push({
+						name: this.projectBuilder.newColumn.name,
+						isStarting: this.projectBuilder.columns.length === 0,
+						isClosing: false,
+						limit: this.projectBuilder.newColumn.limit
+					})
+				}
 			}
 		},
 		mounted() {
@@ -143,11 +173,34 @@
 			justify-content: space-between;
 			flex-direction: column;
 			flex-wrap: wrap;
-			width: 60%;
+			width: 70%;
 			&__naming {
 				width: 60%;
 				margin-top: 100px;
 			}
+			&__columns {
+				display: flex;
+				flex-direction: row;
+				align-items: stretch;
+				justify-content: center;
+				height: 45vh;
+				margin-top: 100px;
+				&__column {
+					color: black;
+					width: 20%;
+					margin-right: 5px;
+					&__header {
+						height: 65px;
+						display: flex;
+						justify-content: center;
+						flex-direction: column;
+						align-items: center;
+						//flex-wrap: wrap;
+						font-weight: bold;
+					}
+				}
+			}
 		}
 	}
+
 </style>

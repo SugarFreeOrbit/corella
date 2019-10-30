@@ -10,17 +10,11 @@ router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 			column.id = md5(req.body.name + column.name);
 			return column;
 		});
-		let preparedRoles = req.body.roles.map(role => {
-			if(role.issueTransitionMatrix) {
-				for (const [key, value] of Object.entries(role.issueTransitionMatrix)) {
-
-				}
-			}
-		});
 		let newProject = new Project({
 			name: req.body.name,
 			columns: preparedColumns,
-			isArchived: false
+			isArchived: false,
+			roles: req.body.roles
 		});
 		newProject.save().then(() => {
 			res.status(201);

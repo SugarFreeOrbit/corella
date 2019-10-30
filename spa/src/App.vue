@@ -28,7 +28,9 @@
 	body {
 		margin: 0;
 	}
-
+	.el-card__header {
+		border-bottom: 1px solid #87A330 !important;
+	}
 	.el-button {
 		background-color: #FFE059;
 		color: black;

@@ -16,13 +16,24 @@
 					<el-form-item label="Project description">
 						<el-input v-model="projectBuilder.naming.description"></el-input>
 					</el-form-item>
-					<el-form-item style="text-align: center">
-						<el-button type="primary" @click="processNaming">Next</el-button>
-					</el-form-item>
+<!--					<el-form-item style="text-align: center">-->
+<!--						<el-button type="primary" @click="processNaming">Next</el-button>-->
+<!--					</el-form-item>-->
 				</el-form>
 				<div class="projectBuilder__content__columns" v-if="projectBuilder.step === 1">
 					<el-card class="projectBuilder__content__columns__column" v-for="column in projectBuilder.columns" v-bind:key="column.name">
-						<div class="projectBuilder__content__columns__column__header" slot="header"><p>{{column.name}}</p><p v-if="column.limit">WIP limit: {{column.limit}}</p></div>
+						<div slot="header">
+							<div class="projectBuilder__content__columns__column__remove" @click="removeColumn(column.name)"><i class="el-icon-close"></i></div>
+							<div class="projectBuilder__content__columns__column__header" slot="header">
+								<p>{{column.name}}</p>
+								<p v-if="column.limit">WIP limit: {{column.limit}}</p>
+							</div>
+						</div>
+<!--						<div class="projectBuilder__content__columns__column__header" slot="header">-->
+<!--							<div class="projectBuilder__content__columns__column__header__remove"><i class="el-icon-close"></i></div>-->
+<!--							<p>{{column.name}}</p>-->
+<!--							<p v-if="column.limit">WIP limit: {{column.limit}}</p>-->
+<!--						</div>-->
 					</el-card>
 					<el-card class="projectBuilder__content__columns__add" v-if="projectBuilder.columns.length <= 6">
 						<div slot="header">
@@ -30,7 +41,7 @@
 						</div>
 						<el-form :model="projectBuilder.newColumn">
 							<el-form-item label="Column name" required>
-								<el-input v-model="projectBuilder.newColumn.name"></el-input>
+								<el-input v-model="projectBuilder.newColumn.name" maxlength="15"></el-input>
 							</el-form-item>
 							<el-form-item label="WIP limit:">
 								<el-input-number v-model="projectBuilder.newColumn.limit" size="mini"></el-input-number>
@@ -40,7 +51,13 @@
 							</el-form-item>
 						</el-form>
 					</el-card>
-					<div class="projectBuilder__content__control"></div>
+				</div>
+				<div class="projectBuilder__content__roles" v-if="progressBuilder.step === 2">
+
+				</div>
+				<div class="projectBuilder__content__control">
+					<el-button @click="projectBuilder.step--" v-if="projectBuilder.step > 0">Previous</el-button>
+					<el-button @click="progressBuilder" type="primary">Next</el-button>
 				</div>
 			</div>
 		</div>
@@ -102,7 +119,7 @@
 				this.projects = res.data;
 				this.loading = false;
 			},
-			processNaming: async function() {
+			progressBuilder: function() {
 				this.projectBuilder.step++;
 			},
 			addColumn: function() {
@@ -120,6 +137,10 @@
 						limit: this.projectBuilder.newColumn.limit
 					})
 				}
+			},
+			removeColumn: function (name) {
+				let index = this.projectBuilder.columns.findIndex(col => col.name === name);
+				this.projectBuilder.columns.splice(index, 1);
 			}
 		},
 		mounted() {
@@ -174,6 +195,10 @@
 			flex-direction: column;
 			flex-wrap: wrap;
 			width: 70%;
+			&__control {
+				text-align: center;
+				margin-top: 50px;
+			}
 			&__naming {
 				width: 60%;
 				margin-top: 100px;
@@ -189,8 +214,18 @@
 					color: black;
 					width: 20%;
 					margin-right: 5px;
+					&__remove {
+						position: relative;
+						display: inline-block;
+						top: -10px;
+						left: -10px;
+						&:hover {
+							cursor: pointer;
+							color: #87A330;
+						}
+					}
 					&__header {
-						height: 65px;
+						height: 45px;
 						display: flex;
 						justify-content: center;
 						flex-direction: column;

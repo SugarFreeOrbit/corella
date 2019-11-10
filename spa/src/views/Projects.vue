@@ -52,12 +52,38 @@
 						</el-form>
 					</el-card>
 				</div>
-				<div class="projectBuilder__content__roles" v-if="progressBuilder.step === 2">
-
+				<div class="projectBuilder__content__roles" v-if="projectBuilder.step === 2">
+					<el-card v-for="role in projectBuilder.roles" style="margin-right: 10px">
+						{{role.name}}
+					</el-card>
+					<el-button circle icon="el-icon-plus" type="primary" style="width: 65px; font-size: 20px" @click="projectBuilder.newRole.visible = true"></el-button>
+					<el-dialog :visible.sync="projectBuilder.newRole.visible" center>
+						<el-form :model="projectBuilder.newRole">
+							<el-form-item label="Role name">
+								<el-input autocomplete="off" v-model="projectBuilder.newRole.name"></el-input>
+							</el-form-item>
+							<el-form-item label="Manage">
+								<el-switch v-model="projectBuilder.newRole.isManager"></el-switch>
+							</el-form-item>
+							<el-form-item label="Create">
+								<el-switch v-model="projectBuilder.newRole.isCreator"></el-switch>
+							</el-form-item>
+							<el-form-item label="Delete">
+								<el-switch v-model="projectBuilder.newRole.isDestroyer"></el-switch>
+							</el-form-item>
+							<el-form-item label="Edit">
+								<el-switch v-model="projectBuilder.newRole.isEditor"></el-switch>
+							</el-form-item>
+							<el-form-item>
+								<
+							</el-form-item>
+						</el-form>
+					</el-dialog>
 				</div>
 				<div class="projectBuilder__content__control">
 					<el-button @click="projectBuilder.step--" v-if="projectBuilder.step > 0">Previous</el-button>
-					<el-button @click="progressBuilder" type="primary">Next</el-button>
+					<el-button @click="progressBuilder" type="primary" v-if="projectBuilder.step < 2">Next</el-button>
+					<el-button @click="progressBuilder" type="primary" v-if="projectBuilder.step === 2">Submit</el-button>
 				</div>
 			</div>
 		</div>
@@ -109,6 +135,22 @@
 						name: '',
 						limit: 0,
 						isClosing: false
+					},
+					roles: [
+						{
+							name: "Manager"
+						},
+						{
+							name: "Developer"
+						}
+					],
+					newRole: {
+						visible: false,
+						name: '',
+						isManager: false,
+						isCreator: false,
+						isDestroyer: false,
+						isEditor: false
 					}
 				}
 			}
@@ -120,6 +162,20 @@
 				this.loading = false;
 			},
 			progressBuilder: function() {
+				switch (this.projectBuilder.step) {
+					case 2:
+						this.projectBuilder.newRole.itm = [];
+						this.projectBuilder.columns.forEach((startCol, startColIndex) => {
+							this.projectBuilder.newRole.itm.push([]);
+							this.projectBuilder.columns.forEach(endCol => {
+								if(startCol.name !== endCol.name) {
+									this.projectBuilder.newRole.itm[startColIndex].push(false);
+								} else {
+									this.projectBuilder.newRole.itm[startColIndex].push(true);
+								}
+							});
+						});
+				}
 				this.projectBuilder.step++;
 			},
 			addColumn: function() {
@@ -208,8 +264,8 @@
 				flex-direction: row;
 				align-items: stretch;
 				justify-content: center;
-				height: 45vh;
-				margin-top: 100px;
+				height: 50vh;
+				margin-top: 30px;
 				&__column {
 					color: black;
 					width: 20%;
@@ -234,6 +290,11 @@
 						font-weight: bold;
 					}
 				}
+			}
+			&__roles {
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
 			}
 		}
 	}

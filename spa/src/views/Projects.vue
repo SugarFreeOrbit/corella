@@ -57,7 +57,7 @@
 						{{role.name}}
 					</el-card>
 					<el-button circle icon="el-icon-plus" type="primary" style="width: 65px; font-size: 20px" @click="projectBuilder.newRole.visible = true"></el-button>
-					<el-dialog :visible.sync="projectBuilder.newRole.visible" center>
+					<el-dialog :visible.sync="projectBuilder.newRole.visible" center class="projectBuilder__content__roles__add">
 						<el-form :model="projectBuilder.newRole">
 							<el-form-item label="Role name">
 								<el-input autocomplete="off" v-model="projectBuilder.newRole.name"></el-input>
@@ -75,7 +75,7 @@
 								<el-switch v-model="projectBuilder.newRole.isEditor"></el-switch>
 							</el-form-item>
 							<el-form-item>
-								<
+								{{transitionSelect}}
 							</el-form-item>
 						</el-form>
 					</el-dialog>
@@ -150,7 +150,9 @@
 						isManager: false,
 						isCreator: false,
 						isDestroyer: false,
-						isEditor: false
+						isEditor: false,
+						itm: {},
+						columns: []
 					}
 				}
 			}
@@ -164,17 +166,21 @@
 			progressBuilder: function() {
 				switch (this.projectBuilder.step) {
 					case 2:
-						this.projectBuilder.newRole.itm = [];
-						this.projectBuilder.columns.forEach((startCol, startColIndex) => {
-							this.projectBuilder.newRole.itm.push([]);
-							this.projectBuilder.columns.forEach(endCol => {
-								if(startCol.name !== endCol.name) {
-									this.projectBuilder.newRole.itm[startColIndex].push(false);
-								} else {
-									this.projectBuilder.newRole.itm[startColIndex].push(true);
-								}
-							});
-						});
+						this.projectBuilder.newRole.itm = {};
+						this.projectBuilder.columns.forEach(col => {
+							this.projectBuilder.newRole.columns.push(col.name);
+						})
+						// this.projectBuilder.newRole.itm = {};
+						// this.projectBuilder.columns.forEach((startCol, startColIndex) => {
+						// 	this.projectBuilder.newRole.itm[startCol] = [];
+						// 	// this.projectBuilder.columns.forEach(endCol => {
+						// 	// 	if(startCol.name !== endCol.name) {
+						// 	// 		this.projectBuilder.newRole.itm[startColIndex].push(false);
+						// 	// 	} else {
+						// 	// 		this.projectBuilder.newRole.itm[startColIndex].push(true);
+						// 	// 	}
+						// 	// });
+						// })
 				}
 				this.projectBuilder.step++;
 			},
@@ -201,6 +207,11 @@
 		},
 		mounted() {
 			this.loadProjects();
+		},
+		computed: {
+			transitionSelect: function () {
+				
+			}
 		}
 	}
 </script>

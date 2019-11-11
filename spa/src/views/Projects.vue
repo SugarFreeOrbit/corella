@@ -53,7 +53,8 @@
 					</el-card>
 				</div>
 				<div class="projectBuilder__content__roles" v-if="projectBuilder.step === 2">
-					<el-card v-for="role in projectBuilder.roles" style="margin-right: 10px">
+					<el-card v-for="role in projectBuilder.roles" style="margin-right: 10px" v-bind:key="role.name">
+						<div class="projectBuilder__content__roles__remove" @click="removeRole(role.name)"><i class="el-icon-close"></i></div>
 						{{role.name}}
 					</el-card>
 					<el-button circle icon="el-icon-plus" type="primary" style="width: 65px; font-size: 20px" @click="projectBuilder.newRole.visible = true"></el-button>
@@ -74,8 +75,14 @@
 							<el-form-item label="Edit">
 								<el-switch v-model="projectBuilder.newRole.isEditor"></el-switch>
 							</el-form-item>
-							<el-form-item>
-								{{transitionSelect}}
+							<el-form-item v-for="startingColumn in projectBuilder.columns" v-bind:key="startingColumn.name" class="projectBuilder__content__roles__add__transitions">
+								{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="projectBuilder.newRole.itm[startingColumn.name]" multiple placeholder="Select transitions">
+									<el-option v-for="targetColumn in projectBuilder.columns" :label="targetColumn.name" :key="targetColumn.name" :value="targetColumn.name" v-if="startingColumn.name !== targetColumn.name"></el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item style="text-align: center">
+								<el-button @click="projectBuilder.newRole.visible = false">Cancel</el-button>
+								<el-button type="primary" @click="addRole">Create</el-button>
 							</el-form-item>
 						</el-form>
 					</el-dialog>
@@ -168,7 +175,7 @@
 					case 2:
 						this.projectBuilder.newRole.itm = {};
 						this.projectBuilder.columns.forEach(col => {
-							this.projectBuilder.newRole.columns.push(col.name);
+							this.projectBuilder.newRole.itm[col.name] = [];
 						})
 						// this.projectBuilder.newRole.itm = {};
 						// this.projectBuilder.columns.forEach((startCol, startColIndex) => {
@@ -203,15 +210,24 @@
 			removeColumn: function (name) {
 				let index = this.projectBuilder.columns.findIndex(col => col.name === name);
 				this.projectBuilder.columns.splice(index, 1);
+			},
+			addRole: function () {
+				this.projectBuilder.roles.push({
+					name: this.projectBuilder.newRole.name,
+					isManager: this.projectBuilder.newRole.isManager,
+					isEditor: this.projectBuilder.newRole.isEditor,
+					isDestroyer: this.projectBuilder.newRole.isDestroyer,
+					issueTransitionMatrix: this.projectBuilder.newRole.itm
+				});
+				this.projectBuilder.newRole.visible = false;
+			},
+			removeRole: function (name) {
+				let ind = this.projectBuilder.roles.findIndex((role) => role.name === name);
+				this.projectBuilder.roles.splice(ind, 1);
 			}
 		},
 		mounted() {
 			this.loadProjects();
-		},
-		computed: {
-			transitionSelect: function () {
-				
-			}
 		}
 	}
 </script>
@@ -306,6 +322,21 @@
 				display: flex;
 				justify-content: center;
 				flex-wrap: wrap;
+				&__remove {
+					top: -10px;
+					left: -10px;
+					position: relative;
+					display: inline-block;
+					&:hover {
+						cursor: pointer;
+						color: #87A330;
+					}
+				}
+				/*&__add {*/
+				/*	&__transitions {*/
+				/*		font-size: 100px;*/
+				/*	}*/
+				/*}*/
 			}
 		}
 	}

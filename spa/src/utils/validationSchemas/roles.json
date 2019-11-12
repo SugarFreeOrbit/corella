@@ -1,0 +1,43 @@
+{
+	"type": "array",
+	"uniqueItemProperties": [
+		"name"
+	],
+	"items": {
+		"type": "object",
+		"required": [
+			"name",
+			"isCreator",
+			"isDestroyer",
+			"isEditor",
+			"isManager"
+		],
+		"properties": {
+			"name": {
+				"type": "string"
+			},
+			"isManager": {
+				"type": "boolean"
+			},
+			"isCreator": {
+				"type": "boolean"
+			},
+			"isDestroyer": {
+				"type": "boolean"
+			},
+			"isEditor": {
+				"type": "boolean"
+			},
+			"itm": {
+				"type": "object",
+				"additionalProperties": true
+			},
+			"members": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

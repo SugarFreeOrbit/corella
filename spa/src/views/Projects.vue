@@ -90,7 +90,7 @@
 				<div class="projectBuilder__content__control">
 					<el-button @click="projectBuilder.step--" v-if="projectBuilder.step > 0">Previous</el-button>
 					<el-button @click="progressBuilder" type="primary" v-if="projectBuilder.step < 2">Next</el-button>
-					<el-button @click="progressBuilder" type="primary" v-if="projectBuilder.step === 2">Submit</el-button>
+					<el-button @click="createProject" type="primary" v-if="projectBuilder.step === 2">Submit</el-button>
 				</div>
 			</div>
 		</div>
@@ -112,6 +112,7 @@
 
 <script>
 	import Navbar from "../components/Navbar";
+	import md5 from "md5";
 	export default {
 		name: "Projects",
 		components: {Navbar},
@@ -126,31 +127,13 @@
 						name: '',
 						description: ''
 					},
-					columns: [
-						{
-							name: 'column',
-							isStarting: true,
-							isClosing: false
-						},
-						{
-							name: 'column1',
-							isStarting: false,
-							isClosing: false
-						}
-					],
+					columns: [],
 					newColumn: {
 						name: '',
 						limit: 0,
 						isClosing: false
 					},
-					roles: [
-						{
-							name: "Manager"
-						},
-						{
-							name: "Developer"
-						}
-					],
+					roles: [],
 					newRole: {
 						visible: false,
 						name: '',
@@ -172,39 +155,59 @@
 			},
 			progressBuilder: function() {
 				switch (this.projectBuilder.step) {
+					case 0:
+						if(this.projectBuilder.naming.name.length > 0) {
+							this.projectBuilder.step++;
+						} else {
+							this.$notify({
+								type: "error",
+								title: "Validation error",
+								message: "Projects must have a name"
+							});
+						}
+						break;
+					case 1:
+						let schemaValid = this.$schemaValidators.validateColumns(this.projectBuilder.columns);
+						if (schemaValid) {
+							this.projectBuilder.step++;
+						} else {
+							this.$notify({
+								type: "error",
+								title: "Validation error",
+								message: "Invalid columns"
+							});
+						}
+						break;
 					case 2:
 						this.projectBuilder.newRole.itm = {};
 						this.projectBuilder.columns.forEach(col => {
 							this.projectBuilder.newRole.itm[col.name] = [];
-						})
-						// this.projectBuilder.newRole.itm = {};
-						// this.projectBuilder.columns.forEach((startCol, startColIndex) => {
-						// 	this.projectBuilder.newRole.itm[startCol] = [];
-						// 	// this.projectBuilder.columns.forEach(endCol => {
-						// 	// 	if(startCol.name !== endCol.name) {
-						// 	// 		this.projectBuilder.newRole.itm[startColIndex].push(false);
-						// 	// 	} else {
-						// 	// 		this.projectBuilder.newRole.itm[startColIndex].push(true);
-						// 	// 	}
-						// 	// });
-						// })
+						});
+						break;
 				}
-				this.projectBuilder.step++;
 			},
 			addColumn: function() {
-				if (this.projectBuilder.newColumn.limit <= 0) {
-					this.projectBuilder.columns.push({
-						name: this.projectBuilder.newColumn.name,
-						isStarting: this.projectBuilder.columns.length === 0,
-						isClosing: false
-					})
+				if(this.projectBuilder.columns.find(col => col.name === this.projectBuilder.newColumn.name)) {
+					this.$notify({
+						title: 'Validation error',
+						message: 'Column names must be unique',
+						type: 'error'
+					});
 				} else {
-					this.projectBuilder.columns.push({
-						name: this.projectBuilder.newColumn.name,
-						isStarting: this.projectBuilder.columns.length === 0,
-						isClosing: false,
-						limit: this.projectBuilder.newColumn.limit
-					})
+					if (this.projectBuilder.newColumn.limit <= 0) {
+						this.projectBuilder.columns.push({
+							name: this.projectBuilder.newColumn.name,
+							isStarting: this.projectBuilder.columns.length === 0,
+							isClosing: false
+						})
+					} else {
+						this.projectBuilder.columns.push({
+							name: this.projectBuilder.newColumn.name,
+							isStarting: this.projectBuilder.columns.length === 0,
+							isClosing: false,
+							limit: this.projectBuilder.newColumn.limit
+						})
+					}
 				}
 			},
 			removeColumn: function (name) {
@@ -224,7 +227,88 @@
 			removeRole: function (name) {
 				let ind = this.projectBuilder.roles.findIndex((role) => role.name === name);
 				this.projectBuilder.roles.splice(ind, 1);
+			},
+			createProject: async function() {
+				if(this.$schemaValidators.validateRoles(this.projectBuilder.roles)) {
+					//Sanitizing ITMs
+					let sanitizedRoles = [];
+					let sanitizedItm = {};
+					for (let role of this.projectBuilder.roles) {
+						sanitizedItm = {};
+						for (let key in role.itm) {
+							let sanitizedKey = md5(this.projectBuilder.naming.name + key);
+							sanitizedItm[sanitizedKey] = {};
+							for (let columnName of role.itm[key]) {
+								sanitizedItm[sanitizedKey].push(md5(this.projectBuilder.naming.name + columnName));
+							}
+						}
+						sanitizedRoles.push({
+							name: role.name,
+							isEditor: role.isEditor,
+							isCreator: role.isCreator,
+							isManager: role.isManager,
+							isDestroyer: role.isDestroyer,
+							issueTransitionMatrix: sanitizedItm
+						});
+					}
+					try {
+						let res = this.$http.put('/projects', {
+							name: this.projectBuilder.naming.name,
+							description: this.projectBuilder.description,
+							columns: this.projectBuilder.columns,
+							roles: sanitizedRoles
+						});
+						this.projectBuilder = {
+							visible: false,
+							step: 0,
+							naming: {
+								name: '',
+								description: ''
+							},
+							columns: [],
+							newColumn: {
+								name: '',
+								limit: 0,
+								isClosing: false
+							},
+							roles: [],
+							newRole: {
+								visible: false,
+								name: '',
+								isManager: false,
+								isCreator: false,
+								isDestroyer: false,
+								isEditor: false,
+								itm: {},
+								columns: []
+							}
+						}
+					} catch (e) {
+						switch (e.response.status) {
+							case 0:
+								this.$notify({
+									title: 'Network error',
+									type: 'error'
+								});
+								break;
+							case 400:
+								this.$notify({
+									title: 'Duplication error',
+									message: "Such project already exists. Try changing the project name"
+								})
+						}
+					}
+				} else {
+					this.$notify({
+						title: 'Validation error',
+						message: 'Roles are invalid',
+						type: 'error'
+					})
+				}
 			}
+			// validateColumns: function () {
+			// 	let schemaValid = this.$schemaValidators.validateColumns(this.projectBuilder.columns);
+			// }
 		},
 		mounted() {
 			this.loadProjects();
@@ -322,6 +406,7 @@
 				display: flex;
 				justify-content: center;
 				flex-wrap: wrap;
+				margin-top: 40px;
 				&__remove {
 					top: -10px;
 					left: -10px;

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from "./store";
-import router from './router'
+import router from './router';
 import axios from 'axios';
 import ElementUI from 'element-ui';
 import VueDataTables from 'vue-data-tables';
@@ -14,6 +14,16 @@ Vue.use(axios);
 Vue.use(ElementUI);
 Vue.use(LayoutPlugin);
 Vue.use(VueDataTables);
+
+const Ajv = require('ajv');
+const ajv = new Ajv();
+require('ajv-keywords')(ajv, 'uniqueItemProperties');
+const validateRoles = ajv.compile(require('./utils/validationSchemas/roles'));
+const validateColumns = ajv.compile(require('./utils/validationSchemas/columns'));
+Vue.prototype.$schemaValidators = {
+	validateRoles,
+	validateColumns
+};
 
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -31,6 +41,7 @@ axios.interceptors.response.use(undefined, (error) => {
 	return Promise.reject(error);
 });
 Vue.prototype.$http = axios;
+
 
 
 

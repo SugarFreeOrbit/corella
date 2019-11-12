@@ -1,0 +1,30 @@
+{
+	"type": "array",
+	"minLength": 2,
+	"uniqueItemProperties": [
+		"name"
+	],
+	"items": {
+		"type": "object",
+		"required": [
+			"name",
+			"isStarting",
+			"isClosing"
+		],
+		"properties": {
+			"name": {
+				"type": "string"
+			},
+			"isStarting": {
+				"type": "boolean"
+			},
+			"isClosing": {
+				"type": "boolean"
+			},
+			"limit": {
+				"type": "integer",
+				"minimum": 0
+			}
+		}
+	}
+}

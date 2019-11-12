@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/utils/validationSchemas/columns.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/utils/validationSchemas/roles.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/spa/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spa/src/views/Projects.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Projects.vue" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -22,11 +25,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="190" />
-    <option name="width" value="1440" />
-    <option name="height" value="1050" />
   </component>
   <component name="ProjectId" id="1OP9mVuDZGxIe1xv4ugdxfN4OpD" />
   <component name="PropertiesComponent">
@@ -150,6 +148,7 @@
       <workItem from="1571897696116" duration="5251000" />
       <workItem from="1572412001804" duration="13711000" />
       <workItem from="1572606570530" duration="6006000" />
+      <workItem from="1573535023129" duration="12593000" />
     </task>
     <servers />
   </component>

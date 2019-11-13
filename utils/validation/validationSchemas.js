@@ -16,14 +16,6 @@ const newProject = {
 						type: "string",
 						required: true
 					},
-					isStarting: {
-						type: "boolean",
-						required: true
-					},
-					isClosing: {
-						type: "boolean",
-						required: true
-					},
 					limit: {
 						type: "integer",
 						minimum: 0

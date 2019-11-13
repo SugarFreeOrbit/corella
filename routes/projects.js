@@ -8,10 +8,15 @@ router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
 		let preparedColumns = req.body.columns.map(column => {
 			column.id = md5(req.body.name + column.name);
+			column.isStarting = false;
+			column.isClosing = false;
 			return column;
 		});
+		preparedColumns[0].isStarting = true;
+		preparedColumns[preparedColumns.length - 1].isClosing = true;
 		let newProject = new Project({
 			name: req.body.name,
+			description: req.body.description,
 			columns: preparedColumns,
 			isArchived: false,
 			roles: req.body.roles

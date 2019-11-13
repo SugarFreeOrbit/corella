@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spa/src/utils/validationSchemas/columns.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spa/src/utils/validationSchemas/roles.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/spa/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/projects.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/projects.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/utils/validationSchemas/columns.json" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/utils/validationSchemas/columns.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spa/src/views/Projects.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Projects.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/validation/validationSchemas.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validation/validationSchemas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/validation/validator.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validation/validator.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -59,10 +59,33 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JavaScript Debug.debug  spa">
+    <configuration name="debug  spa" type="JavascriptDebugType" uri="http://localhost:8080">
+      <method v="2" />
+    </configuration>
     <configuration name="app.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="app.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
+    <configuration name="serve" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/spa/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="serve" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="JavaScript Debug.debug  spa" />
+      <item itemvalue="Node.js.app.js" />
+      <item itemvalue="npm.serve" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.serve" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ServiceViewManager">
     <option name="allServicesViewState">
@@ -148,7 +171,8 @@
       <workItem from="1571897696116" duration="5251000" />
       <workItem from="1572412001804" duration="13711000" />
       <workItem from="1572606570530" duration="6006000" />
-      <workItem from="1573535023129" duration="12593000" />
+      <workItem from="1573535023129" duration="12633000" />
+      <workItem from="1573624995464" duration="9279000" />
     </task>
     <servers />
   </component>

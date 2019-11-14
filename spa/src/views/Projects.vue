@@ -100,7 +100,7 @@
 			</div>
 			<el-card v-for="project in projects" class="project" v-bind:key="project._id">
 				<div slot="header" class="clearfix">
-					<span><router-link to="/" class="project__name">{{project.name}}</router-link></span>
+					<span><router-link :to="'/projects/' + project._id" class="project__name">{{project.name}}</router-link></span>
 				</div>
 				<div v-if="project.description !== undefined">
 					{{project.description}}

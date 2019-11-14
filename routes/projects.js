@@ -132,6 +132,25 @@ router.get('/:projectId/roles', [validator.checkParamsForObjectIds()], function 
 	}
 });
 
+router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		let currentRoleQuery = await Project.findOne({
+			_id: req.params.projectId,
+			'roles.members': req.user._id
+		}, {
+			'roles.$': 1
+		});
+		if (currentRoleQuery.roles.length > 0) {
+			res.json(currentRoleQuery.roles[0]);
+		} else {
+			res.status(404);
+			res.end()
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.checkParamsForObjectIds()], function (req, res, next) {
 	if(req.user.isAdmin) {
 		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {

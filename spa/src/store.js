@@ -2,6 +2,7 @@
 import Vue from 'vue';
 import Vuex from "vuex";
 import router from "./router";
+import axios from 'axios';
 Vue.use(Vuex);
 
 let loggedIn;
@@ -23,7 +24,8 @@ const store = new Vuex.Store({
 			jwt,
 			isAdmin,
 			username
-		}
+		},
+		currentProject: {}
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
 			localStorage.setItem('jwt', jwt);
@@ -41,11 +43,36 @@ const store = new Vuex.Store({
 			state.user.jwt = '';
 			state.user.isAdmin = false;
 			state.user.username = '';
+		},
+		setCurrentProject(state, {_id}) {
+			state.currentProject._id = _id;
+		},
+		unsetCurrentProject(state) {
+			state.currentProject = {};
+		},
+		syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, issueTransitionMatrix}) {
+			state.currentProject.role = {
+				isManager,
+				isEditor,
+				isCreator,
+				isDestroyer,
+				issueTransitionMatrix
+			}
 		}
 	}, actions: {
 		logOut({commit}) {
 			commit('logOut');
 			router.push('/login');
+		},
+		async syncCurrentProjectRole({commit, state}) {
+			if(!state.user.isAdmin) {
+				try {
+					let role = await axios.get(`/projects/${state.currentProject._id}/roles/me`);
+					commit('syncCurrentProjectRole', role.data)
+				} catch (e) {
+					console.log(e)
+				}
+			}
 		}
 	}
 });

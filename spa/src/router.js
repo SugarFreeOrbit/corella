@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Projects from "./views/Projects";
+import Project from "./views/Project";
 import UserManagement from './views/UserManagement';
 import Login from './views/Login'
 import store from './store'
@@ -33,6 +34,15 @@ const router = new Router({
 			path: '/login',
 			name: 'login',
 			component: Login
+		},
+		{
+			path: '/projects/:_id',
+			name: 'project',
+			component: Project,
+			meta: {
+				requiresAuth: true
+			},
+			props: true
 		}
 		// {
 		// 	path: '/about',

@@ -1,10 +1,14 @@
 <template>
-	<div class="board">
+	<div class="board" v-loading="loading">
 		<el-card class="board__column" v-for="column in columns" v-bind:key="column.name">
 			<div class="board__column__header" slot="header">
 				<p>{{column.name}}</p>
 			</div>
-			<div class="board__column__content"></div>
+			<div class="board__column__content">
+				<el-card v-for="issue in column.issues" v-bind:key="issue._id" class="board__column__content__issue">
+					<div></div>
+				</el-card>
+			</div>
 		</el-card>
 	</div>
 </template>
@@ -38,14 +42,18 @@
 					// {
 					// 	name: 'column6'
 					// }
-				]
+				],
+				loading: false
 			}
 		},
 		async created() {
+			this.loading = true;
 			try {
 				let getColumns = await this.$http.get(`/projects/${this.$store.state.currentProject._id}/columns`);
-				this.columns = getColumns.data.columns
+				this.columns = getColumns.data.columns;
+				this.loading = false;
 			} catch (e) {
+				this.loading = false;
 				console.log(e);
 			}
 		}

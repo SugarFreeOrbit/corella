@@ -2,15 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spa/src/components/Board.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spa/src/views/Project.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/components/IssueCard.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/projects.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/projects.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/router.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/store.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spa/src/views/Projects.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Projects.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/users.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/components/Board.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/components/Board.vue" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,11 +26,16 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1OP9mVuDZGxIe1xv4ugdxfN4OpD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="8.10.0" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/spa/src/assets" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -47,18 +50,6 @@
       <recent name="$PROJECT_DIR$/utils/validation" />
       <recent name="$PROJECT_DIR$/security" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Node.js.app.js">
     <configuration name="debug  spa" type="JavascriptDebugType" uri="http://localhost:8080">
@@ -87,16 +78,6 @@
         <item itemvalue="npm.serve" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="ServiceViewManager">
-    <option name="allServicesViewState">
-      <serviceView>
-        <treeState>
-          <expand />
-          <select />
-        </treeState>
-      </serviceView>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -174,7 +155,12 @@
       <workItem from="1572606570530" duration="6006000" />
       <workItem from="1573535023129" duration="12633000" />
       <workItem from="1573624995464" duration="10473000" />
-      <workItem from="1573711234865" duration="21449000" />
+      <workItem from="1573711234865" duration="22632000" />
+      <workItem from="1573795914172" duration="3515000" />
+      <workItem from="1574671162972" duration="607000" />
+      <workItem from="1580111916693" duration="3444000" />
+      <workItem from="1580291779440" duration="8196000" />
+      <workItem from="1580366383314" duration="5676000" />
     </task>
     <servers />
   </component>
@@ -207,5 +193,75 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="408" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580112028631">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state x="408" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1053@0.0.1920.1053" timestamp="1580112028631" />
+    <state width="937" height="220" key="GridCell.Tab.0.bottom" timestamp="1580371365979">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="937" height="220" key="GridCell.Tab.0.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1580371365979" />
+    <state width="937" height="220" key="GridCell.Tab.0.center" timestamp="1580371365979">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="937" height="220" key="GridCell.Tab.0.center/0.0.1920.1053@0.0.1920.1053" timestamp="1580371365979" />
+    <state width="937" height="220" key="GridCell.Tab.0.left" timestamp="1580371365978">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="937" height="220" key="GridCell.Tab.0.left/0.0.1920.1053@0.0.1920.1053" timestamp="1580371365978" />
+    <state width="937" height="220" key="GridCell.Tab.0.right" timestamp="1580371365979">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="937" height="220" key="GridCell.Tab.0.right/0.0.1920.1053@0.0.1920.1053" timestamp="1580371365979" />
+    <state width="946" height="319" key="GridCell.Tab.1.bottom" timestamp="1580369557606">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.1.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557606" />
+    <state width="946" height="319" key="GridCell.Tab.1.center" timestamp="1580369557605">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.1.center/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557605" />
+    <state width="946" height="319" key="GridCell.Tab.1.left" timestamp="1580369557605">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.1.left/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557605" />
+    <state width="946" height="319" key="GridCell.Tab.1.right" timestamp="1580369557605">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.1.right/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557605" />
+    <state width="946" height="319" key="GridCell.Tab.2.bottom" timestamp="1580369557607">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.2.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557607" />
+    <state width="946" height="319" key="GridCell.Tab.2.center" timestamp="1580369557606">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.2.center/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557606" />
+    <state width="946" height="319" key="GridCell.Tab.2.left" timestamp="1580369557606">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.2.left/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557606" />
+    <state width="946" height="319" key="GridCell.Tab.2.right" timestamp="1580369557606">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.2.right/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557606" />
+    <state width="946" height="319" key="GridCell.Tab.3.bottom" timestamp="1580369557608">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.3.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557608" />
+    <state width="946" height="319" key="GridCell.Tab.3.center" timestamp="1580369557607">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.3.center/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557607" />
+    <state width="946" height="319" key="GridCell.Tab.3.left" timestamp="1580369557607">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.3.left/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557607" />
+    <state width="946" height="319" key="GridCell.Tab.3.right" timestamp="1580369557608">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="946" height="319" key="GridCell.Tab.3.right/0.0.1920.1053@0.0.1920.1053" timestamp="1580369557608" />
   </component>
 </project>

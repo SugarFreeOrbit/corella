@@ -62,6 +62,16 @@ const issueSchema = new Schema({
 	assignee: {
 		type: ObjectId,
 		ref: User
+	},
+	color: {
+		type: String,
+		enum: [
+			"green",
+			"blue",
+			"pink",
+			"orange",
+			"yellow"
+		]
 	}
 });
 

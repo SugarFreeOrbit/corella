@@ -58,6 +58,15 @@ router.get('/', async function (req, res, next) {
 	}
 });
 
+router.get('/:userId', async function (req, res, next) {
+	try {
+		let user = User.findById(req.params.userId, {username: 1})
+		res.json(user)
+	} catch (e) {
+		next(e)
+	}
+});
+
 router.delete('/:userId', function (req, res) {
 	if(req.user.isAdmin) {
 		User.deleteOne({_id: req.params.userId}).then(() => {
@@ -79,6 +88,7 @@ router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res
 		if(update._id) {
 			delete update._id;
 		}
+		update.password = bcrypt.hashSync(update.password, 10);
 		User.findByIdAndUpdate(req.params.userId, update).then(() => {
 			res.status(200);
 			res.end();

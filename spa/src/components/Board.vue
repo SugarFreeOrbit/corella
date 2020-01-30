@@ -2,48 +2,47 @@
 	<div class="board" v-loading="loading">
 		<el-card class="board__column" v-for="column in columns" v-bind:key="column.name">
 			<div class="board__column__header" slot="header">
-				<p>{{column.name}}</p>
+				<p>{{column.name}} <el-button circle type="primary"
+											  icon="el-icon-plus"
+											  size="mini"
+											  v-if="column.isStarting && canCreateIssues"
+											  @click="issueCreationModal.active = true"></el-button></p>
 			</div>
 			<div class="board__column__content">
-				<el-card v-for="issue in column.issues" v-bind:key="issue._id" class="board__column__content__issue">
-					<div></div>
-				</el-card>
+				<issue-card v-for="issueId in column.issues" v-bind:issueId="issueId" v-bind:projectId="projectId"></issue-card>
 			</div>
 		</el-card>
+		<el-dialog :visible.sync="issueCreationModal.active" title="New Issue">
+			<el-form ref="issueCreationModal" :model="issueCreationModal">
+
+			</el-form>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
+	import IssueCard from "./IssueCard";
 	export default {
 		name: "Board",
+		components: {IssueCard},
 		computed: {
 			projectId: function () {
 				return this.$store.state.currentProject._id
+			},
+			canCreateIssues: function () {
+				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
 			}
 		},
 		data() {
 			return {
-				columns: [
-					// {
-					// 	name: 'column1'
-					// },
-					// {
-					// 	name: 'column2'
-					// },
-					// {
-					// 	name: 'column3'
-					// },
-					// {
-					// 	name: 'column4'
-					// },
-					// {
-					// 	name: 'column5'
-					// },
-					// {
-					// 	name: 'column6'
-					// }
-				],
-				loading: false
+				columns: [],
+				loading: false,
+				issueCreationModal: {
+					active: false,
+					title: '',
+					description: '',
+					color: ''
+				}
 			}
 		},
 		async created() {

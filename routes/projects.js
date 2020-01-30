@@ -232,15 +232,29 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 			let project = await Project.findById(req.params.projectId, {
 				columns: 1
 			});
-			project.populate({
-				path: "columns.issues",
-				select: "title"
-			});
-			await project.execPopulate();
+			// project.populate({
+			// 	path: "columns.issues",
+			// 	select: "title color assignee"
+			// });
+			// await project.execPopulate();
 			res.json(project);
 		} else {
 			res.status(403);
 			res.end()
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+			let issue = await Issue.findById(req.params.issueId);
+			res.json(issue);
+		} else {
+			res.status(401);
+			res.end();
 		}
 	} catch (e) {
 		next(e);

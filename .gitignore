@@ -62,3 +62,6 @@ typings/
 
 # IDE files
 .idea/
+
+# Temp files fro mfile upload
+tmp/

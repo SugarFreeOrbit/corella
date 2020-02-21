@@ -75,5 +75,10 @@ const issueSchema = new Schema({
 	}
 });
 
+// Expects an array of multer files
+// Issue.methods.addAttachments = async function (localFiles) {
+//
+// };
+
 const Issue = mongoose.model('Issue', issueSchema, 'issues');
 module.exports = Issue;

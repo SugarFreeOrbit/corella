@@ -12,8 +12,33 @@
 					<i class="el-icon-user"></i>
 				</el-tooltip>
 			</div>
+			<el-popover placement="right" trigger="click" width="100">
+				<div class="project__menu__item" v-if="canCreateIssues" slot="reference">
+					<i class="el-icon-plus"></i>
+				</div>
+				<div class="project__menu__item_create">
+					<div class="project__menu__item_create__option" @click="issueCreationModal.active = true">
+						New Issue
+					</div>
+				</div>
+				<div class="project__menu__item_create">
+					<div class="project__menu__item_create__option">
+						New Epic
+					</div>
+				</div>
+			</el-popover>
 		</div>
 		<Board></Board>
+		<el-dialog :visible.sync="issueCreationModal.active" title="New issue">
+			<el-form model="issueCreationModal.form" v-loading="issueCreationModal.inProgress">
+				<el-form-item label="Title">
+					<el-input v-model="issueCreationModal.form.title"></el-input>
+				</el-form-item>
+				<el-form-item label="Description">
+					<el-input v-model="issueCreationModal.form.description"></el-input>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
 	</div>
 </template>
 
@@ -29,7 +54,15 @@
 		},
 		data() {
 			return {
-				activeMenuItem: 'board'
+				activeMenuItem: 'board',
+				issueCreationModal: {
+					active: false,
+					inProgress: false,
+					form: {
+						title: '',
+						description: ''
+					}
+				}
 			}
 		},
 		async created() {
@@ -39,6 +72,9 @@
 		computed: {
 			canAccessRoles: function () {
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager;
+			},
+			canCreateIssues: function () {
+				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
 			}
 		}
 	}
@@ -78,6 +114,12 @@
 				}
 				&:hover {
 					cursor: pointer;
+				}
+				&_create__option {
+					&:hover {
+						cursor: pointer;
+						text-decoration: underline;
+					}
 				}
 			}
 		}

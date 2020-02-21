@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9dcd053-043c-429b-a335-5437be4f6ae9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spa/src/components/IssueCreationModal.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/projects.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/projects.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/components/Board.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/components/Board.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spa/src/views/Project.vue" beforeDir="false" afterPath="$PROJECT_DIR$/spa/src/views/Project.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +32,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="8.10.0" />
@@ -157,7 +161,15 @@
       <workItem from="1574671162972" duration="607000" />
       <workItem from="1580111916693" duration="3444000" />
       <workItem from="1580291779440" duration="8196000" />
-      <workItem from="1580366383314" duration="10558000" />
+      <workItem from="1580366383314" duration="10718000" />
+      <workItem from="1580452776808" duration="335000" />
+      <workItem from="1580729651813" duration="1120000" />
+      <workItem from="1580803971620" duration="35000" />
+      <workItem from="1581427673749" duration="2017000" />
+      <workItem from="1581500007384" duration="4535000" />
+      <workItem from="1581578418229" duration="1395000" />
+      <workItem from="1581678687673" duration="628000" />
+      <workItem from="1582269161001" duration="6941000" />
     </task>
     <servers />
   </component>
@@ -196,22 +208,26 @@
       <screen x="0" y="0" width="1920" height="1053" />
     </state>
     <state x="408" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1053@0.0.1920.1053" timestamp="1580112028631" />
-    <state width="937" height="220" key="GridCell.Tab.0.bottom" timestamp="1580378132494">
+    <state x="733" y="286" width="424" height="482" key="FileChooserDialogImpl" timestamp="1580804003982">
       <screen x="0" y="0" width="1920" height="1053" />
     </state>
-    <state width="937" height="220" key="GridCell.Tab.0.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1580378132494" />
-    <state width="937" height="220" key="GridCell.Tab.0.center" timestamp="1580378132494">
+    <state x="733" y="286" width="424" height="482" key="FileChooserDialogImpl/0.0.1920.1053@0.0.1920.1053" timestamp="1580804003982" />
+    <state width="1877" height="218" key="GridCell.Tab.0.bottom" timestamp="1582272897266">
       <screen x="0" y="0" width="1920" height="1053" />
     </state>
-    <state width="937" height="220" key="GridCell.Tab.0.center/0.0.1920.1053@0.0.1920.1053" timestamp="1580378132494" />
-    <state width="937" height="220" key="GridCell.Tab.0.left" timestamp="1580378132493">
+    <state width="1877" height="218" key="GridCell.Tab.0.bottom/0.0.1920.1053@0.0.1920.1053" timestamp="1582272897266" />
+    <state width="1877" height="218" key="GridCell.Tab.0.center" timestamp="1582272897266">
       <screen x="0" y="0" width="1920" height="1053" />
     </state>
-    <state width="937" height="220" key="GridCell.Tab.0.left/0.0.1920.1053@0.0.1920.1053" timestamp="1580378132493" />
-    <state width="937" height="220" key="GridCell.Tab.0.right" timestamp="1580378132494">
+    <state width="1877" height="218" key="GridCell.Tab.0.center/0.0.1920.1053@0.0.1920.1053" timestamp="1582272897266" />
+    <state width="1877" height="218" key="GridCell.Tab.0.left" timestamp="1582272897265">
       <screen x="0" y="0" width="1920" height="1053" />
     </state>
-    <state width="937" height="220" key="GridCell.Tab.0.right/0.0.1920.1053@0.0.1920.1053" timestamp="1580378132494" />
+    <state width="1877" height="218" key="GridCell.Tab.0.left/0.0.1920.1053@0.0.1920.1053" timestamp="1582272897265" />
+    <state width="1877" height="218" key="GridCell.Tab.0.right" timestamp="1582272897266">
+      <screen x="0" y="0" width="1920" height="1053" />
+    </state>
+    <state width="1877" height="218" key="GridCell.Tab.0.right/0.0.1920.1053@0.0.1920.1053" timestamp="1582272897266" />
     <state width="946" height="319" key="GridCell.Tab.1.bottom" timestamp="1580369557606">
       <screen x="0" y="0" width="1920" height="1053" />
     </state>

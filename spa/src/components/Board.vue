@@ -12,11 +12,6 @@
 				<issue-card v-for="issueId in column.issues" v-bind:issueId="issueId" v-bind:projectId="projectId"></issue-card>
 			</div>
 		</el-card>
-		<el-dialog :visible.sync="issueCreationModal.active" title="New Issue">
-			<el-form ref="issueCreationModal" :model="issueCreationModal">
-
-			</el-form>
-		</el-dialog>
 	</div>
 </template>
 
@@ -41,7 +36,7 @@
 					active: false,
 					title: '',
 					description: '',
-					color: ''
+					inProgress: false
 				}
 			}
 		},

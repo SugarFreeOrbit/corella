@@ -199,7 +199,7 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 });
 
 //issue manipulations go here
-router.put('/:projectId/issues', [upload.array('attachments', 10), validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
 			let newIssue = new Issue({

@@ -20,9 +20,11 @@ const ajv = new Ajv();
 require('ajv-keywords')(ajv, 'uniqueItemProperties');
 const validateRoles = ajv.compile(require('./utils/validationSchemas/roles'));
 const validateColumns = ajv.compile(require('./utils/validationSchemas/columns'));
+const validateNewIssue = ajv.compile(require('./utils/validationSchemas/newIssue'));
 Vue.prototype.$schemaValidators = {
 	validateRoles,
-	validateColumns
+	validateColumns,
+	validateNewIssue
 };
 
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;

@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const http = require('http');
 
 //Load and export the logger configuration
 const logger = require('./utils/loggerConfig');
@@ -16,30 +17,9 @@ global.logger = logger;
 //Initialize the express instance
 const app = express();
 
-//Init global db connection
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useNewUrlParser', true);
-const dbUser = CONFIG.mongodb.user;
-const dbPwd = CONFIG.mongodb.pwd;
-const dbHost = CONFIG.mongodb.host;
-const dbName = CONFIG.mongodb.dbName;
-mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`).then((db) => {
-	logger.log('info', 'Connected to database!');
-	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
-		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {$set: {
-			username: "superadmin",
-			password: hash,
-			email: CONFIG.superadmin.email,
-			isAdmin: true
-		}}, {upsert: true}).then((superUser) => {
-			global.CONFIG.superadmin.id = superUser.value._id;
-			logger.log('debug', 'Assured superadmin user')
-		});
-	});
-}).catch(err => {
-	logger.error('Failed to connect to db!');
-});
+//Create server instance and pass it to globals
+const server = http.createServer(app);
+global.HTTP_SERVER = server;
 
 //Require and attach JWT parsing middleware
 const jwtStrategy = require('./security/jwtStrategy');
@@ -82,4 +62,32 @@ app.use(function (err, req, res, next) {
 		logger.error(err.stack);
 	}
 });
-app.listen(9080);
+
+//Init global db connection and start HTTP listener
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+const dbUser = CONFIG.mongodb.user;
+const dbPwd = CONFIG.mongodb.pwd;
+const dbHost = CONFIG.mongodb.host;
+const dbName = CONFIG.mongodb.dbName;
+let dbConnPromise = mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`);
+dbConnPromise.then((db) => {
+	logger.log('info', 'Connected to database!');
+	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
+		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {$set: {
+				username: "superadmin",
+				password: hash,
+				email: CONFIG.superadmin.email,
+				isAdmin: true
+			}}, {upsert: true}).then((superUser) => {
+			global.CONFIG.superadmin.id = superUser.value._id;
+			logger.log('info', 'Assured superadmin user')
+		});
+	});
+	server.listen(CONFIG.server ? CONFIG.server.port : 8080);
+	logger.info(`App is listening on port ${server.address().port}!`);
+});
+dbConnPromise.catch(() => {
+	logger.error('Failed to connect to db!');
+});

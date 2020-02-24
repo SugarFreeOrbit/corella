@@ -5,6 +5,7 @@ const Issue = require('../models/issue');
 const md5 = require('md5');
 const multer = require('multer');
 const upload = multer({dest: '../tmp'});
+const websocketService = require('../services/websocketService');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -217,6 +218,7 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 					"columns.$.issues": newIssue
 				}
 			});
+			websocketService.emitNewIssue(newIssue._id, req.params.projectId);
 			res.status(201);
 			res.end();
 		} else {

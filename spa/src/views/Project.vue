@@ -32,10 +32,14 @@
 		<el-dialog :visible.sync="issueCreationModal.active" title="New issue">
 			<el-form model="issueCreationModal.form" v-loading="issueCreationModal.inProgress">
 				<el-form-item label="Title">
-					<el-input v-model="issueCreationModal.form.title"></el-input>
+					<el-input required v-model="issueCreationModal.form.title"></el-input>
 				</el-form-item>
 				<el-form-item label="Description">
-					<el-input v-model="issueCreationModal.form.description"></el-input>
+					<el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="createIssue">Create</el-button>
+					<el-button @click="issueCreationModal.active = false">Cancel</el-button>
 				</el-form-item>
 			</el-form>
 		</el-dialog>
@@ -75,6 +79,23 @@
 			},
 			canCreateIssues: function () {
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
+			}
+		},
+		methods:{
+			createIssue: async function() {
+				this.issueCreationModal.inProgress = true;
+				if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
+					let result = await this.$http.put(`/projects/${this._id}/issues`, this.issueCreationModal.form);
+					this.issueCreationModal.inProgress = false;
+					this.issueCreationModal.active = false;
+				} else {
+					this.$notify({
+						title: 'Error',
+						message: 'Your issue is invalid',
+						duration: 3000,
+						type: 'error'
+					})
+				}
 			}
 		}
 	}

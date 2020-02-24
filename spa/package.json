@@ -22,7 +22,8 @@
 		"vue-data-tables": "~3.4.4",
 		"ajv": "~6.10.2",
 		"ajv-keywords": "^3.4.1",
-		"md5": "~2.2.1"
+		"md5": "~2.2.1",
+		"socket.io-client": "~2.3.0"
 	},
 	"postcss": {
 		"plugins": {

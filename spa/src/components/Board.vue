@@ -37,11 +37,16 @@
 					title: '',
 					description: '',
 					inProgress: false
-				}
+				},
+				boardSocket: {}
 			}
 		},
 		async created() {
 			this.loading = true;
+			this.boardSocket = this.$io.of('/boardEvents').join(`${this.projectId}`);
+			this.boardSocket.on('newIssue', (message) => {
+
+			});
 			try {
 				let getColumns = await this.$http.get(`/projects/${this.$store.state.currentProject._id}/columns`);
 				this.columns = getColumns.data.columns;

@@ -9,12 +9,14 @@ import { LayoutPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './element-variable.scss';
+import io from 'socket.io-client';
 
 Vue.use(axios);
 Vue.use(ElementUI);
 Vue.use(LayoutPlugin);
 Vue.use(VueDataTables);
 
+//Load validators
 const Ajv = require('ajv');
 const ajv = new Ajv();
 require('ajv-keywords')(ajv, 'uniqueItemProperties');
@@ -27,6 +29,7 @@ Vue.prototype.$schemaValidators = {
 	validateNewIssue
 };
 
+//Set up axios instance
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.interceptors.request.use( function (config) {
@@ -44,6 +47,8 @@ axios.interceptors.response.use(undefined, (error) => {
 });
 Vue.prototype.$http = axios;
 
+//Start the WS connection
+Vue.prototype.$io = io(process.env.VUE_APP_BACKEND_HOST);
 
 
 

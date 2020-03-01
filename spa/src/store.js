@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Vuex from "vuex";
 import router from "./router";
 import axios from 'axios';
+import io from 'socket.io-client';
 Vue.use(Vuex);
 
 let loggedIn;
@@ -25,7 +26,8 @@ const store = new Vuex.Store({
 			isAdmin,
 			username
 		},
-		currentProject: {}
+		currentProject: {},
+		socket: {}
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
 			localStorage.setItem('jwt', jwt);
@@ -35,6 +37,15 @@ const store = new Vuex.Store({
 			state.user.jwt = jwt;
 			state.user.isAdmin = isAdmin;
 			state.user.username = username;
+			state.socket = io(`${process.env.VUE_APP_BACKEND_HOST}/boardEvents`, {
+				transportOptions: {
+					polling: {
+						extraHeaders: {
+							'Hi': 'Mark'
+						}
+					}
+				}
+			});
 		},
 		logOut(state) {
 			localStorage.removeItem('jwt');
@@ -43,6 +54,12 @@ const store = new Vuex.Store({
 			state.user.jwt = '';
 			state.user.isAdmin = false;
 			state.user.username = '';
+			try {
+				state.socket.disconnect();
+				state.socket = {};
+			} catch (e) {
+				console.log('No socket to close')
+			}
 		},
 		setCurrentProject(state, {_id}) {
 			state.currentProject._id = _id;

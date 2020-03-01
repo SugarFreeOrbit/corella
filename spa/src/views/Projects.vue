@@ -320,7 +320,6 @@
 			// }
 		},
 		mounted() {
-			this.$store.state.socket.emit('hi', 'mark');
 			this.loadProjects();
 		}
 	}

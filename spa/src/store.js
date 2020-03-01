@@ -41,7 +41,7 @@ const store = new Vuex.Store({
 				transportOptions: {
 					polling: {
 						extraHeaders: {
-							'Hi': 'Mark'
+							'X-Client': `Bearer ${jwt}`
 						}
 					}
 				}

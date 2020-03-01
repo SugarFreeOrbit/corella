@@ -38,6 +38,8 @@ passport.use(jwtStrategy);
 // 	});
 // });
 
+app.use(cors());
+
 //Initialize routes
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
@@ -46,7 +48,7 @@ const projectsRouter = require('./routes/projects');
 
 //Add middleware and start the HTTP listener
 app.use(bodyParser.json());
-app.use(cors());
+
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 app.use('/projects', passport.authenticate('jwt', {session: false}), projectsRouter);

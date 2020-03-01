@@ -9,7 +9,6 @@ import { LayoutPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './element-variable.scss';
-import io from 'socket.io-client';
 
 Vue.use(axios);
 Vue.use(ElementUI);
@@ -48,7 +47,7 @@ axios.interceptors.response.use(undefined, (error) => {
 Vue.prototype.$http = axios;
 
 //Start the WS connection
-Vue.prototype.$io = io(process.env.VUE_APP_BACKEND_HOST);
+Vue.prototype.$BACK_END = process.env.VUE_APP_BACKEND_HOST;
 
 
 

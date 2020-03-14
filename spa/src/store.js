@@ -6,17 +6,27 @@ import axios from 'axios';
 import io from 'socket.io-client';
 Vue.use(Vuex);
 
-let loggedIn;
+let loggedIn, socket;
 let jwt = localStorage.getItem('jwt');
 let isAdmin = (localStorage.getItem('isAdmin') === "true");
 let username = localStorage.getItem('username');
 if (username && isAdmin !== undefined && jwt) {
 	loggedIn = true;
+	socket = io(`${process.env.VUE_APP_BACKEND_HOST}/boardEvents`, {
+		transportOptions: {
+			polling: {
+				extraHeaders: {
+					'X-Client': `Bearer ${jwt}`
+				}
+			}
+		}
+	});
 } else {
 	loggedIn = false;
 	isAdmin = false;
 	username = '';
 	jwt = '';
+	socket = {};
 }
 const store = new Vuex.Store({
 	state: {
@@ -27,7 +37,7 @@ const store = new Vuex.Store({
 			username
 		},
 		currentProject: {},
-		socket: {}
+		socket
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
 			localStorage.setItem('jwt', jwt);

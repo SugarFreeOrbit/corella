@@ -43,9 +43,12 @@
 		},
 		async created() {
 			this.loading = true;
-			this.boardSocket = this.$io.of('/boardEvents').join(`${this.projectId}`);
+			this.boardSocket = this.$store.state.socket;
 			this.boardSocket.on('newIssue', (message) => {
-
+				if (message.projectId === this.projectId) {
+					let startingColumn = this.columns.findIndex(col => col.isStarting);
+					this.columns[startingColumn].issues.push(message.issueId);
+				}
 			});
 			try {
 				let getColumns = await this.$http.get(`/projects/${this.$store.state.currentProject._id}/columns`);

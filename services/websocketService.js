@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 const WebsocketService = function () {
 	this.server = require('socket.io')(HTTP_SERVER, {
@@ -13,11 +14,24 @@ const WebsocketService = function () {
 		}
 	});
 	this.boardEventSocket = this.server.of('/boardEvents');
-	this.boardEventSocket.use((socket, next) => {
-		next();
+	this.boardEventSocket.use( async (socket, next) => {
+		try {
+			let rawJwt = socket.request.headers['x-client'].split(' ')[1];
+			await jwt.verify(rawJwt, CONFIG.secret);
+			let parsedJwt = jwt.decode(rawJwt);
+			let user = await User.findById(parsedJwt.id);
+			if (user) {
+				logger.log('debug', `User ${parsedJwt.id} connected to socket`);
+				next();
+			} else {
+				next(new Error('Unauthenticated'));
+			}
+		} catch (e) {
+			next(new Error('Unauthenticated'));
+		}
 	});
 	this.emitNewIssue = function (issueId, projectId) {
-		this.boardEventSocket.to(projectId).emit('newIssue', {issueId});
+		this.boardEventSocket.emit('newIssue', {issueId, projectId});
 	};
 };
 

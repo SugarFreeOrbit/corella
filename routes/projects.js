@@ -230,6 +230,27 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 	}
 });
 
+router.delete('/:projectId/issues/:issueId', async function (req, res, next) {
+	try {
+		if (await Project.checkDestroyerPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
+			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
+				$pull: {
+					'columns.$[].issues': req.params.issueId
+				}
+			});
+			await Promise.all([removeIssueFromColumn, deleteIssue]);
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end()
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {

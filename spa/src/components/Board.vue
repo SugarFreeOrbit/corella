@@ -50,6 +50,13 @@
 					this.columns[startingColumn].issues.push(message.issueId);
 				}
 			});
+			this.boardSocket.on('deletedIssue', (message) => {
+				if (message.projectId === this.projectId) {
+					for (let i = 0; i < this.columns.length; i++) {
+						this.columns[i].issues = this.columns[i].issues.filter(issue => issue !== message.issueId)
+					}
+				}
+			});
 			try {
 				let getColumns = await this.$http.get(`/projects/${this.$store.state.currentProject._id}/columns`);
 				this.columns = getColumns.data.columns;

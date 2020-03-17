@@ -33,6 +33,9 @@ const WebsocketService = function () {
 	this.emitNewIssue = function (issueId, projectId) {
 		this.boardEventSocket.emit('newIssue', {issueId, projectId});
 	};
+	this.emitDeletedIssue = function (issueId, projectId) {
+		this.boardEventSocket.emit('deletedIssue', {issueId, projectId});
+	};
 };
 
 module.exports =  new WebsocketService();

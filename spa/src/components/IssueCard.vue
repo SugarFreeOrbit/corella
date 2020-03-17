@@ -12,6 +12,22 @@
 				<hr>
 				<p class="issue__content_description">{{description}}</p>
 			</div>
+			<div class="issue__content" v-else v-loading="modalLoading">
+				<el-form>
+					<el-form-item label="Title">
+						<el-input v-model="title"></el-input>
+					</el-form-item>
+					<hr>
+					<el-form-item label="Description">
+						<el-input type="textarea" :rows="6" v-model="description"></el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-button @click="issueModalVisible = false">Cancel</el-button>
+						<el-button type="primary">Update</el-button>
+						<el-button type="danger" @click="deleteIssue">Delete</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
 		</el-dialog>
 	</el-card>
 </template>
@@ -34,7 +50,8 @@
 				color: '',
 				previewReady: false,
 				assigneeReady: false,
-				issueModalVisible: false
+				issueModalVisible: false,
+				modalLoading: false
 			}
 		},
 		computed: {
@@ -56,6 +73,14 @@
 				let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
 				this.assignee.username = assignee.data.username;
 				this.assigneeReady = true;
+			}
+		},
+		methods: {
+			deleteIssue: async function() {
+				this.modalLoading = true;
+				await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}`);
+				this.modalLoading = false;
+				this.issueModalVisible = false;
 			}
 		}
 	}

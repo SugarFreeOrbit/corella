@@ -205,7 +205,7 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
 			let newIssue = new Issue({
 				title: req.body.title,
-				description: req.body.description | "",
+				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
 				author: req.user._id
 			});

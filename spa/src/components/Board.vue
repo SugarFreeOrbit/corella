@@ -81,7 +81,8 @@
 				vertical-align: middle;
 			}
 			&__content {
-				height: 100%;
+				height: 800px;
+				overflow-y: auto;
 			}
 		}
 	}

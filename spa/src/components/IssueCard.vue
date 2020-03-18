@@ -77,6 +77,11 @@
 		},
 		methods: {
 			deleteIssue: async function() {
+				await this.$confirm('This will permanently delete this issue. Continue?', 'Warning', {
+					confirmButtonText: 'Confirm',
+					cancelButtonText: 'Cancel',
+					type: "warning"
+				});
 				this.modalLoading = true;
 				await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}`);
 				this.modalLoading = false;

@@ -230,9 +230,10 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 	}
 });
 
-router.delete('/:projectId/issues/:issueId', async function (req, res, next) {
+router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		if (await Project.checkDestroyerPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id)]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0]) || req.user.isAdmin) {
 			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
 			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
@@ -246,6 +247,28 @@ router.delete('/:projectId/issues/:issueId', async function (req, res, next) {
 		} else {
 			res.status(403);
 			res.end()
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id)]);
+		if((projectPermissionQueries[0] && projectPermissionQueries[1]) || req.user.isAdmin) {
+			await Issue.findByIdAndUpdate(req.params.issueId, {
+				title: req.body.title,
+				description: (req.body.description) ? req.body.description : "",
+				checklist: req.body.checklist,
+				author: req.user._id
+			});
+			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
 		}
 	} catch (e) {
 		next(e);

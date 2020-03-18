@@ -23,8 +23,8 @@
 					</el-form-item>
 					<el-form-item>
 						<el-button @click="issueModalVisible = false">Cancel</el-button>
-						<el-button type="primary">Update</el-button>
-						<el-button type="danger" @click="deleteIssue">Delete</el-button>
+						<el-button type="primary" @click="updateIssue">Update</el-button>
+						<el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -51,7 +51,8 @@
 				previewReady: false,
 				assigneeReady: false,
 				issueModalVisible: false,
-				modalLoading: false
+				modalLoading: false,
+				issueSocket: {}
 			}
 		},
 		computed: {
@@ -74,6 +75,12 @@
 				this.assignee.username = assignee.data.username;
 				this.assigneeReady = true;
 			}
+			this.issueSocket = this.$store.state.socket;
+			this.issueSocket.on('updatedIssue', message => {
+				if (message.projectId === this.projectId && message.issueId === this.issueId) {
+					this.reloadIssue();
+				}
+			});
 		},
 		methods: {
 			deleteIssue: async function() {
@@ -86,6 +93,30 @@
 				await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}`);
 				this.modalLoading = false;
 				this.issueModalVisible = false;
+			},
+			updateIssue: async function() {
+				this.modalLoading = true;
+				await this.$http.patch(`/projects/${this.projectId}/issues/${this.issueId}`, {
+					title: this.title,
+					description: this.description,
+					color: this.color,
+					assignee: this.assignee._id
+				});
+				this.modalLoading = false;
+			},
+			reloadIssue: async function() {
+				this.previewReady = false;
+				let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
+				this.title = issue.data.title;
+				this.description = issue.data.description;
+				this.color = issue.data.color;
+				this.previewReady = true;
+				if (issue.data.assignee) {
+					this.assignee._id = issue.data.assignee;
+					let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
+					this.assignee.username = assignee.data.username;
+					this.assigneeReady = true;
+				}
 			}
 		}
 	}

@@ -185,6 +185,13 @@ projectSchema.statics.checkReaderPermission = async function (projectId, userId)
 	}, {projectName: 1});
 	return !!permissionTest;
 };
+projectSchema.statics.validateProjectToIssueRelation = async function(projectId, issueId) {
+	let relationTest = await this.findOne({
+		_id: projectId,
+		'columns.issues': issueId
+	}, {projectName: 1});
+	return !!relationTest;
+};
 // projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
 // 	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
 // 		let project = await this.findOne({

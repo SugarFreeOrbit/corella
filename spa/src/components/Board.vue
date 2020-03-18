@@ -9,7 +9,7 @@
 											  @click="issueCreationModal.active = true"></el-button></p>
 			</div>
 			<div class="board__column__content">
-				<issue-card v-for="issueId in column.issues" v-bind:issueId="issueId" v-bind:projectId="projectId"></issue-card>
+				<issue-card v-for="issueId in column.issues" v-bind:key="issueId" v-bind:issueId="issueId" v-bind:projectId="projectId"></issue-card>
 			</div>
 		</el-card>
 	</div>

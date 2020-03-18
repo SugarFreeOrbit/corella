@@ -240,6 +240,7 @@ router.delete('/:projectId/issues/:issueId', async function (req, res, next) {
 				}
 			});
 			await Promise.all([removeIssueFromColumn, deleteIssue]);
+			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {

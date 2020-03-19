@@ -9,7 +9,7 @@
 											  @click="issueCreationModal.active = true"></el-button></p>
 			</div>
 			<div class="board__column__content">
-				<issue-card v-for="issueId in column.issues" v-bind:key="issueId" v-bind:issueId="issueId" v-bind:projectId="projectId"></issue-card>
+				<issue-card v-for="issueId in column.issues" v-bind:key="issueId" v-bind:issueId="issueId" v-bind:projectId="projectId" v-bind:columnList="columnList"></issue-card>
 			</div>
 		</el-card>
 	</div>
@@ -26,6 +26,16 @@
 			},
 			canCreateIssues: function () {
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
+			},
+			columnList: function () {
+				return this.columns.map(col => {
+					return {
+						id: col.id,
+						name: col.name,
+						isStarting: col.isStarting,
+						isClosing: col.isClosing
+					};
+				});
 			}
 		},
 		data() {

@@ -47,8 +47,7 @@ const issueSchema = new Schema({
 		required: true
 	},
 	description: {
-		type: String,
-		required: true
+		type: String
 	},
 	history: [historyEntrySchema],
 	checklist: [checklistItemSchema],

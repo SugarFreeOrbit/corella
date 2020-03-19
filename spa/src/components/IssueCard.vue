@@ -7,10 +7,13 @@
 			{{assignee.username}}
 		</div>
 		<el-dialog :visible.sync="issueModalVisible">
-			<div v-if="!canEditIssues" class="issue__content">
+			<div v-if="canEditIssues" class="issue__content" v-loading="modalLoading">
 				<p class="issue__content__title">{{title}}</p>
 				<hr>
 				<p class="issue__content_description">{{description}}</p>
+				<div class="issue__content__control">
+					<el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
+				</div>
 			</div>
 			<div class="issue__content" v-else v-loading="modalLoading">
 				<el-form>
@@ -21,7 +24,7 @@
 					<el-form-item label="Description">
 						<el-input type="textarea" :rows="6" v-model="description"></el-input>
 					</el-form-item>
-					<el-form-item>
+					<el-form-item class="issue__content__control">
 						<el-button @click="issueModalVisible = false">Cancel</el-button>
 						<el-button type="primary" @click="updateIssue">Update</el-button>
 						<el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
@@ -37,7 +40,8 @@
 		name: "IssueCard",
 		props: {
 			issueId: String,
-			projectId: String
+			projectId: String,
+			columnList: Array
 		},
 		data() {
 			return {

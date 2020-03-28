@@ -85,6 +85,20 @@ const store = new Vuex.Store({
 				isDestroyer,
 				issueTransitionMatrix
 			}
+		},
+		syncCurrentProjectBoard(state, columns) {
+			Vue.set(state.currentProject, 'columns', columns);
+		},
+		addIssue(state, issueId) {
+			let startingColIndex = state.currentProject.columns.findIndex(col => col.isStarting);
+			if (startingColIndex !== -1) {
+					state.currentProject.columns[startingColIndex].push(issueId);
+			}
+		},
+		removeIssue(state, issueId) {
+			for (let i = 0; i < state.currentProject.columns.length; i++) {
+				state.currentProject.columns[i].issues = state.currentProject.columns[i].issues.filter(issue => issue !== issueId);
+			}
 		}
 	}, actions: {
 		logOut({commit}) {
@@ -100,6 +114,10 @@ const store = new Vuex.Store({
 					console.log(e)
 				}
 			}
+		},
+		async syncCurrentProjectBoard({commit, state}) {
+			let getColumns = await axios.get(`/projects/${state.currentProject._id}/columns`);
+			commit('syncCurrentProjectBoard', getColumns.data.columns);
 		}
 	}
 });

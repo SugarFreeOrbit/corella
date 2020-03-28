@@ -141,15 +141,12 @@
 					targetPosition: 0,
 					originalColumn: this.currentColumnId
 				};
-				this.$emit('moved-issue', payload);
+				this.$store.commit('moveIssue', payload);
 				this.modalLoading = false;
 				try {
-					console.log('started back-end move');
 					let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
-					console.log('finished back-end move');
 				} catch (e) {
-					console.log('failed back-end move');
-					this.$emit('moved-issue', {
+					this.$store.commit('moveIssue', {
 						issueId: payload.issueId,
 						targetColumn: payload.originalColumn,
 						targetPosition: 0,

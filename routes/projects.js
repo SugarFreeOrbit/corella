@@ -353,6 +353,12 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 				}
 			});
 			await Promise.all([detach, attach]);
+			websocketService.emitMovedIssue({
+				issueId: req.body.issueId,
+				originalColumn,
+				targetColumn: req.body.targetColumn,
+				targetPosition: req.body.targetPosition
+			});
 			res.status(200);
 			res.end();
 		} else {

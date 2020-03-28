@@ -95,6 +95,7 @@
 				});
 				this.modalLoading = true;
 				await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}`);
+				this.$store.commit('removeIssue', this.issueId);
 				this.modalLoading = false;
 				this.issueModalVisible = false;
 			},

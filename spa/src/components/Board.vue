@@ -28,7 +28,7 @@
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
 			},
 			columnList: function () {
-				return this.columns.map(col => {
+				return this.$store.state.currentProject.columns.map(col => {
 					return {
 						id: col.id,
 						name: col.name,
@@ -36,11 +36,13 @@
 						isClosing: col.isClosing
 					};
 				});
+			},
+			columns: function () {
+				return this.$store.state.currentProject.columns;
 			}
 		},
 		data() {
 			return {
-				columns: [],
 				loading: false,
 				issueCreationModal: {
 					active: false,
@@ -56,25 +58,26 @@
 			this.boardSocket = this.$store.state.socket;
 			this.boardSocket.on('newIssue', (message) => {
 				if (message.projectId === this.projectId) {
-					let startingColumn = this.columns.findIndex(col => col.isStarting);
-					this.columns[startingColumn].issues.push(message.issueId);
+					this.$store.commit('addIssue', message.issueId)
 				}
 			});
 			this.boardSocket.on('deletedIssue', (message) => {
 				if (message.projectId === this.projectId) {
-					for (let i = 0; i < this.columns.length; i++) {
-						this.columns[i].issues = this.columns[i].issues.filter(issue => issue !== message.issueId)
-					}
+					this.$store.commit('removeIssue', message.issueId)
 				}
 			});
 			try {
-				let getColumns = await this.$http.get(`/projects/${this.$store.state.currentProject._id}/columns`);
-				this.columns = getColumns.data.columns;
+				console.log(this.columns);
+				await this.$store.dispatch('syncCurrentProjectBoard');
+				console.log(this.columns);
 				this.loading = false;
 			} catch (e) {
 				this.loading = false;
 				console.log(e);
 			}
+		},
+		methods: {
+
 		}
 	}
 </script>

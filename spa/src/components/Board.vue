@@ -13,8 +13,7 @@
 							v-bind:issueId="issueId"
 							v-bind:projectId="projectId"
 							v-bind:columnList="columnList"
-							v-bind:currentColumnId="column.id"
-							v-on:moved-issue="moveIssue"></issue-card>
+							v-bind:currentColumnId="column.id"></issue-card>
 			</div>
 		</el-card>
 	</div>
@@ -71,26 +70,17 @@
 					this.$store.commit('removeIssue', message.issueId)
 				}
 			});
+			this.boardSocket.on('movedIssue', message => {
+				if (message.projectId === this.projectId) {
+					this.$store.commit('moveIssue', message.moveOperation)
+				}
+			});
 			try {
-				console.log(this.columns);
 				await this.$store.dispatch('syncCurrentProjectBoard');
-				console.log(this.columns);
 				this.loading = false;
 			} catch (e) {
 				this.loading = false;
 				console.log(e);
-			}
-		},
-		methods: {
-			moveIssue: function (moveOperation) {
-				console.log('got front-end move');
-				let targetColIndex = this.columns.findIndex(col => col.id === moveOperation.targetColumn);
-				let originalColIndex = this.columns.findIndex(col => col.id === moveOperation.originalColumn);
-				if (targetColIndex !== -1 && originalColIndex !== -1 && !(this.columns[targetColIndex].issues.includes(moveOperation.issueId)) && this.columns[originalColIndex].issues.includes(moveOperation.issueId)) {
-					this.columns[originalColIndex].issues = this.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
-					this.columns[targetColIndex].issues.push(moveOperation.issueId);
-					console.log('accepted front-end move');
-				}
 			}
 		}
 	}

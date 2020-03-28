@@ -99,6 +99,14 @@ const store = new Vuex.Store({
 			for (let i = 0; i < state.currentProject.columns.length; i++) {
 				state.currentProject.columns[i].issues = state.currentProject.columns[i].issues.filter(issue => issue !== issueId);
 			}
+		},
+		moveIssue(state, moveOperation) {
+			let targetColIndex = state.currentProject.columns.findIndex(col => col.id === moveOperation.targetColumn);
+			let originalColIndex = state.currentProject.columns.findIndex(col => col.id === moveOperation.originalColumn);
+			if (targetColIndex !== -1 && originalColIndex !== -1 && !(state.currentProject.columns[targetColIndex].issues.includes(moveOperation.issueId)) && state.currentProject.columns[originalColIndex].issues.includes(moveOperation.issueId)) {
+				state.currentProject.columns[originalColIndex].issues = state.currentProject.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
+				state.currentProject.columns[targetColIndex].issues.push(moveOperation.issueId);
+			}
 		}
 	}, actions: {
 		logOut({commit}) {

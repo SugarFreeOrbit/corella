@@ -1,6 +1,6 @@
 <template>
 	<div class="board" v-loading="loading">
-		<el-card class="board__column" v-for="column in columns" v-bind:key="column.name">
+		<el-card class="board__column" v-for="column in columns" v-bind:key="column.id">
 			<div class="board__column__header" slot="header">
 				<p>{{column.name}} <el-button circle type="primary"
 											  icon="el-icon-plus"
@@ -9,7 +9,12 @@
 											  @click="issueCreationModal.active = true"></el-button></p>
 			</div>
 			<div class="board__column__content">
-				<issue-card v-for="issueId in column.issues" v-bind:key="issueId" v-bind:issueId="issueId" v-bind:projectId="projectId" v-bind:columnList="columnList"></issue-card>
+				<issue-card v-for="issueId in column.issues" v-bind:key="issueId"
+							v-bind:issueId="issueId"
+							v-bind:projectId="projectId"
+							v-bind:columnList="columnList"
+							v-bind:currentColumnId="column.id"
+							v-on:moved-issue="moveIssue"></issue-card>
 			</div>
 		</el-card>
 	</div>
@@ -77,7 +82,16 @@
 			}
 		},
 		methods: {
-
+			moveIssue: function (moveOperation) {
+				console.log('got front-end move');
+				let targetColIndex = this.columns.findIndex(col => col.id === moveOperation.targetColumn);
+				let originalColIndex = this.columns.findIndex(col => col.id === moveOperation.originalColumn);
+				if (targetColIndex !== -1 && originalColIndex !== -1 && !(this.columns[targetColIndex].issues.includes(moveOperation.issueId)) && this.columns[originalColIndex].issues.includes(moveOperation.issueId)) {
+					this.columns[originalColIndex].issues = this.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
+					this.columns[targetColIndex].issues.push(moveOperation.issueId);
+					console.log('accepted front-end move');
+				}
+			}
 		}
 	}
 </script>

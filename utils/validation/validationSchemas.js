@@ -173,16 +173,17 @@ const moveOperation = {
 	properties: {
 		issueId: {
 			type: "string",
-			format: "objectId"
+			format: "objectId",
+			required: true
 		},
 		originalPosition: {
 			type: "integer",
-			minimum: 0,
-			required: true
+			minimum: 0
 		},
 		targetColumn: {
 			type: "string",
-			format: "md5"
+			format: "md5",
+			required: true
 		},
 		targetPosition: {
 			type: "integer",

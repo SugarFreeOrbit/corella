@@ -13,6 +13,13 @@
 				<p class="issue__content_description">{{description}}</p>
 				<div class="issue__content__control">
 					<el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
+					<el-select v-model="targetColumn" placeholder="Move this issue to..." class="issue__content__control__move" @change="moveIssue">
+						<el-option v-for="col in availableTransitions"
+								   :key="col.id"
+								   :label="col.name"
+								   :value="col.id">
+						</el-option>
+					</el-select>
 				</div>
 			</div>
 			<div class="issue__content" v-else v-loading="modalLoading">
@@ -27,6 +34,13 @@
 					<el-form-item class="issue__content__control">
 						<el-button @click="issueModalVisible = false">Cancel</el-button>
 						<el-button type="primary" @click="updateIssue">Update</el-button>
+						<el-select v-model="targetColumn" placeholder="Move this issue to..." class="issue__content__control__move" @change="moveIssue">
+							<el-option v-for="col in availableTransitions"
+									   :key="col.id"
+									   :label="col.name"
+									   :value="col.id">
+							</el-option>
+						</el-select>
 						<el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
 					</el-form-item>
 				</el-form>
@@ -41,7 +55,8 @@
 		props: {
 			issueId: String,
 			projectId: String,
-			columnList: Array
+			columnList: Array,
+			currentColumnId: String
 		},
 		data() {
 			return {
@@ -56,6 +71,7 @@
 				assigneeReady: false,
 				issueModalVisible: false,
 				modalLoading: false,
+				targetColumn: '',
 				issueSocket: {}
 			}
 		},
@@ -65,6 +81,14 @@
 			},
 			canDeleteIssues: function () {
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isDestroyer;
+			},
+			availableTransitions: function () {
+				if (this.$store.state.user.isAdmin) {
+					return this.columnList
+				} else {
+					let allowedCols = this.$store.state.user.currentProject.role.issueTransitionMatrix[this.currentColumnId];
+					return this.columnList.filter(col => col.id in allowedCols);
+				}
 			}
 		},
 		async created() {
@@ -109,6 +133,30 @@
 				});
 				this.modalLoading = false;
 			},
+			moveIssue: async function(targetColumn) {
+				this.modalLoading = true;
+				let payload = {
+					issueId: this.issueId,
+					targetColumn: targetColumn,
+					targetPosition: 0,
+					originalColumn: this.currentColumnId
+				};
+				this.$emit('moved-issue', payload);
+				this.modalLoading = false;
+				try {
+					console.log('started back-end move');
+					let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
+					console.log('finished back-end move');
+				} catch (e) {
+					console.log('failed back-end move');
+					this.$emit('moved-issue', {
+						issueId: payload.issueId,
+						targetColumn: payload.originalColumn,
+						targetPosition: 0,
+						originalColumn: payload.targetColumn
+					});
+				}
+			},
 			reloadIssue: async function() {
 				this.previewReady = false;
 				let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
@@ -146,6 +194,12 @@
 				font-weight: bold;
 				text-align: center;
 				font-size: larger;
+			}
+			&__control {
+				&__move {
+					margin-left: 10px;
+					margin-right: 10px;
+				}
 			}
 		}
 	}

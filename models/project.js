@@ -216,41 +216,61 @@ projectSchema.statics.validateProjectToIssueRelation = async function(projectId,
 // 		return !!permissionTest;
 // 	}
 // };
-projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
-	let roleQuery = this.findOne({
-		_id: projectId,
-		"roles.members": userId
-	}, {
-		"roles.$.issueTransitionMatrix": 1,
-		"roles.isManager": 1
-	});
-	let columnQuery = this.findOne({
-		_id: projectId,
-		"columns.issues": moveOperation.issueId
-	}, {
-		"columns.$.id": 1
-	});
-	let results = await Promise.all([roleQuery, columnQuery]);
-	if(results[1].columns && results[0].roles) {
-		let originalColumn = results[1].columns[0].id;
-		let role = results[0].roles[0];
-		try {
-			if(originalColumn !== moveOperation.targetColumn) {
-				if(role.issueTransitionMatrix) {
-					return ((role.issueTransitionMatrix.get(originalColumn).includes(moveOperation.targetColumn) || role.isManager) ? originalColumn : false);
-				} else {
-					return (role.isManager ? originalColumn : false);
-				}
-			} else {
-				return originalColumn;
-			}
-		} catch (e) {
+projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation, isAdmin) {
+	if(isAdmin) {
+		let originalColumnQuery = this.findOne({
+			_id: projectId,
+			"columns.issues": moveOperation.issueId
+		}, {
+			"columns.$.id": 1
+		});
+		let targetColumnQuery = this.findOne({
+			_id: projectId,
+			"columns.id": moveOperation.targetColumn
+		}, {
+			"columns.$.id": 1
+		});
+		let result = await Promise.all([originalColumnQuery, targetColumnQuery]);
+		if(result[1] && result[0]) {
+			return result[0].columns[0].id;
+		} else {
 			return false;
 		}
 	} else {
-		return false;
+		let roleQuery = this.findOne({
+			_id: projectId,
+			"roles.members": userId
+		}, {
+			"roles.$.issueTransitionMatrix": 1,
+			"roles.isManager": 1
+		});
+		let columnQuery = this.findOne({
+			_id: projectId,
+			"columns.issues": moveOperation.issueId
+		}, {
+			"columns.$.id": 1
+		});
+		let results = await Promise.all([roleQuery, columnQuery]);
+		if(results[1].columns && results[0].roles) {
+			let originalColumn = results[1].columns[0].id;
+			let role = results[0].roles[0];
+			try {
+				if(originalColumn !== moveOperation.targetColumn) {
+					if(role.issueTransitionMatrix) {
+						return ((role.issueTransitionMatrix.get(originalColumn).includes(moveOperation.targetColumn) || role.isManager) ? originalColumn : false);
+					} else {
+						return (role.isManager ? originalColumn : false);
+					}
+				} else {
+					return originalColumn;
+				}
+			} catch (e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
-
 };
 const Project = mongoose.model('Project', projectSchema, 'projects');
 module.exports = Project;

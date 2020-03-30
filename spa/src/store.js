@@ -105,7 +105,7 @@ const store = new Vuex.Store({
 			let originalColIndex = state.currentProject.columns.findIndex(col => col.id === moveOperation.originalColumn);
 			if (targetColIndex !== -1 && originalColIndex !== -1 && !(state.currentProject.columns[targetColIndex].issues.includes(moveOperation.issueId)) && state.currentProject.columns[originalColIndex].issues.includes(moveOperation.issueId)) {
 				state.currentProject.columns[originalColIndex].issues = state.currentProject.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
-				state.currentProject.columns[targetColIndex].issues.push(moveOperation.issueId);
+				state.currentProject.columns[targetColIndex].issues.splice(moveOperation.targetPosition, 0, moveOperation.issueId);
 			}
 		}
 	}, actions: {

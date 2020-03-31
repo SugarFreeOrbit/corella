@@ -28,7 +28,8 @@
 				</div>
 			</el-popover>
 		</div>
-		<Board></Board>
+		<Board v-if="activeMenuItem === 'board'"></Board>
+		<RolesAndMembers v-if="activeMenuItem === 'roles'"></RolesAndMembers>
 		<el-dialog :visible.sync="issueCreationModal.active" title="New issue">
 			<el-form model="issueCreationModal.form" v-loading="issueCreationModal.inProgress">
 				<el-form-item label="Title">
@@ -49,9 +50,10 @@
 <script>
 	import Navbar from "../components/Navbar";
 	import Board from "../components/Board";
+	import RolesAndMembers from "../components/RolesAndMembers";
 	export default {
 		name: "Project",
-		components: {Board, Navbar},
+		components: {RolesAndMembers, Board, Navbar},
 		props: {
 			name: String,
 			_id: String

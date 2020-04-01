@@ -117,7 +117,7 @@ const projectRoleSchema = new Schema({
 		type: ObjectId,
 		ref: User
 	}]
-});
+}, {_id: false});
 
 const projectSchema = new Schema({
 	name: {
@@ -133,6 +133,8 @@ const projectSchema = new Schema({
 	},
 	description: String
 });
+projectSchema.index({name: 1, "roles.name": 1}, {unique: true});
+
 projectSchema.post('save', function (error, doc , next) {
 	if (error.name === 'MongoError' && error.code === 11000) {
 		let err = new Error('There was a duplicate key error');

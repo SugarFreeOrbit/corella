@@ -155,47 +155,54 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 });
 
 router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.checkParamsForObjectIds()], function (req, res, next) {
-	if(req.user.isAdmin) {
-		Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
-			res.status(200);
-			res.end();
-		}).catch(err => {
-			logger.debug(err.toString());
-			if (err.name === 'ValidationError'){
-				res.status(400);
-			} else {
-				res.status(500);
-			}
-			res.json(err.message);
-		});
+	let names = new Set();
+	req.body.forEach(role => names.add(role.name));
+	if(names.size !== req.body.length) {
+		res.status(400);
+		res.end();
 	} else {
-		Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1}).then(isPermitted => {
-			if(isPermitted) {
-				Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
-					res.status(200);
-					res.end();
-				}).catch(err => {
-					logger.debug(err.toString());
-					if (err.name === 'ValidationError'){
-						res.status(400);
-					} else {
-						res.status(500);
-					}
-					res.json(err.message);
-				});
-			} else {
-				res.status(403);
+		if(req.user.isAdmin) {
+			Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+				res.status(200);
 				res.end();
-			}
-		}).catch(err => {
-			logger.debug(err.toString());
-			if (err.name === 'ValidationError'){
-				res.status(400);
-			} else {
-				res.status(500);
-			}
-			res.json(err.message);
-		});
+			}).catch(err => {
+				logger.debug(err.toString());
+				if (err.name === 'ValidationError'){
+					res.status(400);
+				} else {
+					res.status(500);
+				}
+				res.json(err.message);
+			});
+		} else {
+			Project.findOne({_id: req.params.projectId, roles: {members: req.user._id, isManager: true}}, {name: 1}).then(isPermitted => {
+				if(isPermitted) {
+					Project.findOneAndUpdate({_id: req.params.projectId}, {roles: req.body}).then(() => {
+						res.status(200);
+						res.end();
+					}).catch(err => {
+						logger.debug(err.toString());
+						if (err.name === 'ValidationError'){
+							res.status(400);
+						} else {
+							res.status(500);
+						}
+						res.json(err.message);
+					});
+				} else {
+					res.status(403);
+					res.end();
+				}
+			}).catch(err => {
+				logger.debug(err.toString());
+				if (err.name === 'ValidationError'){
+					res.status(400);
+				} else {
+					res.status(500);
+				}
+				res.json(err.message);
+			});
+		}
 	}
 });
 

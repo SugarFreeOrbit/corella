@@ -9,7 +9,7 @@
 			</div>
 			<div class="roles__role__controls">
 				<el-tooltip placement="bottom" content="View members">
-					<el-button circle type="primary" icon="el-icon-user"></el-button>
+					<el-button circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Edit role">
 					<el-button circle type="primary" icon="el-icon-edit"></el-button>
@@ -19,33 +19,48 @@
 				</el-tooltip>
 			</div>
 		</el-card>
-		<el-dialog class="roles__modal_add" :visible.sync="addRoleModal.visible" v-loading="addRoleModal.loading">
-			<el-form>
-				<el-form-item label="Role name">
-					<el-input autocomplete="off" v-model="addRoleModal.name"></el-input>
-				</el-form-item>
-				<el-form-item label="Manage">
-					<el-switch v-model="addRoleModal.isManager"></el-switch>
-				</el-form-item>
-				<el-form-item label="Create">
-					<el-switch v-model="addRoleModal.isCreator"></el-switch>
-				</el-form-item>
-				<el-form-item label="Delete">
-					<el-switch v-model="addRoleModal.isDestroyer"></el-switch>
-				</el-form-item>
-				<el-form-item label="Edit">
-					<el-switch v-model="addRoleModal.isEditor"></el-switch>
-				</el-form-item>
-				<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
-					{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="addRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
-					<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
-				</el-select>
-				</el-form-item>
-				<el-form-item style="text-align: center">
-					<el-button @click="addRoleModal.visible = false">Cancel</el-button>
-					<el-button type="primary" @click="addRole">Create</el-button>
-				</el-form-item>
-			</el-form>
+		<el-dialog class="roles__modal_add" :visible.sync="addRoleModal.visible">
+			<div v-loading="addRoleModal.loading">
+				<el-form>
+					<el-form-item label="Role name">
+						<el-input autocomplete="off" v-model="addRoleModal.name"></el-input>
+					</el-form-item>
+					<el-form-item label="Manage">
+						<el-switch v-model="addRoleModal.isManager"></el-switch>
+					</el-form-item>
+					<el-form-item label="Create">
+						<el-switch v-model="addRoleModal.isCreator"></el-switch>
+					</el-form-item>
+					<el-form-item label="Delete">
+						<el-switch v-model="addRoleModal.isDestroyer"></el-switch>
+					</el-form-item>
+					<el-form-item label="Edit">
+						<el-switch v-model="addRoleModal.isEditor"></el-switch>
+					</el-form-item>
+					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
+						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="addRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
+						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
+					</el-select>
+					</el-form-item>
+					<el-form-item style="text-align: center">
+						<el-button @click="addRoleModal.visible = false">Cancel</el-button>
+						<el-button type="primary" @click="addRole">Create</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
+		<el-dialog class="roles__modal_viewMembers" v-if="viewMembersModal.ready" :visible.sync="viewMembersModal.visible" :title="viewMembersModal.targetRole">
+			<div v-loading="viewMembersModal.loading">
+				<div class="roles__modal_viewMembers__search">
+					<el-select multiple filterable v-model="viewMembersModal.newMembers" style="margin-right: 10px; width: 700px;">
+						<el-option v-for="user in users" v-bind:key="user._id" :label="user.username" :value="user._id" v-if="!userHasRole(user._id)"></el-option>
+					</el-select>
+					<el-button type="primary" @click="addMembers">Add new members</el-button>
+					<el-table :data="members" border class="roles__modal_viewMembers__list">
+						<el-table-column prop="username" label="Username"></el-table-column>
+					</el-table>
+				</div>
+			</div>
 		</el-dialog>
 	</div>
 </template>
@@ -66,6 +81,14 @@
 					isDestroyer: false,
 					isEditor: false,
 					issueTransitionMatrix: {}
+				},
+				users: [],
+				viewMembersModal: {
+					ready: false,
+					targetRole: '',
+					visible: false,
+					newMembers: [],
+					loading: false
 				}
 			}
 		},
@@ -82,34 +105,52 @@
 						isClosing: col.isClosing
 					};
 				});
+			},
+			members: function () {
+				let role = this.roles.find(r=> r.name === this.viewMembersModal.targetRole);
+				if(role) {
+					return this.users.filter(user => role.members.includes(user._id));
+				} else {
+					return null;
+				}
 			}
 		},
 		async created() {
 			this.loading = true;
 			let getRoles = await this.$http.get(`/projects/${this.projectId}/roles`);
-			this.roles = getRoles.data.roles.map(role => {
-				role.expanded = false;
-				return role;
-			});
+			this.roles = getRoles.data.roles;
 			this.loading = false;
+			let getUsers = await this.$http.get(`/users`);
+			this.users = getUsers.data;
+			this.viewMembersModal.ready = true;
 		},
 		methods: {
 			addRole: async function() {
 				let revert = this.roles;
 				try {
 					this.addRoleModal.loading = true;
-					let payload = {
-						name: this.addRoleModal.name,
-						isManager: this.addRoleModal.isManager,
-						isCreator: this.addRoleModal.isCreator,
-						isDestroyer: this.addRoleModal.isDestroyer,
-						isEditor: this.addRoleModal.isEditor,
-						issueTransitionMatrix: this.addRoleModal.issueTransitionMatrix
-					};
-					this.roles.push(payload);
-					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
-					this.addRoleModal.loading = false;
-					this.addRoleModal.visible = false;
+					if(this.roles.find(role => this.addRoleModal.name === role.name)) {
+						this.addRoleModal.loading = false;
+						this.$notify({
+							type: "error",
+							duration: 2000,
+							title: "Role names must be unique"
+						});
+					} else {
+						let payload = {
+							name: this.addRoleModal.name,
+							isManager: this.addRoleModal.isManager,
+							isCreator: this.addRoleModal.isCreator,
+							isDestroyer: this.addRoleModal.isDestroyer,
+							isEditor: this.addRoleModal.isEditor,
+							issueTransitionMatrix: this.addRoleModal.issueTransitionMatrix,
+							members: []
+						};
+						this.roles.push(payload);
+						await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
+						this.addRoleModal.loading = false;
+						this.addRoleModal.visible = false;
+					}
 				} catch (e) {
 					this.roles = revert;
 					this.addRoleModal.loading = false;
@@ -130,6 +171,36 @@
 					this.roles = revert;
 					console.log(e);
 				}
+			},
+			userHasRole: function (userId) {
+				return !!this.roles.find(role => role.members.includes(userId));
+			},
+			viewMembers: function (roleName) {
+				this.viewMembersModal.targetRole = roleName;
+				this.viewMembersModal.visible = true;
+			},
+			addMembers: async function() {
+				if (this.viewMembersModal.newMembers.length === 0) {
+					this.$notify({
+						type: "warning",
+						duration: 2000,
+						title: "No members to add!"
+					})
+				} else {
+					this.viewMembersModal.loading = true;
+					let revert = this.roles;
+					let roleIndex = this.roles.findIndex(role => role.name === this.viewMembersModal.targetRole);
+					this.roles[roleIndex].members.push(...this.viewMembersModal.newMembers);
+					try {
+						await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
+						this.viewMembersModal.newMembers = [];
+						this.viewMembersModal.loading = false;
+					} catch (e) {
+						this.roles = revert;
+						this.viewMembersModal.loading = false;
+						console.log(e);
+					}
+				}
 			}
 		}
 	}
@@ -140,6 +211,15 @@
 		height: 100%;
 		padding-left: 80px;
 		padding-right: 55px;
+		&__modal {
+			&_viewMembers {
+				&__search {
+				}
+				&__list {
+					margin-top: 20px;
+				}
+			}
+		}
 		&__control {
 			text-align: center;
 			margin-top: 25px;

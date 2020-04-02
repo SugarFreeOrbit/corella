@@ -36,7 +36,7 @@ router.put('/', function (req, res) {
 });
 
 router.get('/', async function (req, res, next) {
-	if (typeof parseInt(req.query.limit) === 'number' && typeof parseInt(req.query.page) === 'number') {
+	if (!isNaN(parseInt(req.query.limit)) && !isNaN(parseInt(req.query.page))) {
 		try {
 			let limit = parseInt(req.query.limit);
 			let page = parseInt(req.query.page);
@@ -53,8 +53,12 @@ router.get('/', async function (req, res, next) {
 			next(e);
 		}
 	} else {
-		res.status(400);
-		res.end();
+		try {
+			let users = await User.find({}, {username: 1, email: 1});
+			res.json(users);
+		} catch (e) {
+			next(e);
+		}
 	}
 });
 

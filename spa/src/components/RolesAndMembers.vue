@@ -12,7 +12,7 @@
 					<el-button circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Edit role">
-					<el-button circle type="primary" icon="el-icon-edit"></el-button>
+					<el-button circle type="primary" icon="el-icon-edit" @click="showEditModal(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Delete role and it's members">
 					<el-button circle type="danger" icon="el-icon-delete" @click="deleteRole(role.name)"></el-button>
@@ -62,6 +62,36 @@
 				</div>
 			</div>
 		</el-dialog>
+		<el-dialog class="roles__modal_edit" :visible.sync="editRoleModal.visible" v-if="editRoleModal.ready">
+			<div v-loading="editRoleModal.loading">
+				<el-form>
+					<el-form-item label="Role name">
+						<el-input autocomplete="off" v-model="editRoleModal.name"></el-input>
+					</el-form-item>
+					<el-form-item label="Manage">
+						<el-switch v-model="editRoleModal.isManager"></el-switch>
+					</el-form-item>
+					<el-form-item label="Create">
+						<el-switch v-model="editRoleModal.isCreator"></el-switch>
+					</el-form-item>
+					<el-form-item label="Delete">
+						<el-switch v-model="editRoleModal.isDestroyer"></el-switch>
+					</el-form-item>
+					<el-form-item label="Edit">
+						<el-switch v-model="editRoleModal.isEditor"></el-switch>
+					</el-form-item>
+					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
+						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
+						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
+					</el-select>
+					</el-form-item>
+					<el-form-item style="text-align: center">
+						<el-button @click="editRoleModal.visible = false">Cancel</el-button>
+						<el-button type="primary" @click="editRole">Update</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
@@ -89,6 +119,18 @@
 					visible: false,
 					newMembers: [],
 					loading: false
+				},
+				editRoleModal: {
+					roleIndex: 0,
+					visible: false,
+					ready: false,
+					loading: false,
+					name: '',
+					isManager: false,
+					isCreator: false,
+					isDestroyer: false,
+					isEditor: false,
+					issueTransitionMatrix: {}
 				}
 			}
 		},
@@ -154,6 +196,11 @@
 				} catch (e) {
 					this.roles = revert;
 					this.addRoleModal.loading = false;
+					this.$notify({
+						type: "error",
+						duration: "2000",
+						message: "Failed to add a new role!"
+					});
 					console.log(e);
 				}
 			},
@@ -200,6 +247,42 @@
 						this.viewMembersModal.loading = false;
 						console.log(e);
 					}
+				}
+			},
+			showEditModal: function (roleName) {
+				let roleIndex = this.roles.findIndex(r => r.name === roleName);
+				this.editRoleModal.issueTransitionMatrix = this.roles[roleIndex].issueTransitionMatrix;
+				this.editRoleModal.name = this.roles[roleIndex].name;
+				this.editRoleModal.isCreator = this.roles[roleIndex].isCreator;
+				this.editRoleModal.isDestroyer = this.roles[roleIndex].isDestroyer;
+				this.editRoleModal.isEditor = this.roles[roleIndex].isEditor;
+				this.editRoleModal.isManager = this.roles[roleIndex].isManager;
+				this.editRoleModal.roleIndex = roleIndex;
+				this.editRoleModal.ready = true;
+				this.editRoleModal.visible = true;
+			},
+			editRole: async function () {
+				let revert = this.roles;
+				this.editRoleModal.loading = true;
+				try {
+					this.roles[this.editRoleModal.roleIndex].name = this.editRoleModal.name;
+					this.roles[this.editRoleModal.roleIndex].isCreator = this.editRoleModal.isCreator;
+					this.roles[this.editRoleModal.roleIndex].isDestroyer = this.editRoleModal.isDestroyer;
+					this.roles[this.editRoleModal.roleIndex].isEditor = this.editRoleModal.isEditor;
+					this.roles[this.editRoleModal.roleIndex].isManager = this.editRoleModal.isManager;
+					this.roles[this.editRoleModal.roleIndex].issueTransitionMatrix = this.editRoleModal.issueTransitionMatrix;
+					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
+					this.editRoleModal.loading = false;
+					this.editRoleModal.visible = false;
+				} catch (e) {
+					this.roles = revert;
+					this.editRoleModal.loading = false;
+					this.$notify({
+						type: "error",
+						duration: "2000",
+						message: "Failed to edit role!"
+					});
+					console.log(e);
 				}
 			}
 		}

@@ -86,8 +86,8 @@
 				if (this.$store.state.user.isAdmin) {
 					return this.columnList
 				} else {
-					let allowedCols = this.$store.state.user.currentProject.role.issueTransitionMatrix[this.currentColumnId];
-					return this.columnList.filter(col => col.id in allowedCols);
+					let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[this.currentColumnId];
+					return this.columnList.filter(col =>  allowedCols.includes(col.id));
 				}
 			}
 		},

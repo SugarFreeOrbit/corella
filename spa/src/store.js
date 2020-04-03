@@ -92,7 +92,7 @@ const store = new Vuex.Store({
 		addIssue(state, issueId) {
 			let startingColIndex = state.currentProject.columns.findIndex(col => col.isStarting);
 			if (startingColIndex !== -1) {
-					state.currentProject.columns[startingColIndex].push(issueId);
+					state.currentProject.columns[startingColIndex].issues.push(issueId);
 			}
 		},
 		removeIssue(state, issueId) {

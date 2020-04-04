@@ -2,11 +2,7 @@
 	<div class="board" v-loading="loading">
 		<el-card class="board__column" v-for="column in columns" v-bind:key="column.id">
 			<div class="board__column__header" slot="header">
-				<p>{{column.name}} <el-button circle type="primary"
-											  icon="el-icon-plus"
-											  size="mini"
-											  v-if="column.isStarting && canCreateIssues"
-											  @click="issueCreationModal.active = true"></el-button></p>
+				<p>{{column.name}}</p>
 			</div>
 			<div class="board__column__content">
 				<issue-card v-for="issueId in column.issues" v-bind:key="issueId"

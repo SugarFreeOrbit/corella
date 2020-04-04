@@ -57,7 +57,7 @@
 						<div class="projectBuilder__content__roles__remove" @click="removeRole(role.name)"><i class="el-icon-close"></i></div>
 						{{role.name}}
 					</el-card>
-					<el-button circle icon="el-icon-plus" type="primary" class="projectBuilder__content__roles__addButton" @click="projectBuilder.newRole.visible = true"></el-button>
+					<el-button round icon="el-icon-plus" type="primary" class="projectBuilder__content__roles__addButton" @click="projectBuilder.newRole.visible = true">Add new role</el-button>
 					<el-dialog :visible.sync="projectBuilder.newRole.visible" center class="projectBuilder__content__roles__add">
 						<el-form :model="projectBuilder.newRole">
 							<el-form-item label="Role name">
@@ -419,7 +419,6 @@
 				margin-top: 40px;
 				&__addButton {
 					height: 40px;
-					width: 40px;
 				}
 				&__remove {
 					top: -10px;

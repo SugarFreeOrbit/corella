@@ -46,6 +46,11 @@
 					});
 					this.$router.push('/');
 				} catch (e) {
+					this.$notify({
+						title: 'Invalid username or password',
+						duration: 2000,
+						type: 'error'
+					});
 					console.log(e);
 				}
 			}

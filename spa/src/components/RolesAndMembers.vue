@@ -52,7 +52,7 @@
 		<el-dialog class="roles__modal_viewMembers" v-if="viewMembersModal.ready" :visible.sync="viewMembersModal.visible" :title="viewMembersModal.targetRole">
 			<div v-loading="viewMembersModal.loading">
 				<div class="roles__modal_viewMembers__search">
-					<el-select multiple filterable v-model="viewMembersModal.newMembers" style="margin-right: 10px; width: 700px;">
+					<el-select multiple filterable v-model="viewMembersModal.newMembers" style="margin-right: 10px; width: 500px;">
 						<el-option v-for="user in users" v-bind:key="user._id" :label="user.username" :value="user._id" v-if="!userHasRole(user._id)"></el-option>
 					</el-select>
 					<el-button type="primary" @click="addMembers">Add new members</el-button>

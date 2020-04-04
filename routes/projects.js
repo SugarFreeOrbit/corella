@@ -365,7 +365,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 				originalColumn,
 				targetColumn: req.body.targetColumn,
 				targetPosition: req.body.targetPosition
-			});
+			}, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {

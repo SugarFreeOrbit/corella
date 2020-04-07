@@ -1,7 +1,7 @@
 <template>
 	<div style="height: 100%">
 		<navbar></navbar>
-		<div v-if="projectBuilder.visible" class="projectBuilder">
+		<div v-if="projectBuilder.visible && isAdmin" class="projectBuilder">
 			<div class="projectBuilder__close" @click="projectBuilder.visible = false"><i class="el-icon-close"></i></div>
 			<div class="projectBuilder__content container">
 				<el-steps :active="projectBuilder.step" align-center finish-status="success">
@@ -95,7 +95,7 @@
 			</div>
 		</div>
 		<div class="projects" v-loading="loading" v-else>
-			<div class="projects__tools">
+			<div class="projects__tools" v-if="isAdmin">
 				<el-button round icon="el-icon-plus" type="primary" @click="projectBuilder.visible = true">Create new project</el-button>
 			</div>
 			<el-card v-for="project in projects" class="project" v-bind:key="project._id">
@@ -145,6 +145,11 @@
 						columns: []
 					}
 				}
+			}
+		},
+		computed: {
+			isAdmin: function () {
+				return this.$store.state.user.isAdmin;
 			}
 		},
 		methods: {

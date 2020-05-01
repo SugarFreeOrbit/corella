@@ -90,7 +90,7 @@ const store = new Vuex.Store({
 			Vue.set(state.currentProject, 'columns', columns);
 		},
 		addIssue(state, issueId) {
-			let startingColIndex = state.currentProject.columns.findIndex(col => col.isStarting);
+			let startingColIndex = state.currentProject.columns.findIndex(col => col.isStarting && !col.issues.includes(issueId));
 			if (startingColIndex !== -1) {
 					state.currentProject.columns[startingColIndex].issues.push(issueId);
 			}

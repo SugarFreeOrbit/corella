@@ -63,5 +63,8 @@ typings/
 # IDE files
 .idea/
 
-# Temp files fro mfile upload
+# Temp files from file upload
 tmp/
+
+# Config file
+configuration.json

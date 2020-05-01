@@ -95,13 +95,16 @@
 					let result = await this.$http.put(`/projects/${this._id}/issues`, this.issueCreationModal.form);
 					this.issueCreationModal.inProgress = false;
 					this.issueCreationModal.active = false;
+					this.issueCreationModal.title = '';
+					this.issueCreationModal.description = '';
 				} else {
 					this.$notify({
 						title: 'Error',
 						message: 'Your issue is invalid',
 						duration: 3000,
 						type: 'error'
-					})
+					});
+					this.issueCreationModal.inProgress = false;
 				}
 			}
 		}

@@ -101,7 +101,7 @@
 				vertical-align: middle;
 			}
 			&__content {
-				height: 800px;
+				height: 550px;
 				overflow-y: auto;
 			}
 		}

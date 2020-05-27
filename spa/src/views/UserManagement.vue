@@ -3,7 +3,7 @@
 		<navbar></navbar>
 		<div class="userManagement container-fluid" v-loading="loading">
 			<el-dialog title="Edit user" center :visible.sync="editModalVisible" width="40%">
-				<el-form v-model="edit">
+				<el-form v-model="edit" autocomplete="off">
 					<el-form-item label="Username">
 						<el-input v-model="edit.username"></el-input>
 					</el-form-item>
@@ -23,7 +23,7 @@
 				</el-form>
 			</el-dialog>
 			<el-dialog title="Add user" center :visible.sync="addModalVisible" width="40%">
-				<el-form v-model="add">
+				<el-form v-model="add" autocomplete="off">
 					<el-form-item label="Username">
 						<el-input v-model="add.username"></el-input>
 					</el-form-item>

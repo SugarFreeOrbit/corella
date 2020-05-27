@@ -1,0 +1,31 @@
+{
+	"type": "object",
+	"required": [
+		"name",
+		"isArchived"
+	],
+	"properties": {
+		"name": {
+			"type": "string",
+			"unique": true
+		},
+		"roles": {
+			"type": "array",
+			"items": {
+				"type": "object"
+			}
+		},
+		"columns": {
+			"type": "array",
+			"items": {
+				"type": "object"
+			}
+		},
+		"isArchived": {
+			"type": "boolean"
+		},
+		"description": {
+			"type": "string"
+		}
+	}
+}

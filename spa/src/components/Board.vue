@@ -102,7 +102,7 @@
 				vertical-align: middle;
 			}
 			&__content {
-				height: calc(100vh - 170px);
+				height: calc(100vh - 172px);
 				overflow-y: auto;
 			}
 		}

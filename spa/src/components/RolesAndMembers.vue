@@ -58,6 +58,11 @@
 					<el-button type="primary" @click="addMembers">Add new members</el-button>
 					<el-table :data="members" border class="roles__modal_viewMembers__list">
 						<el-table-column prop="username" label="Username"></el-table-column>
+						<el-table-column label="Actions" width="72px">
+							<template slot-scope="props">
+								<el-button type="danger" icon="el-icon-delete" circle @click="removeMember(viewMembersModal.targetRole, props.row._id)"></el-button>
+							</template>
+						</el-table-column>
 					</el-table>
 				</div>
 			</div>
@@ -247,6 +252,21 @@
 						this.viewMembersModal.loading = false;
 						console.log(e);
 					}
+				}
+			},
+			removeMember: async function(roleName, userId) {
+				this.viewMembersModal.loading = true;
+				let revert = this.roles;
+				let roleIndex = this.roles.findIndex(role => role.name === roleName);
+				this.roles[roleIndex].members.splice(roleIndex, 1);
+				try {
+					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
+					this.viewMembersModal.newMembers = [];
+					this.viewMembersModal.loading = false;
+				} catch (e) {
+					this.roles = revert;
+					this.viewMembersModal.loading = false;
+					console.log(e);
 				}
 			},
 			showEditModal: function (roleName) {

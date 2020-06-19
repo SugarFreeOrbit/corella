@@ -63,6 +63,7 @@
 	}
 	.navbar {
 		padding: 0;
+		height: 50px;
 		box-sizing: border-box;
 		background-color: #87A330;
 		text-decoration: none;

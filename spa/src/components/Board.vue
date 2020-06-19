@@ -97,11 +97,12 @@
 			&__header {
 				color: black;
 				font-weight: bold;
+				height: 40px;
 				text-align: center;
 				vertical-align: middle;
 			}
 			&__content {
-				height: 550px;
+				height: calc(100vh - 170px);
 				overflow-y: auto;
 			}
 		}

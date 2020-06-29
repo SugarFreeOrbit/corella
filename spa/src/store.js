@@ -71,8 +71,9 @@ const store = new Vuex.Store({
 				console.log('No socket to close')
 			}
 		},
-		setCurrentProject(state, {_id}) {
+		setCurrentProject(state, {_id, name}) {
 			state.currentProject._id = _id;
+			state.currentProject.name = name;
 		},
 		unsetCurrentProject(state) {
 			state.currentProject = {};

@@ -76,7 +76,7 @@
 			}
 		},
 		async created() {
-			this.$store.commit('setCurrentProject', {_id: this._id});
+			this.$store.commit('setCurrentProject', {_id: this._id, name: this.name});
 			await this.$store.dispatch('syncCurrentProjectRole');
 			this.projectReady = true;
 		},

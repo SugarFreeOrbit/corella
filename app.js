@@ -1,5 +1,3 @@
-//Load main configuration file
-global.CONFIG = require('./configuration');
 //Require npm dependencies
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -13,6 +11,9 @@ const http = require('http');
 //Load and export the logger configuration
 const logger = require('./utils/loggerConfig');
 global.logger = logger;
+
+//Load main configuration file
+global.CONFIG = require('./configuration');
 
 //Initialize the express instance
 const app = express();
@@ -73,7 +74,7 @@ const dbUser = CONFIG.mongodb.user;
 const dbPwd = CONFIG.mongodb.pwd;
 const dbHost = CONFIG.mongodb.host;
 const dbName = CONFIG.mongodb.dbName;
-let dbConnPromise = mongoose.connect(`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`);
+let dbConnPromise = mongoose.connect((`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`) ? dbPwd && dbHost : `mongodb://${dbHost}/${dbName}`);
 dbConnPromise.then((db) => {
 	logger.log('info', 'Connected to database!');
 	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
@@ -90,6 +91,6 @@ dbConnPromise.then((db) => {
 	server.listen(CONFIG.server ? CONFIG.server.port : 8080);
 	logger.info(`App is listening on port ${server.address().port}!`);
 });
-dbConnPromise.catch(() => {
-	logger.error('Failed to connect to db!');
+dbConnPromise.catch((err) => {
+	logger.error(`Failed to connect to db! Error: ${err.message}`);
 });

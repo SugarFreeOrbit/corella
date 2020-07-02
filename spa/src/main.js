@@ -29,7 +29,7 @@ Vue.prototype.$schemaValidators = {
 };
 
 //Set up axios instance
-axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST;
+axios.defaults.baseURL = process.env.VUE_APP_BACKEND_HOST || "http://localhost:9080";
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.interceptors.request.use( function (config) {
 	if (store.state.user.loggedIn) {

@@ -74,7 +74,7 @@ const dbUser = CONFIG.mongodb.user;
 const dbPwd = CONFIG.mongodb.pwd;
 const dbHost = CONFIG.mongodb.host;
 const dbName = CONFIG.mongodb.dbName;
-let dbConnPromise = mongoose.connect((`mongodb://${dbUser}:${dbPwd}@${dbHost}/${dbName}`) ? dbPwd && dbHost : `mongodb://${dbHost}/${dbName}`);
+let dbConnPromise = mongoose.connect(dbPwd && dbHost ? `mongodb+srv://${dbUser}:${dbPwd}@${dbHost}/${dbName}` : `mongodb://${dbHost}/${dbName}`);
 dbConnPromise.then((db) => {
 	logger.log('info', 'Connected to database!');
 	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
@@ -88,7 +88,7 @@ dbConnPromise.then((db) => {
 			logger.log('info', 'Assured superadmin user')
 		});
 	});
-	server.listen(CONFIG.server ? CONFIG.server.port : 8080);
+	server.listen(CONFIG.server.port);
 	logger.info(`App is listening on port ${server.address().port}!`);
 });
 dbConnPromise.catch((err) => {

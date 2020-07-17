@@ -144,7 +144,7 @@ projectSchema.post('save', function (error, doc , next) {
 		next();
 	}
 });
-projectSchema.statics.checkPermission = async function (projectId, userId, permission) {
+projectSchema.statics.checkPermission = async function (projectId, userId, permission, isAdmin) {
 	let permissionTest = await this.findOne({
 		_id: projectId,
 		$or: [
@@ -166,26 +166,26 @@ projectSchema.statics.checkPermission = async function (projectId, userId, permi
 			}
 		]
 	}, {projectName: 1});
-	return !!permissionTest;
+	return !!permissionTest || isAdmin;
 };
-projectSchema.statics.checkCreatorPermission = async function (projectId, userId) {
-	return await this.checkPermission(projectId, userId, 'isCreator');
+projectSchema.statics.checkCreatorPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'isCreator', isAdmin);
 };
-projectSchema.statics.checkDestroyerPermission = async function (projectId, userId) {
-	return await this.checkPermission(projectId, userId, 'isDestroyer');
+projectSchema.statics.checkDestroyerPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'isDestroyer', isAdmin);
 };
-projectSchema.statics.checkEditorPermission = async function (projectId, userId) {
-	return await this.checkPermission(projectId, userId, 'isEditor');
+projectSchema.statics.checkEditorPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'isEditor', isAdmin);
 };
-projectSchema.statics.checkManagerPermission = async function (projectId, userId) {
-	return await this.checkPermission(projectId, userId, 'isManager');
+projectSchema.statics.checkManagerPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'isManager', isAdmin);
 };
-projectSchema.statics.checkReaderPermission = async function (projectId, userId) {
+projectSchema.statics.checkReaderPermission = async function (projectId, userId, isAdmin) {
 	let permissionTest = await this.findOne({
 		_id: projectId,
 		'roles.members': userId
 	}, {projectName: 1});
-	return !!permissionTest;
+	return !!permissionTest || isAdmin;
 };
 projectSchema.statics.validateProjectToIssueRelation = async function(projectId, issueId) {
 	let relationTest = await this.findOne({

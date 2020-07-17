@@ -76,8 +76,8 @@
 			}
 		},
 		async created() {
-			this.$store.commit('setCurrentProject', {_id: this._id, name: this.name});
-			await this.$store.dispatch('syncCurrentProjectRole');
+			this.$store.commit('setCurrentProject', {_id: this._id});
+			await Promise.all([this.$store.dispatch('syncCurrentProjectRole'), this.$store.dispatch('syncCurrentProjectMeta')]);
 			this.projectReady = true;
 		},
 		computed: {
@@ -86,6 +86,14 @@
 			},
 			canCreateIssues: function () {
 				return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
+			}
+		},
+		beforeRouteLeave(to, from, next) {
+			try {
+				this.$store.commit('unsetCurrentProject');
+				next()
+			} catch (e) {
+				next()
 			}
 		},
 		methods:{

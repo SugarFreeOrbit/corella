@@ -209,7 +209,7 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 //issue manipulations go here
 router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let newIssue = new Issue({
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
@@ -239,8 +239,8 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 
 router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id)]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0]) || req.user.isAdmin) {
+		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
 			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
 			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
@@ -262,8 +262,8 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 
 router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id)]);
-		if((projectPermissionQueries[0] && projectPermissionQueries[1]) || req.user.isAdmin) {
+		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
+		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
 			await Issue.findByIdAndUpdate(req.params.issueId, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
@@ -284,7 +284,7 @@ router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), va
 
 router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let project = await Project.findById(req.params.projectId, {
 				columns: 1
 			});
@@ -305,7 +305,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 
 router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		if(await Project.checkReaderPermission(req.params.projectId, req.user._id) || req.user.isAdmin) {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let issue = await Issue.findById(req.params.issueId);
 			res.json(issue);
 		} else {
@@ -374,6 +374,20 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 		}
 	} catch (e) {
 		next(e);
+	}
+});
+
+router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let projectMeta = await Project.findById(req.params.projectId, {name: 1});
+			res.json(projectMeta);
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e)
 	}
 });
 

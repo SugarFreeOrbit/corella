@@ -10,6 +10,9 @@
 				</ul>
 			</div>
 		</div>
+		<div v-if="currentProjectName" class="navbar__currentProject">
+			{{this.currentProjectName}}
+		</div>
 		<div class="navbar__tools">
 			<div class="navbar__currentUser">
 				Logged in as: {{username}}
@@ -30,6 +33,9 @@
 			},
 			userIsAdmin: function () {
 				return this.$store.state.user.isAdmin;
+			},
+			currentProjectName: function () {
+				return this.$store.state.currentProject.name;
 			}
 		},
 		methods: {
@@ -95,6 +101,10 @@
 			&:active {
 				background-color: #c6a952;
 			}
+		}
+		&__currentProject {
+			position: relative;
+			float: left;
 		}
 	}
 	.navbar__main {

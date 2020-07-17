@@ -113,6 +113,7 @@
 <script>
 	import Navbar from "../components/Navbar";
 	import md5 from "md5";
+	import store from "../store";
 	export default {
 		name: "Projects",
 		components: {Navbar},

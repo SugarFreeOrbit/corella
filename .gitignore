@@ -68,3 +68,7 @@ tmp/
 
 # Config file
 configuration.json
+
+.run/
+.run/*
+/.run/server.run.xml

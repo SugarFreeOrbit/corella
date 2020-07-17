@@ -71,9 +71,8 @@ const store = new Vuex.Store({
 				console.log('No socket to close')
 			}
 		},
-		setCurrentProject(state, {_id, name}) {
-			state.currentProject._id = _id;
-			state.currentProject.name = name;
+		setCurrentProject(state, {_id}) {
+			Vue.set(state.currentProject, '_id', _id);
 		},
 		unsetCurrentProject(state) {
 			state.currentProject = {};
@@ -89,6 +88,9 @@ const store = new Vuex.Store({
 		},
 		syncCurrentProjectBoard(state, columns) {
 			Vue.set(state.currentProject, 'columns', columns);
+		},
+		syncCurrentProjectMeta(state, name) {
+			Vue.set(state.currentProject, 'name', name);
 		},
 		addIssue(state, issueId) {
 			let startingColIndex = state.currentProject.columns.findIndex(col => col.isStarting && !col.issues.includes(issueId));
@@ -127,8 +129,12 @@ const store = new Vuex.Store({
 		async syncCurrentProjectBoard({commit, state}) {
 			let getColumns = await axios.get(`/projects/${state.currentProject._id}/columns`);
 			commit('syncCurrentProjectBoard', getColumns.data.columns);
+		},
+		async syncCurrentProjectMeta({commit, state}) {
+			let getMeta = await axios.get(`/projects/${state.currentProject._id}/meta`);
+			commit('syncCurrentProjectMeta', getMeta.data.name);
 		}
-	}
+ 	}
 });
 
 export default store;

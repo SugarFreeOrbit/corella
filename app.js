@@ -70,11 +70,7 @@ app.use(function (err, req, res, next) {
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useNewUrlParser', true);
-const dbUser = CONFIG.mongodb.user;
-const dbPwd = CONFIG.mongodb.pwd;
-const dbHost = CONFIG.mongodb.host;
-const dbName = CONFIG.mongodb.dbName;
-let dbConnPromise = mongoose.connect(dbPwd && dbHost ? `mongodb+srv://${dbUser}:${dbPwd}@${dbHost}/${dbName}` : `mongodb://${dbHost}/${dbName}`);
+let dbConnPromise = mongoose.connect(CONFIG.mongodb.connection);
 dbConnPromise.then((db) => {
 	logger.log('info', 'Connected to database!');
 	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {

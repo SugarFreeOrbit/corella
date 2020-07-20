@@ -6,10 +6,7 @@ let config = {
                 "isAdmin": true
         },
         "mongodb": {
-                "host":  process.env.CORELLA_DB_HOST || "localhost",
-                "user":  process.env.CORELLA_DB_USER || "corellaAdmin", //Omit this parameter if authentication is not required
-                "pwd":  process.env.CORELLA_DB_PWD || "password", //Omit this parameter if authentication is not required
-                "dbName": process.env.CORELLA_DB_NAME || "corella"
+                "connection":  process.env.CORELLA_DB_CONN || "mongodb://localhost:27017/corella" //Full database connection string
         },
         "secret":  process.env.CORELLA_SECRET || "/CM%e4Sp<Zguvaam\\_g_h%Wnjc5zsc7hdDJG`Y<fU3CS_sYa49",
         "server": {

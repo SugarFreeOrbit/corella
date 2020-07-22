@@ -211,4 +211,17 @@ const updateUser = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser};
+const newHotfix = {
+	type: object,
+	properties: {
+		title: {
+			type: "String",
+			required: true
+		},
+		description: {
+			type: "String"
+		}
+	}
+};
+
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newHotfix};

@@ -113,6 +113,18 @@ const projectRoleSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
+	createHotfixes: {
+		type: Boolean,
+		required: true
+	},
+	deleteHotfixes: {
+		type: Boolean,
+		required: true
+	},
+	editHotfixes: {
+		type: Boolean,
+		required: true
+	},
 	members: [{
 		type: ObjectId,
 		ref: User

@@ -30,10 +30,14 @@ const hotfixSchema = new Schema({
 		ref: Project,
 		required: true
 	},
+	created: {
+		type: Number
+	},
 	attachments: [{
 		type: ObjectId
 	}]
 });
+hotfixSchema.index({created: -1});
 hotfixSchema.index({priority: -1});
 hotfixSchema.index({state: 1});
 

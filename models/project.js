@@ -192,6 +192,15 @@ projectSchema.statics.checkEditorPermission = async function (projectId, userId,
 projectSchema.statics.checkManagerPermission = async function (projectId, userId, isAdmin) {
 	return await this.checkPermission(projectId, userId, 'isManager', isAdmin);
 };
+projectSchema.statics.checkCreateHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'createHotfixes', isAdmin);
+};
+projectSchema.statics.checkEditHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'editHotfixes', isAdmin);
+};
+projectSchema.statics.checkDeleteHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'deleteHotfixes', isAdmin);
+};
 projectSchema.statics.checkReaderPermission = async function (projectId, userId, isAdmin) {
 	let permissionTest = await this.findOne({
 		_id: projectId,

@@ -1,7 +1,9 @@
 const router = require('express').Router();
+const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
+const Hotfix = require('../models/hotfix');
 const md5 = require('md5');
 const multer = require('multer');
 const upload = multer({dest: '../tmp'});
@@ -392,7 +394,64 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 });
 
 router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkBody('newHotfix')], async function (req, res, next) {
-
+	try {
+		if (await Project.checkCreateHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let newHotfix = new Hotfix({
+				title: req.body.title,
+				description: req.body.description,
+				priority: req.body.priority,
+				state: 1,
+				created: Date.now(),
+				project: ObjectId(req.params.projectId),
+				author: ObjectId(req.user._id)
+			});
+			await newHotfix.save();
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
 })
+
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let limit = parseInt(req.query.limit) || 10;
+			let page = parseInt(req.query.page) || 1;
+			let translation = {
+				'ASC': 1,
+				'DESC': -1
+			}
+			let sortingParams = {};
+			if (req.query.sortByState) {
+				sortingParams.state = translation[req.query.sortByState];
+			}
+			if (req.query.sortByPriority) {
+				sortingParams.priority = translation[req.query.sortByPriority];
+			}
+			if (req.query.sortByCreation) {
+				sortingParams.creation = translation[req.query.sortByCreation];
+			}
+			let query = await Promise.all([
+				Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+				Hotfix.estimatedDocumentCount()
+			]);
+			res.json({
+				total: query[1],
+				pageCount: Math.ceil(query[1] / limit),
+				data: query[0]
+			});
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
 
 module.exports = router;

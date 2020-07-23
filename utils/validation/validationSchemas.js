@@ -212,16 +212,50 @@ const updateUser = {
 };
 
 const newHotfix = {
-	type: object,
+	type: "object",
 	properties: {
 		title: {
-			type: "String",
+			type: "string",
 			required: true
 		},
 		description: {
-			type: "String"
+			type: "string"
+		},
+		priority: {
+			type: "integer",
+			minimum: 1,
+			maximum: 4,
+			required: true
 		}
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newHotfix};
+let getHotfixesQuery = {
+	type: 'object',
+	properties: {
+		limit: {
+			type: 'integer',
+			minimum: 1,
+			maximum: 10000
+		},
+		page: {
+			type: 'integer',
+			minimum: 1,
+			maximum: 10000
+		},
+		sortByPriority: {
+			type: 'string',
+			enum: ['ASC', 'DESC']
+		},
+		sortByState: {
+			type: 'string',
+			enum: ['ASC', 'DESC']
+		},
+		sortByCreation: {
+			type: 'string',
+			enum: ['ASC', 'DESC']
+		}
+	}
+}
+
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newHotfix, getHotfixesQuery};

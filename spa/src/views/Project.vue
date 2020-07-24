@@ -39,6 +39,7 @@
 			</div>
 			<Board v-if="activeMenuItem === 'board'"></Board>
 			<RolesAndMembers v-if="activeMenuItem === 'roles'"></RolesAndMembers>
+			<Hotfixes v-if="activeMenuItem === 'hotfixes'"></Hotfixes>
 			<el-dialog :visible.sync="issueCreationModal.active" title="New issue">
 				<el-form model="issueCreationModal.form" v-loading="issueCreationModal.inProgress">
 					<el-form-item label="Title">
@@ -62,9 +63,10 @@
 	import Navbar from "../components/Navbar";
 	import Board from "../components/Board";
 	import RolesAndMembers from "../components/RolesAndMembers";
+	import Hotfixes from "../components/Hotfixes";
 	export default {
 		name: "Project",
-		components: {RolesAndMembers, Board, Navbar},
+		components: {Hotfixes, RolesAndMembers, Board, Navbar},
 		props: {
 			name: String,
 			_id: String

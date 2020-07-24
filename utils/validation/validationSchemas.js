@@ -243,18 +243,21 @@ let getHotfixesQuery = {
 			minimum: 1,
 			maximum: 10000
 		},
-		sortByPriority: {
-			type: 'string',
-			enum: ['ASC', 'DESC']
-		},
-		sortByState: {
-			type: 'string',
-			enum: ['ASC', 'DESC']
-		},
-		sortByCreation: {
-			type: 'string',
-			enum: ['ASC', 'DESC']
+		showCompleted: {
+			type: 'boolean'
 		}
+		// sortByPriority: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// },
+		// sortByState: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// },
+		// sortByCreation: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// }
 	}
 }
 

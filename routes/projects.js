@@ -422,24 +422,36 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async 
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let limit = parseInt(req.query.limit) || 10;
 			let page = parseInt(req.query.page) || 1;
-			let translation = {
-				'ASC': 1,
-				'DESC': -1
+			let sortingParams = {
+				priority: -1,
+				state: 1,
+				created: -1
+			};
+			// let translation = {
+			// 	'ASC': 1,
+			// 	'DESC': -1
+			// }
+			// if (req.query.sortByState) {
+			// 	sortingParams.state = translation[req.query.sortByState];
+			// }
+			// if (req.query.sortByPriority) {
+			// 	sortingParams.priority = translation[req.query.sortByPriority];
+			// }
+			// if (req.query.sortByCreation) {
+			// 	sortingParams.creation = translation[req.query.sortByCreation];
+			// }
+			let query;
+			if (req.query ? req.query.showCompleted : false) {
+				query = await Promise.all([
+					Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.estimatedDocumentCount()
+				]);
+			} else {
+				query = await Promise.all([
+					Hotfix.find({state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.countDocuments({state: {$lt: 3}})
+				]);
 			}
-			let sortingParams = {};
-			if (req.query.sortByState) {
-				sortingParams.state = translation[req.query.sortByState];
-			}
-			if (req.query.sortByPriority) {
-				sortingParams.priority = translation[req.query.sortByPriority];
-			}
-			if (req.query.sortByCreation) {
-				sortingParams.creation = translation[req.query.sortByCreation];
-			}
-			let query = await Promise.all([
-				Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
-				Hotfix.estimatedDocumentCount()
-			]);
 			res.json({
 				total: query[1],
 				pageCount: Math.ceil(query[1] / limit),

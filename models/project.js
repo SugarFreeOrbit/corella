@@ -194,6 +194,14 @@ projectSchema.statics.validateProjectToIssueRelation = async function(projectId,
 	}, {projectName: 1});
 	return !!relationTest;
 };
+
+projectSchema.statics.validateProjectToColumnRelation = async function (projectId, columnId) {
+	let relationTest = await this.findOne({
+		_id: projectId,
+		'columns.id': columnId
+	}, {projectName: 1});
+	return !!relationTest;
+}
 // projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
 // 	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
 // 		let project = await this.findOne({

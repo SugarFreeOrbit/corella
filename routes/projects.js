@@ -232,7 +232,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFil
 				req.files.forEach((file) => {
 					fileUpload(file, async (id) => {
 						logger.info(`Upload file: ${file.originalname}`);
-						await Issue.findByIdAndUpdate(newIssue._id, {
+						await newIssue.update({
 							$push: { files: ObjectId(id) }
 						});
 					});

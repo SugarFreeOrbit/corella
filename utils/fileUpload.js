@@ -23,7 +23,7 @@ const fileFilter = function(req, file, cb) {
 const upload = multer({ dest: '../tmp', storage, fileFilter }).array('files');
 
 const uploadFiles = async function(req, res, next) {
-    req.fileTypes = (await Config.finOne()).allowedFileTypes;
+    req.fileTypes = (await Config.findOne()).allowedFileTypes;
     upload(req, res, next);
 }
 

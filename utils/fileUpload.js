@@ -42,6 +42,24 @@ const fileUpload = function(file, callback) {
     });
 }
 
+const fileUploadSuper = function(file) {
+    return new Promise((resolve, reject) => {
+        try {
+            let bucket = new GridFsBucket(mongoose.connection.db, {
+                bucketName: 'attachments'
+            });
+            let uploadStream = bucket.openUploadStream(file.originalname, {contentType: file.mimetype});
+            fs.createReadStream(file.path).pipe(uploadStream);
+            uploadStream.on('finish', () => {
+                fs.unlink(file.path, (err) => err && logger.error(err));
+                resolve(uploadStream.id);
+            });
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     uploadFiles, fileUpload
 }

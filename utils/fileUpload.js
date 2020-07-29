@@ -6,6 +6,9 @@ const fs = require('fs');
 
 //const storage = multer.memoryStorage();
 const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../tmp')
+    },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now())
     }
@@ -32,9 +35,9 @@ const fileUpload = function(file, callback) {
         bucketName: 'attachments'
     });
     let uploadStream = bucket.openUploadStream(file.originalname, {contentType: file.mimetype});
-    fs.createReadStream(file.filename).pipe(uploadStream);
+    fs.createReadStream(file.path).pipe(uploadStream);
     uploadStream.on('finish', () => {
-        fs.unlink(file.filename, (err) => err && logger.error(err));
+        fs.unlink(file.path, (err) => err && logger.error(err));
         callback(uploadStream.id);
     });
 }

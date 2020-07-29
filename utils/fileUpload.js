@@ -24,7 +24,7 @@ const fileFilter = function(req, file, cb) {
 const upload = multer({ storage, fileFilter }).array('files');
 
 const uploadFiles = async function(req, res, next) {
-    req.fileTypes = await Project.getAllowedFileTypes(req.params.projectId, req.user._id);}
+    req.fileTypes = await Project.getAllowedFileTypes(req.params.projectId, req.user._id);
     upload(req, res, next);
 }
 

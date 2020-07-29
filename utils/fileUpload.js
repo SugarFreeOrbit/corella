@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ObjectId = require('mongoose').Types.ObjectId;
 const multer = require('multer');
 const Config = require('../models/config');
 const GridFsBucket = require('mongodb').GridFSBucket;
@@ -25,24 +26,12 @@ const fileFilter = function(req, file, cb) {
 
 const upload = multer({ dest: '../tmp', storage, fileFilter }).array('files');
 
-const uploadFiles = async function(req, res, next) {
+const uploadFilesMiddleware = async function(req, res, next) {
     req.fileTypes = (await Config.findOne()).allowedFileTypes;
     upload(req, res, next);
 }
 
-const fileUpload = function(file, callback) {
-    let bucket = new GridFsBucket(mongoose.connection.db, {
-        bucketName: 'attachments'
-    });
-    let uploadStream = bucket.openUploadStream(file.originalname, {contentType: file.mimetype});
-    fs.createReadStream(file.path).pipe(uploadStream);
-    uploadStream.on('finish', () => {
-        fs.unlink(file.path, (err) => err && logger.error(err));
-        callback(uploadStream.id);
-    });
-}
-
-const fileUploadSuper = function(file) {
+const fileUpload = function(file) {
     return new Promise((resolve, reject) => {
         try {
             let bucket = new GridFsBucket(mongoose.connection.db, {
@@ -52,7 +41,7 @@ const fileUploadSuper = function(file) {
             fs.createReadStream(file.path).pipe(uploadStream);
             uploadStream.on('finish', () => {
                 fs.unlink(file.path, (err) => err && logger.error(err));
-                resolve(uploadStream.id);
+                resolve(ObjectId(uploadStream.id));
             });
         } catch (e) {
             reject(e);
@@ -61,5 +50,5 @@ const fileUploadSuper = function(file) {
 }
 
 module.exports = {
-    uploadFiles, fileUpload
+    uploadFilesMiddleware, fileUpload
 }

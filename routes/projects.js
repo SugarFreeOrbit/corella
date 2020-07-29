@@ -9,7 +9,7 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const { uploadFiles, fileUpload } = require('../utils/fileUpload');
+const { uploadFilesMiddleware, fileUpload } = require('../utils/fileUpload');
 const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
@@ -212,13 +212,21 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 });
 
 //issue manipulations go here
-router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFiles, validator.checkBody('newIssue')], async function (req, res, next) {
+router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFilesMiddleware, validator.checkBody('newIssue')], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let promises = [];
+			if (req.files) {
+				promises = req.files.map((file) => {
+					logger.info(`Upload file: ${file.originalname}`);
+					return fileUpload(file);
+				});
+			}
 			let newIssue = new Issue({
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
+				files: (await Promise.all(promises)),
 				author: req.user._id
 			});
 			await newIssue.save();
@@ -230,16 +238,6 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFil
 					"columns.$.issues": newIssue
 				}
 			});
-			if (req.files) {
-				req.files.forEach((file) => {
-					fileUpload(file, async (id) => {
-						logger.info(`Upload file: ${file.originalname}`);
-						await newIssue.update({
-							$push: { files: ObjectId(id) }
-						});
-					});
-				});
-			}
 			websocketService.emitNewIssue(newIssue._id, req.params.projectId);
 			res.status(201);
 			res.end();
@@ -260,25 +258,25 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			uploadFiles(req, res, (err) => {
-				if (err) {
+			uploadFilesMiddleware(req, res, async (err) => {
+				try {
+					if (err) throw new Error('File upload error')
+					if (req.files) {
+						let files = await Promise.all(req.files.map((file) => {
+							logger.info(`Upload file: ${file.originalname}`);
+							return fileUpload(file);
+						}));
+						await Issue.findByIdAndUpdate(req.params.issueId, {
+							$push: { files }
+						});
+					}
+					res.status(200);
+					res.end();
+				} catch (e) {
 					res.status(403);
 					res.end();
-					throw new Error('File upload error')
-				}
-				if (req.files) {
-					req.files.forEach((file) => {
-						fileUpload(file, async (id) => {
-							logger.info(`Upload file: ${file.originalname}`);
-							await Issue.findByIdAndUpdate(req.params.issueId, {
-								$push: { files: ObjectId(id) }
-							});
-						});
-					});
 				}
 			});
-			res.status(200);
-			res.end();
 		} else {
 			res.status(403);
 			res.end();

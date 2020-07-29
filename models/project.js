@@ -97,7 +97,6 @@ const projectRoleSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
-	allowedFileTypes: [String],
 	issueTransitionMatrix: {
 		type: Map,
 		of: [String]
@@ -157,13 +156,6 @@ projectSchema.post('save', function (error, doc , next) {
 		next();
 	}
 });
-projectSchema.statics.getAllowedFileTypes = async function (projectId, userId) {
-	return (await this.findOne({
-		_id: projectId,
-		"roles.members": userId
-	}, {"roles.$.allowedFileTypes": 1}))
-		.roles[0].allowedFileTypes;
-};
 projectSchema.statics.checkPermission = async function (projectId, userId, permission, isAdmin) {
 	let permissionTest = await this.findOne({
 		_id: projectId,

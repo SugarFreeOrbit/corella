@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');

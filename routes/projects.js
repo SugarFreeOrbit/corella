@@ -399,6 +399,38 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 	}
 });
 
+router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let modified = (await Issue.updateOne({_id: ObjectId(req.params.issueId)}, {
+				$pull: { files: ObjectId(req.params.fileId) }
+			}));
+			if(modified.nModified === 0) {
+				res.status(404);
+				res.json(modified);
+			}
+			else {
+				let bucket = new GridFsBucket(mongoose.connection.db, {
+					bucketName: 'attachments'
+				});
+				bucket.delete(ObjectId(req.params.fileId));
+
+				res.status(200);
+				res.end();
+			}
+		} else {
+			res.status(403);
+			res.end()
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body, req.user.isAdmin);

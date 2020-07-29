@@ -215,18 +215,18 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFilesMiddleware, validator.checkBody('newIssue')], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let promises = [];
+			let files = [];
 			if (req.files) {
-				promises = req.files.map((file) => {
+				files = await Promise.all(req.files.map((file) => {
 					logger.info(`Upload file: ${file.originalname}`);
 					return fileUpload(file);
-				});
+				}));
 			}
 			let newIssue = new Issue({
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
-				files: (await Promise.all(promises)),
+				files: files,
 				author: req.user._id
 			});
 			await newIssue.save();

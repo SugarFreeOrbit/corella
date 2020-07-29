@@ -211,7 +211,7 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 });
 
 //issue manipulations go here
-router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFiles, validator.checkBody('newIssue')], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let newIssue = new Issue({
@@ -229,8 +229,54 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 					"columns.$.issues": newIssue
 				}
 			});
+			if (req.files) {
+				req.files.forEach((file) => {
+					fileUpload(file, async (id) => {
+						logger.info(`Upload file: ${file.originalname}`);
+						await Issue.findByIdAndUpdate(req.params.issueId, {
+							$push: { files: ObjectId(id) }
+						});
+					});
+				});
+			}
 			websocketService.emitNewIssue(newIssue._id, req.params.projectId);
 			res.status(201);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+// endpoint for attach files to issue when edit
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			uploadFiles(req, res, (err) => {
+				if (err) {
+					res.status(403);
+					res.end();
+					throw new Error('File upload error')
+				}
+				if (req.files) {
+					req.files.forEach((file) => {
+						fileUpload(file, async (id) => {
+							logger.info(`Upload file: ${file.originalname}`);
+							await Issue.findByIdAndUpdate(req.params.issueId, {
+								$push: { files: ObjectId(id) }
+							});
+						});
+					});
+				}
+			});
+			res.status(200);
 			res.end();
 		} else {
 			res.status(403);
@@ -258,43 +304,6 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 		} else {
 			res.status(403);
 			res.end()
-		}
-	} catch (e) {
-		next(e);
-	}
-});
-
-// endpoint for attach files to issue when edit
-router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next) {
-	try {
-		let projectPermissionQueries = await Promise.all([
-			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
-			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
-		]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			req.fileTypes = await Project.getAllowedFileTypes(req.params.projectId, req.user._id);
-			uploadFiles(req, res, (err) => {
-				if (err) {
-					res.status(403);
-					res.end();
-					return;
-				}
-				if (req.files) {
-					req.files.forEach((file) => {
-						fileUpload(file, async (id) => {
-							logger.info(`Upload file: ${file.originalname}`);
-							await Issue.findByIdAndUpdate(req.params.issueId, {
-								$push: { files: ObjectId(id) }
-							});
-						});
-					});
-				}
-			});
-			res.status(200);
-			res.end();
-		} else {
-			res.status(403);
-			res.end();
 		}
 	} catch (e) {
 		next(e);

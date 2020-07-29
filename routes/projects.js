@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
@@ -9,6 +10,7 @@ const md5 = require('md5');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
 const { uploadFiles, fileUpload } = require('../utils/fileUpload');
+const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -280,6 +282,37 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 		} else {
 			res.status(403);
 			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+// endpoint for get attachment file
+router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Issue.checkFileIsAttach(req.params.issueId, ObjectId(req.params.fileId))
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let bucket = new GridFsBucket(mongoose.connection.db, {
+				bucketName: 'attachments'
+			});
+			let downloadStream = bucket.openDownloadStream(ObjectId(req.params.fileId));
+			downloadStream.on('file', file => {
+				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);
+				res.type(file.contentType);
+			});
+			downloadStream.on('data', chunk => {
+				res.write(chunk);
+			});
+			downloadStream.on('end', () => {
+				res.end();
+			});
+		} else {
+			res.status(403);
+			res.end()
 		}
 	} catch (e) {
 		next(e);

@@ -78,6 +78,12 @@ const issueSchema = new Schema({
 // Issue.methods.addAttachments = async function (localFiles) {
 //
 // };
+issueSchema.statics.checkFileIsAttach = async function (issueId, fileId) {
+	return (await this.countDocuments({
+		_id: issueId,
+		files: fileId
+	})) !== 0;
+};
 
 const Issue = mongoose.model('Issue', issueSchema, 'issues');
 module.exports = Issue;

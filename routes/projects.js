@@ -391,7 +391,7 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 	}
 });
 
-router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit')], async function(req, res, next) {
+router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit'), validator.checkParamsForObjectIds(`columnId`)], async function(req, res, next) {
 	try {
 		let permissions = await Promise.all([Project.checkEditorPermission(req.params.projectId, req.user._id), 
 			req.user.isAdmin, Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);

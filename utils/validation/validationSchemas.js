@@ -211,4 +211,15 @@ const updateUser = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser};
+const updateWIPLimit = {
+	type:'object',
+	properties: {
+		limit: {
+			type:"number",
+			minimum: 1,
+			maximum: 20
+		}
+	}
+};
+
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, updateWIPLimit};

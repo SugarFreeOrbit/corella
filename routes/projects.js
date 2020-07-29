@@ -9,7 +9,7 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const { upload, getAllowedFilesTypes, fileUpload } = require('../utils/fileUpload');
+const { uploadMiddleware, getAllowedFilesTypes, fileUpload } = require('../utils/fileUpload');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -264,7 +264,8 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 	}
 });
 
-router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), getAllowedFilesTypes, upload], async function (req, res, next) {
+// endpoint for attach files to issue when edit
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), getAllowedFilesTypes, uploadMiddleware], async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),

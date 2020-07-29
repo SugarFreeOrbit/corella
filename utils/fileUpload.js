@@ -1,16 +1,17 @@
 const multer = require('multer');
-const storage = multer.memoryStorage();
 const Project = require('../models/project');
 const GridFsBucket = require('mongodb').GridFSBucket;
 const ReadableStream = require('stream').Readable;
 const path = require('path');
 const mime = require('mime-types')
 
+const storage = multer.memoryStorage();
+
 const fileFilter = function(req, file, cb) {
 	cb(null, req.fileTypes && req.fileTypes.find((fileType) => file.filename.endsWith('.' + fileType)) != null);
 }
 
-const upload = multer({ storage, fileFilter }).array('files');
+const uploadMiddleware = multer({ storage, fileFilter }).array('files');
 
 const getAllowedFilesTypes = async function(req, res, next) {
     req.fileTypes = await Project.getAllowedFileTypes(req.params.projectId, req.user._id);
@@ -30,5 +31,5 @@ const fileUpload = function(file, callback) {
 }
 
 module.exports = {
-    upload, getAllowedFilesTypes, fileUpload
+    uploadMiddleware, getAllowedFilesTypes, fileUpload
 }

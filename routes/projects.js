@@ -9,7 +9,7 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const { uploadMiddleware, getAllowedFilesTypes, fileUpload } = require('../utils/fileUpload');
+const { uploadFiles, fileUpload } = require('../utils/fileUpload');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -265,23 +265,31 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 });
 
 // endpoint for attach files to issue when edit
-router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), getAllowedFilesTypes, uploadMiddleware], async function (req, res, next) {
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			if (req.files) {
-				req.files.forEach((file) => {
-					logger.debug(file.filename);
-					fileUpload(file, async (id) => {
-						await Issue.findByIdAndUpdate(req.params.issueId, {
-							$push: {allowFileTypes: id}
+			req.fileTypes = await Project.getAllowedFileTypes(req.params.projectId, req.user._id);
+			uploadFiles(req, res, (err) => {
+				if (err) {
+					res.status(403);
+					res.end();
+					return;
+				}
+				if (req.files) {
+					req.files.forEach((file) => {
+						fileUpload(file, async (id) => {
+							logger.info(`Upload file: ${file.originalname}`);
+							await Issue.findByIdAndUpdate(req.params.issueId, {
+								$push: { files: ObjectId(id) }
+							});
 						});
 					});
-				});
-			}
+				}
+			});
 			res.status(200);
 			res.end();
 		} else {

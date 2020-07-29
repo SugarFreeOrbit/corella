@@ -24,7 +24,14 @@ const fileFilter = function(req, file, cb) {
     }
 }
 
-const upload = multer({ dest: '../tmp', storage, fileFilter }).array('files');
+const upload = multer({
+        dest: '../tmp',
+        limits: {
+            fileSize: 10 * 1024 * 1024
+        },
+        storage,
+        fileFilter
+    }).array('files');
 
 const uploadFilesMiddleware = async function(req, res, next) {
     req.fileTypes = (await Config.findOne()).allowedFileTypes;

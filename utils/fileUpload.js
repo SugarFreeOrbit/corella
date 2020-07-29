@@ -32,7 +32,7 @@ const fileUpload = function(file, callback) {
         bucketName: 'attachments'
     });
     let uploadStream = bucket.openUploadStream(file.originalname, {contentType: file.mimetype});
-    fs.createReadStream(file.filename).pipe(uploadFiles);
+    fs.createReadStream(file.filename).pipe(uploadStream);
     uploadStream.on('finish', () => {
         fs.unlink(file.filename, (err) => err && logger.error(err));
         callback(uploadStream.id);

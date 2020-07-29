@@ -217,10 +217,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFil
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let files = [];
 			if (req.files) {
-				files = await Promise.all(req.files.map((file) => {
-					logger.info(`Upload file: ${file.originalname}`);
-					return fileUpload(file);
-				}));
+				files = await Promise.all(req.files.map(fileUpload));
 			}
 			let newIssue = new Issue({
 				title: req.body.title,
@@ -262,10 +259,7 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 				try {
 					if (err) throw new Error('File upload error')
 					if (req.files) {
-						let files = await Promise.all(req.files.map((file) => {
-							logger.info(`Upload file: ${file.originalname}`);
-							return fileUpload(file);
-						}));
+						let files = await Promise.all(req.files.map(fileUpload));
 						await Issue.findByIdAndUpdate(req.params.issueId, {
 							$push: { files }
 						});

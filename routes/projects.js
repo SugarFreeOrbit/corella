@@ -391,4 +391,28 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 	}
 });
 
+router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit')], async function(req, res, next) {
+	try {
+		let permissions = await Promise.all([Project.checkEditorPermission(req.params.projectId, req.user._id), 
+			req.user.isAdmin, Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);
+		if (permissions[0] && permissions[1]) {
+
+			let matchedCount = await Project.updateOne({
+				_id:req.params.projectId, 'columns.id': req.params.columnId
+			}, 
+			{
+				$set:{'columns.$.limit': req.body.limit}
+			}).n;
+			res.status(200);
+		}
+		else {
+			res.status(403);
+		}
+		res.end();
+	}
+	catch (e) {
+		next(e);
+	}
+});
+
 module.exports = router;

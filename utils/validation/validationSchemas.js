@@ -36,6 +36,12 @@ const newProject = {
 						type: "string",
 						required: true
 					},
+					allowedFileTypes: {
+						type: "array",
+						items: {
+							type: "string"
+						}
+					},
 					isManager: {
 						type: "boolean",
 						required: true

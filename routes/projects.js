@@ -1,13 +1,15 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
 const md5 = require('md5');
-const multer = require('multer');
-const upload = multer({dest: '../tmp'});
+//const multer = require('multer');
+//const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
+const { upload, getAllowedFilesTypes, fileUpload } = require('../utils/fileUpload');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -262,6 +264,34 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 	}
 });
 
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), getAllowedFilesTypes, upload], async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			if (req.files) {
+				req.files.forEach((file) => {
+					logger.debug(file.filename);
+					fileUpload(file, async (id) => {
+						await Issue.findByIdAndUpdate(req.params.issueId, {
+							$push: {allowFileTypes: id}
+						});
+					});
+				});
+			}
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
@@ -465,5 +495,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async 
 		next(e);
 	}
 });
+
+
 
 module.exports = router;

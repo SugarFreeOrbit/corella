@@ -92,7 +92,9 @@ router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res
 		if(update._id) {
 			delete update._id;
 		}
-		update.password = bcrypt.hashSync(update.password, 10);
+		if (update.password) {
+			update.password = bcrypt.hashSync(update.password, 10);
+		}
 		User.findByIdAndUpdate(req.params.userId, update).then(() => {
 			res.status(200);
 			res.end();

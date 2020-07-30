@@ -62,6 +62,7 @@ typings/
 
 # IDE files
 .idea/
+.vscode/
 
 # Temp files from file upload
 tmp/

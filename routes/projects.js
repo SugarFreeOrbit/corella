@@ -491,7 +491,7 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 	}
 });
 
-//hotfix manipulations go here
+
 router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.uploadFiles, validator.checkBody('newHotfix')], async function (req, res, next) {
 	try {
 		if (await Project.checkCreateHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {

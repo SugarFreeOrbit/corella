@@ -587,10 +587,8 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
-			let deleteIssue = Hotfix.findByIdAndRemove(req.params.hotfixId);
-			let results = await Promise.all([deleteIssue]);
-			deleteIssue = results[0];
-			await Promise.all(deleteIssue.files.map(File.deleteById));
+			let deleteHotfix = await Hotfix.findByIdAndRemove(req.params.hotfixId);
+			await Promise.all(deleteHotfix.files.map(File.deleteById));
 			//websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();

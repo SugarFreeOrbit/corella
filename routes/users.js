@@ -87,7 +87,7 @@ router.delete('/:userId', function (req, res) {
 });
 
 router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res) {
-	if(req.user.isAdmin || req.user._id === req.params.userId) {
+	if(req.user.isAdmin) {
 		let update = req.body;
 		if(update._id) {
 			delete update._id;

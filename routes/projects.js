@@ -288,10 +288,7 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 			Issue.checkFileIsAttach(req.params.issueId, ObjectId(req.params.fileId))
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			let bucket = new GridFsBucket(mongoose.connection.db, {
-				bucketName: 'attachments'
-			});
-			let downloadStream = bucket.openDownloadStream(ObjectId(req.params.fileId));
+			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
 			downloadStream.on('file', file => {
 				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);
 				res.type(file.contentType);
@@ -406,11 +403,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 				res.json(modified);
 			}
 			else {
-				let bucket = new GridFsBucket(mongoose.connection.db, {
-					bucketName: 'attachments'
-				});
-				bucket.delete(ObjectId(req.params.fileId));
-
+				File.deleteById(ObjectId(req.params.fileId));
 				res.status(200);
 				res.end();
 			}

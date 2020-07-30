@@ -57,6 +57,20 @@ fileSchema.statics.uploadToGridFS = function(file) {
     })
 }
 
+fileSchema.statics.downloadById = function(fileId) {
+    let bucket = new GridFsBucket(mongoose.connection.db, {
+        bucketName: 'attachments'
+    });
+    return bucket.openDownloadStream(fileId);
+}
+
+fileSchema.statics.deleteById = function (fileId) {
+    let bucket = new GridFsBucket(mongoose.connection.db, {
+        bucketName: 'attachments'
+    });
+    return bucket.delete(fileId);
+}
+
 const File = mongoose.model('File', fileSchema, 'attachments.files');
 
 module.exports = File;

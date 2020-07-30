@@ -56,6 +56,13 @@ fileSchema.statics.uploadToGridFS = function(file) {
         }
     })
 }
+fileSchema.statics.clearTempFiles = function (files) {
+    if (files) {
+        files.forEach((file) => {
+            fs.unlink(file.path, (err) => err && logger.error(err));
+        });
+    }
+}
 
 fileSchema.statics.downloadById = function(fileId) {
     let bucket = new GridFsBucket(mongoose.connection.db, {

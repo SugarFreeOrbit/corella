@@ -315,12 +315,21 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 	try {
 		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
+			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId).then(async (result) => {
+				let gridFsBucket = new GridFsBucket(mongoose.connection.db, {
+					bucketName: 'attachments'
+				});
+				let deletes = result.files.map((fileId) => {
+					return gridFsBucket.delete(fileId)
+				});
+				await Promise.all(deletes);
+			})
 			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
 					'columns.$[].issues': req.params.issueId
 				}
 			});
+
 			await Promise.all([removeIssueFromColumn, deleteIssue]);
 			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
@@ -403,7 +412,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 			}));
 			if(modified.nModified === 0) {
 				res.status(404);
-				res.json(modified);
+				res.end();
 			}
 			else {
 				let bucket = new GridFsBucket(mongoose.connection.db, {

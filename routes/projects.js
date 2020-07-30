@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
@@ -10,7 +9,6 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -321,11 +319,7 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 
 			let results = await Promise.all([removeIssueFromColumn, deleteIssue]);
 			deleteIssue = results[1];
-			let gridFsBucket = new GridFsBucket(mongoose.connection.db, {
-				bucketName: 'attachments'
-			});
-			let deletes = deleteIssue.files.map((fileId) => gridFsBucket.delete(fileId));
-			await Promise.all(deletes);
+			await Promise.all(deleteIssue.files.map(File.deleteById));
 			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();

@@ -1,6 +1,6 @@
-const router = require('express').Router();
-const validator = require('../utils/validation/validator');
-const Project = require('../models/project');
+// const router = require('express').Router();
+// const validator = require('../utils/validation/validator');
+// const Project = require('../models/project');
 // const Issue = require('../models/issue');
 
 // router.put('/', [validator.checkBody('newIssue')], async function (req, res, next) {

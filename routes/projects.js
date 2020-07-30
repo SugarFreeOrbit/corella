@@ -259,6 +259,7 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 					$push: {files}
 				});
 			}
+			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {
@@ -398,6 +399,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 			}
 			else {
 				File.deleteById(ObjectId(req.params.fileId));
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 				res.status(200);
 				res.end();
 			}

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
+const File = require('./files')
 
 const historyEntrySchema = new Schema({
 	timestamp: {
@@ -52,7 +53,10 @@ const issueSchema = new Schema({
 	history: [historyEntrySchema],
 	checklist: [checklistItemSchema],
 	comments: [commentSchema],
-	files: [ObjectId],
+	files: [{
+		type: ObjectId,
+		ref: File
+	}],
 	author: {
 		type: ObjectId,
 		ref: User,

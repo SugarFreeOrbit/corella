@@ -5,11 +5,11 @@ const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
+const File = require('../models/files')
 const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const { uploadFilesMiddleware, fileUpload } = require('../utils/fileUpload');
 const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
@@ -212,12 +212,12 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 });
 
 //issue manipulations go here
-router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), uploadFilesMiddleware, validator.checkBody('newIssue')], async function (req, res, next) {
+router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uploadFiles, validator.checkBody('newIssue')], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let files = [];
 			if (req.files) {
-				files = await Promise.all(req.files.map(fileUpload));
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
 			let newIssue = new Issue({
 				title: req.body.title,
@@ -255,13 +255,13 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			uploadFilesMiddleware(req, res, async (err) => {
+			File.uploadFiles(req, res, async (err) => {
 				try {
 					if (err) throw new Error('File upload error')
 					if (req.files) {
-						let files = await Promise.all(req.files.map(fileUpload));
+						let files = await Promise.all(req.files.map(File.uploadToGridFS));
 						await Issue.findByIdAndUpdate(req.params.issueId, {
-							$push: { files }
+							$push: {files}
 						});
 					}
 					res.status(200);
@@ -380,7 +380,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let issue = await Issue.findById(req.params.issueId);
+			let issue = await Issue.findById(req.params.issueId).populate('files', 'filename length');
 			res.json(issue);
 		} else {
 			res.status(401);

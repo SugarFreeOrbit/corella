@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
+const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Types.ObjectId;
 const multer = require('multer');
 const Config = require('../models/config');
 const GridFsBucket = require('mongodb').GridFSBucket;
 const fs = require('fs');
 
-//const storage = multer.memoryStorage();
+const fileSchema = new Schema({
+    filename: String,
+    length: Number
+});
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, '../tmp')
@@ -15,30 +20,25 @@ const storage = multer.diskStorage({
     }
 });
 
-const fileFilter = function(req, file, cb) {
-    if (req.fileTypes && req.fileTypes.find((fileType) => file.originalname.endsWith('.' + fileType))) {
-        // cb(null, file.size <= 50 * 1024 * 1024); // Size no more than 50MB
-        cb(null, true)
-    } else {
-        cb(null, false);
-    }
+function fileFilter(req, file, cb) {
+    cb(null, !!(req.fileTypes && req.fileTypes.find((fileType) => file.originalname.endsWith('.' + fileType))));
 }
 
 const upload = multer({
-        dest: '../tmp',
-        limits: {
-            fileSize: 10 * 1024 * 1024
-        },
-        storage,
-        fileFilter
-    }).array('files');
+    dest: '../tmp',
+    limits: {
+        fileSize: 10 * 1024 * 1024
+    },
+    storage,
+    fileFilter
+}).array('files');
 
-const uploadFilesMiddleware = async function(req, res, next) {
+fileSchema.statics.uploadFiles = async function(req, res, next) {
     req.fileTypes = (await Config.findOne()).allowedFileTypes;
     upload(req, res, next);
 }
 
-const fileUpload = function(file) {
+fileSchema.statics.uploadToGridFS = function(file) {
     return new Promise((resolve, reject) => {
         try {
             let bucket = new GridFsBucket(mongoose.connection.db, {
@@ -47,6 +47,7 @@ const fileUpload = function(file) {
             let uploadStream = bucket.openUploadStream(file.originalname, {contentType: file.mimetype});
             fs.createReadStream(file.path).pipe(uploadStream);
             uploadStream.on('finish', () => {
+                logger.info(`Upload file: ${file.originalname}`);
                 fs.unlink(file.path, (err) => err && logger.error(err));
                 resolve(ObjectId(uploadStream.id));
             });
@@ -56,6 +57,6 @@ const fileUpload = function(file) {
     })
 }
 
-module.exports = {
-    uploadFilesMiddleware, fileUpload
-}
+const File = mongoose.model('File', fileSchema, 'attachments.files');
+
+module.exports = File;

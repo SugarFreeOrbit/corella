@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     }
 });
 
-function fileFilter(req, file, cb) {
+const fileFilter = function(req, file, cb) {
     cb(null, !!(req.fileTypes && req.fileTypes.find((fileType) => file.originalname.endsWith('.' + fileType))));
 }
 

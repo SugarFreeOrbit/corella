@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
-const File = require('./files')
+const File = require('./file')
 
 const historyEntrySchema = new Schema({
 	timestamp: {

@@ -10,7 +10,6 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
-const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {

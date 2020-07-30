@@ -237,10 +237,12 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 			res.status(201);
 			res.end();
 		} else {
+			File.clearTempFiles(req.files);
 			res.status(403);
 			res.end();
 		}
 	} catch (e) {
+		File.clearTempFiles(req.files);
 		next(e);
 	}
 });
@@ -263,10 +265,12 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 			res.status(200);
 			res.end();
 		} else {
+			File.clearTempFiles(req.files);
 			res.status(403);
 			res.end();
 		}
 	} catch (e) {
+		File.clearTempFiles(req.files);
 		next(e);
 	}
 });

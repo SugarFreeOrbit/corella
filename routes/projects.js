@@ -246,29 +246,21 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 });
 
 // endpoint for attach files to issue when edit
-router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), File.uploadFiles], async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			File.uploadFiles(req, res, async (err) => {
-				try {
-					if (err) throw new Error('File upload error')
-					if (req.files) {
-						let files = await Promise.all(req.files.map(File.uploadToGridFS));
-						await Issue.findByIdAndUpdate(req.params.issueId, {
-							$push: {files}
-						});
-					}
-					res.status(200);
-					res.end();
-				} catch (e) {
-					res.status(403);
-					res.end();
-				}
-			});
+			if (req.files) {
+				let files = await Promise.all(req.files.map(File.uploadToGridFS));
+				await Issue.findByIdAndUpdate(req.params.issueId, {
+					$push: {files}
+				});
+			}
+			res.status(200);
+			res.end();
 		} else {
 			res.status(403);
 			res.end();
@@ -283,9 +275,10 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
-			Issue.checkFileIsAttach(req.params.issueId, ObjectId(req.params.fileId))
+			Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin),
+			Issue.checkFileIsAttached(req.params.issueId, req.params.fileId)
 		]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])) {
 			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
 			downloadStream.on('file', file => {
 				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);

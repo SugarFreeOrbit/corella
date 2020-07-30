@@ -82,7 +82,7 @@ const issueSchema = new Schema({
 // Issue.methods.addAttachments = async function (localFiles) {
 //
 // };
-issueSchema.statics.checkFileIsAttach = async function (issueId, fileId) {
+issueSchema.statics.checkFileIsAttached = async function (issueId, fileId) {
 	return (await this.countDocuments({
 		_id: issueId,
 		files: fileId

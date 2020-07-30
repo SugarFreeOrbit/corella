@@ -10,6 +10,7 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
+const GridFsBucket = require('mongodb').GridFSBucket;
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -315,9 +316,7 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 				let gridFsBucket = new GridFsBucket(mongoose.connection.db, {
 					bucketName: 'attachments'
 				});
-				let deletes = result.files.map((fileId) => {
-					return gridFsBucket.delete(fileId)
-				});
+				let deletes = result.files.map((fileId) => gridFsBucket.delete(fileId));
 				await Promise.all(deletes);
 			})
 			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {

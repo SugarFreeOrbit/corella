@@ -393,8 +393,8 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 
 router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit'), validator.checkParamsForObjectIds(`columnId`)], async function(req, res, next) {
 	try {
-		let permissions = await Promise.all([Project.checkEditorPermission(req.params.projectId, req.user._id), 
-			req.user.isAdmin, Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);
+		let permissions = await Promise.all([Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin),
+			 Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);
 		if (permissions[0] && permissions[1]) {
 
 			let matchedCount = await Project.updateOne({

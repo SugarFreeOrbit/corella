@@ -222,9 +222,8 @@ const newHotfix = {
 			type: "string"
 		},
 		priority: {
-			type: "integer",
-			minimum: 1,
-			maximum: 4,
+			type: "string",
+			enum: ['1', '2', '3', '4'],
 			required: true
 		}
 	}

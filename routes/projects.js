@@ -261,8 +261,8 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 				await Issue.findByIdAndUpdate(req.params.issueId, {
 					$push: {files}
 				});
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			}
-			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {
@@ -308,23 +308,22 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if ((await Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
-			let deleteIssue = Issue.findOneAndDelete({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)})
-				.then((issue) => {
-					if(!issue) {
-						res.status(404);
-						res.end();
-					}
-					return issue;
-			})
+			let deleteIssue = await Issue.findOneAndDelete({
+				_id: ObjectId(req.params.issueId),
+				projectId: ObjectId(req.params.projectId)
+			});
+			if (!deleteIssue) {
+					res.status(404);
+					res.end();
+					return;
+			}
 
-			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
+			await Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
 					'columns.$[].issues': req.params.issueId
 				}
 			});
 
-			let results = await Promise.all([removeIssueFromColumn, deleteIssue]);
-			deleteIssue = results[1];
 			await Promise.all(deleteIssue.files.map(File.deleteById));
 			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
@@ -351,9 +350,11 @@ router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), va
 				res.status(404);
 				res.end();
 			}
-			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
-			res.status(200);
-			res.end();
+			else {
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+				res.status(200);
+				res.end();
+			}
 		} else {
 			res.status(403);
 			res.end();

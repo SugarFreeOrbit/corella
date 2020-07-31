@@ -146,7 +146,7 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 			'roles.$': 1
 		});
 		if (currentRoleQuery.roles.length > 0) {
-			currentRoleQuery.roles[0].members = null;
+			currentRoleQuery.roles[0].members = undefined;
 			res.json(currentRoleQuery.roles[0]);
 		} else {
 			res.status(404);

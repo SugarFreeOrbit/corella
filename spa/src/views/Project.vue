@@ -41,7 +41,8 @@
 			<RolesAndMembers v-if="activeMenuItem === 'roles'"></RolesAndMembers>
 			<Hotfixes v-if="activeMenuItem === 'hotfixes'"></Hotfixes>
 			<el-dialog :visible.sync="issueCreationModal.active" title="New issue">
-				<el-form model="issueCreationModal.form" v-loading="issueCreationModal.inProgress">
+				<el-form v-model="issueCreationModal.form"
+						 v-loading="issueCreationModal.inProgress">
 					<el-form-item label="Title">
 						<el-input required v-model="issueCreationModal.form.title"></el-input>
 					</el-form-item>
@@ -49,19 +50,10 @@
 						<el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
 					</el-form-item>
 					<el-form-item>
-						<el-upload
-								class="upload-demo"
-								action="https://jsonplaceholder.typicode.com/posts/"
-								:on-preview="handlePreview"
-								:on-remove="handleRemove"
-								:before-remove="beforeRemove"
-								multiple
-								:limit="3"
-								:on-exceed="handleExceed"
-								:file-list="fileList">
-							<el-button size="small" type="primary">Click to upload</el-button>
+						<label for="files">
+							<input placeholder="upload files" type="file" id="files" ref="files" multiple v-on:change="handleFilesUpload()"/>
 							<div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
-						</el-upload>
+						</label>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" @click="createIssue">Create</el-button>
@@ -94,11 +86,12 @@
 					inProgress: false,
 					form: {
 						title: '',
-						description: ''
+						description: '',
+						files: []
 					}
 				},
-				projectReady: false,
-                fileList: []
+                files: [],
+				projectReady: false
             }
 		},
 		async created() {
@@ -128,34 +121,31 @@
 		methods:{
 			createIssue: async function() {
 				this.issueCreationModal.inProgress = true;
-				if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-					let result = await this.$http.put(`/projects/${this._id}/issues`, this.issueCreationModal.form);
-					this.issueCreationModal.inProgress = false;
-					this.issueCreationModal.active = false;
-					this.issueCreationModal.title = '';
-					this.issueCreationModal.description = '';
-				} else {
-					this.$notify({
-						title: 'Error',
-						message: 'Your issue is invalid',
-						duration: 3000,
-						type: 'error'
-					});
-					this.issueCreationModal.inProgress = false;
-				}
+
+				console.log(this.issueCreationModal.form);
+
+				// if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
+				// 	let result = await this.$http.put(`/projects/${this._id}/issues`, this.issueCreationModal.form);
+				// 	this.issueCreationModal.inProgress = false;
+				// 	this.issueCreationModal.active = false;
+				// 	this.issueCreationModal.title = '';
+				// 	this.issueCreationModal.description = '';
+				// } else {
+				// 	this.$notify({
+				// 		title: 'Error',
+				// 		message: 'Your issue is invalid',
+				// 		duration: 3000,
+				// 		type: 'error'
+				// 	});
+				// 	this.issueCreationModal.inProgress = false;
+				// }
 			},
-            handleRemove(file, fileList) {
-                console.log(file);
-                console.log(fileList);
-            },
-            handlePreview(file) {
-                console.log(file);
-            },
-            handleExceed(files, fileList) {
-                this.$message.warning(`The limit is 3, you selected ${files.length} files this time, add up to ${files.length + fileList.length} totally`);
-            },
-            beforeRemove(file, fileList) {
-                return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
+            handleFilesUpload(){
+                // this.issueCreationModal.form.files = this.$refs.files.files;
+                this.files = this.$refs.files.files;
+                this.issueCreationModal.form.files.push(this.files);
+                console.log(this.files);
+                console.log(this.issueCreationModal.form.files);
             }
 		}
 	}

@@ -20,6 +20,7 @@
 		"element-ui": "~2.12.0",
 		"md5": "~2.2.1",
 		"node-sass": "^4.14.1",
+		"compass-mixins": "^0.12.10",
 		"sass-loader": "^7.1.0",
 		"socket.io-client": "~2.3.0",
 		"vue-data-tables": "~3.4.4",

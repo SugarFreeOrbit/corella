@@ -1,0 +1,11 @@
+.modal {
+
+  &__upload-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+    float: left;
+    width: 100%;
+  }
+}

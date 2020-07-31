@@ -59,6 +59,13 @@
                                type="file" id="uploadFiles" ref="files"
                                multiple v-on:change="handleFilesUpload()" hidden/>
                         <div class="el-upload__tip">jpg/png files with a size less than 500kb</div>
+                        <div v-if="issueCreationModal.form.files.length != 0" class="modal__upload-wrapper">
+                            <ul class="modal__upload-list">
+                                <li v-for="(file, i) in issueCreationModal.form.files">
+                                    <span>{{file.name}}</span>
+                                </li>
+                            </ul>
+                        </div>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="createIssue">Create</el-button>

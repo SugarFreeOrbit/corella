@@ -48,19 +48,30 @@ router.get('/',[validator.checkQuery('paginationQuery')], async function (req, r
 		}
 });
 
-router.get('/:userId', async function (req, res, next) {
+router.get('/:userId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let user = await User.findById(req.params.userId, {username: 1});
-		res.json(user)
+		if (!user) {
+			res.status(404);
+			res.end();
+		}
+		else {
+			res.json(user)
+		}
 	} catch (e) {
 		next(e)
 	}
 });
 
-router.delete('/:userId', function (req, res) {
+router.delete('/:userId', [validator.checkParamsForObjectIds()], function (req, res) {
 	if(req.user.isAdmin) {
-		User.deleteOne({_id: req.params.userId}).then(() => {
-			res.status(200);
+		User.deleteOne({_id: req.params.userId}).then((result) => {
+			if (result.n < 1) {
+				res.status(404);
+			}
+			else {
+				res.status(200);
+			}
 			res.end();
 		}).catch(err => {
 			res.status(400);
@@ -72,7 +83,7 @@ router.delete('/:userId', function (req, res) {
 	}
 });
 
-router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res) {
+router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBody('updateUser')], function (req, res) {
 	if(req.user.isAdmin) {
 		let update = req.body;
 		if(update._id) {
@@ -81,8 +92,13 @@ router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res
 		if (update.password) {
 			update.password = bcrypt.hashSync(update.password, 10);
 		}
-		User.findByIdAndUpdate(req.params.userId, update).then(() => {
-			res.status(200);
+		User.updateOne({_id: req.params.userId}, update).then((result) => {
+			if (result.n < 1) {
+				res.status(404);
+			}
+			else {
+				res.status(200);
+			}
 			res.end();
 		}).catch(err => {
 			res.status(400);
@@ -94,7 +110,7 @@ router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res
 	}
 });
 
-router.get('/:userId/avatar', async function (req, res) {
+router.get('/:userId/avatar', [validator.checkParamsForObjectIds()], async function (req, res) {
 	try {
 		let downloadStream = await User.downloadAvatarByUserId(req.params.userId);
 		downloadStream.on('file', file => {

@@ -52,7 +52,7 @@ hotfixSchema.statics.validateProjectIdAndHotfixId = async function(projectId, ho
 	return !!relationTest;
 }
 
-hotfixSchema.statics.checkFileIsAttach = async function (hotfixId, fileId) {
+hotfixSchema.statics.checkFileIsAttached = async function (hotfixId, fileId) {
 	return (await this.countDocuments({
 		_id: hotfixId,
 		files: fileId

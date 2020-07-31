@@ -513,6 +513,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			res.status(200);
 			res.end();
 		} else {
+			File.clearTempFiles(req.files);
 			res.status(403);
 			res.end();
 		}
@@ -540,16 +541,19 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 					res.status(200);
 					res.end();
 				}catch (e) {
+					File.clearTempFiles(req.files);
 					res.status(403);
 					res.end();
 				}
 			})
 		}
 		else{
+			File.clearTempFiles(req.files);
 			res.status(403);
 			res.end();
 		}
 	}catch (e) {
+		File.clearTempFiles(req.files);
 		next(e);
 	}
 }); //
@@ -558,7 +562,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 	try{
 		let projectPermissionQueries = await Promise.all([
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
-			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let modified = (await Hotfix.updateOne({_id: ObjectId(req.params.hotfixId)}, {
@@ -583,7 +587,7 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
-			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let deleteHotfix = await Hotfix.findByIdAndRemove(req.params.hotfixId);
@@ -600,13 +604,14 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 	}
 });
 
-router.get('/:projectId/hotfixes/:hotfixId/attachment/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next){
+router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
-			Hotfix.checkFileIsAttach(req.params.hotfixId, ObjectId(req.params.fileId))
+			Hotfix.checkFileIsAttached(req.params.hotfixId, req.params.fileId),
+			Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
 			downloadStream.on('file', file => {
 				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);

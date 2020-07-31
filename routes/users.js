@@ -4,6 +4,7 @@ const User = require('../models/user');
 const validator = require('../utils/validation/validator');
 
 router.put('/', [validator.checkBody('newUser')], function (req, res) {
+	if (req.user.isAdmin) {
 		bcrypt.hash(req.body.password, 10).then(hash => {
 			let newUser = new User({
 				username: req.body.username,
@@ -28,9 +29,15 @@ router.put('/', [validator.checkBody('newUser')], function (req, res) {
 			res.status(500);
 			res.end();
 		});
+	}
+	else {
+		res.status(403);
+		res.end();
+	}
 });
 
 router.get('/',[validator.checkQuery('paginationQuery')], async function (req, res, next) {
+	if (req.user.isAdmin) {
 		try {
 			let limit = parseInt(req.query.limit) || 10;
 			let page = parseInt(req.query.page) || 1;
@@ -46,20 +53,31 @@ router.get('/',[validator.checkQuery('paginationQuery')], async function (req, r
 		} catch (e) {
 			next(e);
 		}
+	}
+	else {
+		res.status(403);
+		res.end();
+	}
 });
 
 router.get('/:userId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
-	try {
-		let user = await User.findById(req.params.userId, {username: 1});
-		if (!user) {
-			res.status(404);
-			res.end();
+	if (req.user.isAdmin) {
+		try {
+			let user = await User.findById(req.params.userId, {username: 1});
+			if (!user) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				res.json(user)
+			}
+		} catch (e) {
+			next(e)
 		}
-		else {
-			res.json(user)
-		}
-	} catch (e) {
-		next(e)
+	}
+	else {
+		res.status(403);
+		res.end();
 	}
 });
 

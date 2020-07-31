@@ -52,6 +52,18 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
+					createHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					deleteHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					editHotfixes: {
+						type: "boolean",
+						required: true
+					},
 					issueTransitionMatrix: {
 						type: "object"
 					}
@@ -122,6 +134,18 @@ const roles = {
 				required: true
 			},
 			isEditor: {
+				type: "boolean",
+				required: true
+			},
+			createHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			deleteHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			editHotfixes: {
 				type: "boolean",
 				required: true
 			},

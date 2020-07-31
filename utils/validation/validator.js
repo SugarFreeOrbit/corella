@@ -9,7 +9,7 @@ Validator.prototype.customFormats.objectId = function(input) {
 
 const validator = function () {
 	this.v = new Validator();
-	this.checkBody = ((schema) => {
+		this.checkBody = ((schema) => {
 		return ((req, res, next) => {
 			let validationResult = this.v.validate(req.body, validationSchemas[schema]);
 			if (validationResult.errors.length) {
@@ -30,7 +30,7 @@ const validator = function () {
 				next();
 			}
 		})
-	});//  5f22 7b6c 2441 5416 fcb6 736a
+	});
 	this.checkParamsForObjectIds = function (excludedParams=[]) {
 		return ((req, res, next) => {
 			let params = Object.entries(req.params);

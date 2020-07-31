@@ -579,6 +579,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			}
 		}
 	}catch (e) {
+		File.deleteById(ObjectId(req.params.fileId));
 		next(e);
 	}
 }); //

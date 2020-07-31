@@ -3,8 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const validator = require('../utils/validation/validator');
 
-router.put('/', function (req, res) {
-	if (req.body.username && req.body.password && req.body.email && typeof req.body.isAdmin === 'boolean') {
+router.put('/', [validator.checkBody('newUser')], function (req, res) {
 		bcrypt.hash(req.body.password, 10).then(hash => {
 			let newUser = new User({
 				username: req.body.username,
@@ -29,17 +28,12 @@ router.put('/', function (req, res) {
 			res.status(500);
 			res.end();
 		});
-	} else {
-		res.status(400);
-		res.end();
-	}
 });
 
-router.get('/', async function (req, res, next) {
-	if (!isNaN(parseInt(req.query.limit)) && !isNaN(parseInt(req.query.page))) {
+router.get('/',[validator.checkQuery('paginationQuery')], async function (req, res, next) {
 		try {
-			let limit = parseInt(req.query.limit);
-			let page = parseInt(req.query.page);
+			let limit = parseInt(req.query.limit) || 10;
+			let page = parseInt(req.query.page) || 1;
 			let query = await Promise.all([
 				User.find({}, {username: 1, email: 1, isAdmin: 1}).skip((page - 1) * limit).limit(limit),
 				User.estimatedDocumentCount()
@@ -52,14 +46,6 @@ router.get('/', async function (req, res, next) {
 		} catch (e) {
 			next(e);
 		}
-	} else {
-		try {
-			let users = await User.find({}, {username: 1, email: 1});
-			res.json(users);
-		} catch (e) {
-			next(e);
-		}
-	}
 });
 
 router.get('/:userId', async function (req, res, next) {

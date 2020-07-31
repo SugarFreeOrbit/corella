@@ -417,7 +417,8 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 	}
 })
 
-router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
+	async function (req, res, next) {
 	try {
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let limit = parseInt(req.query.limit) || 10;

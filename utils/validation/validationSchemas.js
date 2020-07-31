@@ -197,19 +197,28 @@ const updateUser = {
 	type: 'object',
 	properties: {
 		username: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		email: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		password: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		isAdmin: {
 			type: "boolean"
 		}
 	}
 };
+
+const newUser = Object.assign({}, updateUser);
+newUser.required = ['username', 'password', 'email', 'isAdmin'];
 
 const newHotfix = {
 	type: "object",
@@ -261,4 +270,4 @@ let getHotfixesQuery = {
 	}
 }
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newHotfix, getHotfixesQuery};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, getHotfixesQuery};

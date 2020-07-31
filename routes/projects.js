@@ -490,15 +490,22 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 	}
 });
 
-router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkBody('newHotfix')], async function (req, res, next) {
+
+router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.uploadFiles, validator.checkBody('newHotfix')], async function (req, res, next) {
 	try {
 		if (await Project.checkCreateHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+			}
+
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
 				priority: req.body.priority,
 				state: 1,
 				created: Date.now(),
+				files: files,
 				project: ObjectId(req.params.projectId),
 				author: ObjectId(req.user._id)
 			});
@@ -506,13 +513,124 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			res.status(200);
 			res.end();
 		} else {
+			File.clearTempFiles(req.files);
 			res.status(403);
 			res.end();
 		}
 	} catch (e) {
 		next(e);
 	}
-})
+}) //
+
+router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			File.uploadFiles(req, res, async (err) => {
+				try{
+					if (err) throw new Error('File upload error')
+					if (req.files) {
+						let files = await Promise.all(req.files.map(File.uploadToGridFS));
+						await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+							$push: {files}
+						});
+					}
+					res.status(200);
+					res.end();
+				}catch (e) {
+					File.clearTempFiles(req.files);
+					res.status(403);
+					res.end();
+				}
+			})
+		}
+		else{
+			File.clearTempFiles(req.files);
+			res.status(403);
+			res.end();
+		}
+	}catch (e) {
+		File.clearTempFiles(req.files);
+		next(e);
+	}
+}); //
+
+router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (req, res, next){
+	try{
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let modified = (await Hotfix.updateOne({_id: ObjectId(req.params.hotfixId)}, {
+				$pull: { files: ObjectId(req.params.fileId) }
+			}));
+			if(modified.nModified === 0) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				File.deleteById(ObjectId(req.params.fileId));
+				res.status(200);
+				res.end();
+			}
+		}
+	}catch (e) {
+		next(e);
+	}
+}); //
+
+router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectIds()], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let deleteHotfix = await Hotfix.findByIdAndRemove(req.params.hotfixId);
+			await Promise.all(deleteHotfix.files.map(File.deleteById));
+			//websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
+			res.status(200);
+			res.end();
+		}else{
+			res.status(403);
+			res.end();
+		}
+	}catch (e) {
+		next(e);
+	}
+});
+
+router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Hotfix.checkFileIsAttached(req.params.hotfixId, req.params.fileId),
+			Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
+			downloadStream.on('file', file => {
+				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);
+				res.type(file.contentType);
+			});
+			downloadStream.on('data', chunk => {
+				res.write(chunk);
+			});
+			downloadStream.on('end', () => {
+				res.end();
+			});
+		} else{
+			res.status(403);
+			res.end();
+		}
+	}catch (e) {
+		next(e);
+	}
+}) //
 
 router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
@@ -545,7 +663,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async 
 				]);
 			} else {
 				query = await Promise.all([
-					Hotfix.find({state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.find({project: req.params.projectId, state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
 					Hotfix.countDocuments({state: {$lt: 3}})
 				]);
 			}

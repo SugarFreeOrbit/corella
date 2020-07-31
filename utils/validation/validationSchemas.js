@@ -239,21 +239,26 @@ const newHotfix = {
 	}
 };
 
-let getHotfixesQuery = {
+const paginationQuery = {
 	type: 'object',
 	properties: {
 		limit: {
-			type: 'integer',
-			minimum: 1,
-			maximum: 10000
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
 		},
 		page: {
-			type: 'integer',
-			minimum: 1,
-			maximum: 10000
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
 		},
+	}
+};
+
+const getHotfixesQuery = {
+	type: 'object',
+	properties: {
 		showCompleted: {
-			type: 'boolean'
+			type: 'string',
+			enum: ['true', 'false']
 		}
 		// sortByPriority: {
 		// 	type: 'string',
@@ -268,6 +273,7 @@ let getHotfixesQuery = {
 		// 	enum: ['ASC', 'DESC']
 		// }
 	}
-}
+};
+Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, getHotfixesQuery};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery};

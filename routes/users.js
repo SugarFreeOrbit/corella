@@ -2,9 +2,10 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const validator = require('../utils/validation/validator');
+const emailValidator = require("email-validator");
 
 router.put('/', [validator.checkBody('newUser')], function (req, res) {
-	if (req.user.isAdmin) {
+	if (req.user.isAdmin && emailValidator.validate(req.body.email)) {
 		bcrypt.hash(req.body.password, 10).then(hash => {
 			let newUser = new User({
 				username: req.body.username,

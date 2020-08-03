@@ -111,6 +111,9 @@ router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBo
 		if (update.password) {
 			update.password = bcrypt.hashSync(update.password, 10);
 		}
+		if(!emailValidator.validate(req.body.email)){
+			delete update.email;
+		}
 		User.updateOne({_id: req.params.userId}, update).then((result) => {
 			if (result.n < 1) {
 				res.status(404);

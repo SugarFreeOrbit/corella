@@ -2,33 +2,39 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const validator = require('../utils/validation/validator');
+const emailValidator = require("email-validator");
 
 router.put('/', [validator.checkBody('newUser')], function (req, res) {
 	if (req.user.isAdmin) {
-		bcrypt.hash(req.body.password, 10).then(hash => {
-			let newUser = new User({
-				username: req.body.username,
-				password: hash,
-				isAdmin: req.body.isAdmin,
-				email: req.body.email
-			});
-			newUser.save().then(() => {
-				res.status(201);
-				res.end();
-				newUser.setAvatar().then(() => {
-					logger.debug('Avatar generated');
+		if(emailValidator.validate(req.body.email)){
+			bcrypt.hash(req.body.password, 10).then(hash => {
+				let newUser = new User({
+					username: req.body.username,
+					password: hash,
+					isAdmin: req.body.isAdmin,
+					email: req.body.email
+				});
+				newUser.save().then(() => {
+					res.status(201);
+					res.end();
+					newUser.setAvatar().then(() => {
+						logger.debug('Avatar generated');
+					}).catch(err => {
+						logger.error(err.message);
+					});
 				}).catch(err => {
-					logger.error(err.message);
+					res.status(400);
+					res.json({message: err.message});
 				});
 			}).catch(err => {
-				res.status(400);
-				res.json({message: err.message});
+				logger.error(err.message);
+				res.status(500);
+				res.end();
 			});
-		}).catch(err => {
-			logger.error(err.message);
-			res.status(500);
+		} else{
+			res.status(400);
 			res.end();
-		});
+		}
 	}
 	else {
 		res.status(403);
@@ -109,6 +115,9 @@ router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBo
 		}
 		if (update.password) {
 			update.password = bcrypt.hashSync(update.password, 10);
+		}
+		if(!emailValidator.validate(req.body.email)){
+			delete update.email;
 		}
 		User.updateOne({_id: req.params.userId}, update).then((result) => {
 			if (result.n < 1) {

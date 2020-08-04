@@ -521,7 +521,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 	} catch (e) {
 		next(e);
 	}
-}) //
+})
 
 router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
@@ -557,7 +557,7 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 		File.clearTempFiles(req.files);
 		next(e);
 	}
-}); //
+});
 
 router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (req, res, next){
 	try{
@@ -583,7 +583,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 		File.deleteById(ObjectId(req.params.fileId));
 		next(e);
 	}
-}); //
+});
 
 router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
@@ -632,7 +632,7 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 	}catch (e) {
 		next(e);
 	}
-}) //
+})
 
 router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
 	async function (req, res, next) {

@@ -500,10 +500,10 @@ paths:
           schema:
             type: string
         - in: path
-            required: true
-            name: issueId
-            schema:
-              type: string
+          required: true
+          name: fileId
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -529,10 +529,10 @@ paths:
           schema:
             type: string
         - in: path
-            required: true
-            name: issueId
-            schema:
-              type: string
+          required: true
+          name: fileId
+          schema:
+            type: string
       responses:
         '200':
           description: Get file from issue
@@ -704,9 +704,34 @@ paths:
         '403':
           description: Forbidden
 
-  /config
+  /config:
     get:
-
+      summary: Recive global config
+      tags:
+        - Config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/globalConfig'
+        '403':
+          description: Forbidden
+    patch:
+      summary: Patch global config
+      tags:
+        - Config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/globalConfig'
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
 
 components:
   securitySchemes:
@@ -1004,20 +1029,21 @@ components:
         }
       }
 
-  globalConfig:
-    {
-      "type": "object",
-      "required": [
-        "allowedFileTypes"
-      ],
-      "properties": {
-        "allowedFileTypes": {
-          "type": "array",
-          "items": {
-            "type": "string"
+    globalConfig:
+      {
+        "type": "object",
+        "required": [
+          "allowedFileTypes"
+        ],
+        "properties": {
+          "allowedFileTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
-    }
+
 security:
   - bearerAuth: []

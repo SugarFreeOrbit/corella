@@ -197,19 +197,28 @@ const updateUser = {
 	type: 'object',
 	properties: {
 		username: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		email: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		password: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		isAdmin: {
 			type: "boolean"
 		}
 	}
 };
+
+const newUser = Object.assign({}, updateUser);
+newUser.required = ['username', 'password', 'email', 'isAdmin'];
 
 const newHotfix = {
 	type: "object",
@@ -230,21 +239,26 @@ const newHotfix = {
 	}
 };
 
-let getHotfixesQuery = {
+const paginationQuery = {
 	type: 'object',
 	properties: {
 		limit: {
-			type: 'integer',
-			minimum: 1,
-			maximum: 10000
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
 		},
 		page: {
-			type: 'integer',
-			minimum: 1,
-			maximum: 10000
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
 		},
+	}
+};
+
+const getHotfixesQuery = {
+	type: 'object',
+	properties: {
 		showCompleted: {
-			type: 'boolean'
+			type: 'string',
+			enum: ['true', 'false']
 		}
 		// sortByPriority: {
 		// 	type: 'string',
@@ -259,6 +273,7 @@ let getHotfixesQuery = {
 		// 	enum: ['ASC', 'DESC']
 		// }
 	}
-}
+};
+Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newHotfix, getHotfixesQuery};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery};

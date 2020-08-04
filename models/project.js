@@ -98,7 +98,7 @@ const projectRoleSchema = new Schema({
 		required: true
 	},
 	issueTransitionMatrix: {
-		type: Map,
+		type: Map,//ключи - айдишники колонок, значения - массивы айдишников колонок
 		of: [String]
 	},
 	isCreator: {

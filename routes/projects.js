@@ -323,6 +323,7 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 			if(!issue) {
 				res.status(404);
 				res.end();
+				return;
 			}
 			res.json(issue);
 		} else {
@@ -341,6 +342,7 @@ router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async fu
 			if(!issue) {
 				res.status(404);
 				res.end();
+				return;
 			}
 			res.json(issue);
 		} else {

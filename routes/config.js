@@ -1,10 +1,11 @@
 const router = require('express').Router();
 const Config = require('../models/config');
+const validator = require('../utils/validation/validator');
 
 router.get('/', async function (req, res, next) {
     if (req.user.isAdmin) {
         try {
-            config = await Config.findOne();
+            config = await Config.findOne({}, { _id: 0, __v: 0 });
             res.json(config);
         } catch (e) {
             next(e);
@@ -18,9 +19,9 @@ router.get('/', async function (req, res, next) {
 router.patch('/', [validator.checkBody('globalConfig')], async function (req, res, next) {
     if (req.user.isAdmin) {
         try {
-            await Config.findOneAndUpdate({
+            await new Config({
                 allowedFileTypes: req.body.allowedFileTypes
-            });
+            }).save();
             res.status(200);
             res.end();
         } catch (e) {
@@ -31,3 +32,5 @@ router.patch('/', [validator.checkBody('globalConfig')], async function (req, re
         res.end();
     }
 });
+
+module.exports = router;

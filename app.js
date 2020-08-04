@@ -90,9 +90,10 @@ dbConnPromise.then((db) => {
 	});
 	mongoose.connection.db.createCollection('globalConfig', {capped: true, size: 999999, max: 1}).then((collection) => {
 		collection.updateOne({}, { $setOnInsert: {
-				allowedFileTypes: ['txt', 'png', 'jpg', 'jpeg']
-			}}, { upsert: true });
-		logger.info('Create config collection')
+			allowedFileTypes: ['txt', 'png', 'jpg', 'jpeg']
+		}}, { upsert: true }).then(() => {
+			logger.info('Create config collection');
+		});
 	});
 	server.listen(CONFIG.server.port);
 	logger.info(`App is listening on port ${server.address().port}!`);

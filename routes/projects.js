@@ -319,7 +319,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let issue = await Issue.findById(req.params.issueId);
+			let issue = await Issue.findOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
 			res.json(issue);
 		} else {
 			res.status(401);
@@ -329,6 +329,21 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 		next(e);
 	}
 });
+
+router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let issue = await Issue.findOne({issueCode: req.params.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			res.json(issue);
+		} else {
+			res.status(401);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {

@@ -16,6 +16,10 @@ const hotfixSchema = new Schema({
 		type: Number,
 		required: true
 	},
+	hotfixCode: {
+		type: Number,
+		required: true
+	},
 	state: {
 		type: Number,
 		required: true
@@ -40,6 +44,7 @@ const hotfixSchema = new Schema({
 hotfixSchema.index({created: -1});
 hotfixSchema.index({priority: -1});
 hotfixSchema.index({state: 1});
+hotfixSchema.index({hotfixCode: 1}, {unique:true});
 
 const Hotfix = mongoose.model('Hotfix', hotfixSchema, 'hotfixes');
 

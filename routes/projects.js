@@ -147,6 +147,7 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 			'roles.$': 1
 		});
 		if (currentRoleQuery.roles.length > 0) {
+			currentRoleQuery.roles[0].members = undefined;
 			res.json(currentRoleQuery.roles[0]);
 		} else {
 			res.status(404);
@@ -419,7 +420,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body, req.user.isAdmin);
-		if (originalColumn) {
+		if (originalColumn !== req.body.targetColumn) {
 			// await Project.findOneAndUpdate({
 			// 	_id: req.params.projectId,
 			// 	"columns.id": originalColumn
@@ -633,7 +634,8 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 	}
 }) //
 
-router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
+	async function (req, res, next) {
 	try {
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let limit = parseInt(req.query.limit) || 10;

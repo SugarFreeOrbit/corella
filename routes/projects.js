@@ -4,6 +4,7 @@ const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
+const Counter = require('../models/counter');
 const md5 = require('md5');
 const multer = require('multer');
 const upload = multer({dest: '../tmp'});
@@ -213,11 +214,13 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let issueCode = await Counter.getNextSequenceCount();
 			let newIssue = new Issue({
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
-				author: req.user._id
+				author: req.user._id,
+				issueCode: issueCode,
 			});
 			await newIssue.save();
 			await Project.findOneAndUpdate({
@@ -397,6 +400,7 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkBody('newHotfix')], async function (req, res, next) {
 	try {
 		if (await Project.checkCreateHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let hotfixCode = await Counter.getNextSequenceCount();
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
@@ -404,7 +408,8 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				state: 1,
 				created: Date.now(),
 				project: ObjectId(req.params.projectId),
-				author: ObjectId(req.user._id)
+				author: ObjectId(req.user._id),
+				hotfixCode: hotfixCode,
 			});
 			await newHotfix.save();
 			res.status(200);

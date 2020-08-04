@@ -17,3 +17,7 @@ const counterSchema = new Schema({
 
 const Counter = mongoose.model('Counter', counterSchema, 'counter');
 module.exports = Counter;
+
+counterSchema.statics.getNextSequenceCount() = async function() {
+    return await Counter.findOneAndUpdate({}, {$inc: {sequenceCount: 1}}, {upsert: true}).sequenceCount;
+}

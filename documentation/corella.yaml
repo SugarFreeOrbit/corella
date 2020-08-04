@@ -439,7 +439,7 @@ paths:
             type: string
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/newIssue'
       responses:
@@ -447,6 +447,107 @@ paths:
           description: OK
         '400':
           description: ValidationError
+        '403':
+          description: Forbidden
+
+  /projects/{projectId}/issues/{issueId}/attach:
+    post:
+      summary: Attach files to issue
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: issueId
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+
+  /projects/{projectId}/issues/{issueId}/detach/{fileId}:
+    delete:
+      summary: Detach file from issue
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: issueId
+          schema:
+            type: string
+        - in: path
+            required: true
+            name: issueId
+            schema:
+              type: string
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+        '404':
+          description: File not found
+
+  /projects/{projectId}/issues/{issueId}/attachment/{fileId}:
+    get:
+      summary: Get file from issue
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: issueId
+          schema:
+            type: string
+        - in: path
+            required: true
+            name: issueId
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Get file from issue
+          content:
+            text/plain:
+              schema:
+                type: string
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
         '403':
           description: Forbidden
 
@@ -820,6 +921,13 @@ components:
           },
           "description": {
             "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
           }
         }
       }
@@ -876,7 +984,18 @@ components:
           "files": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "length": {
+                  "type": "integer"
+                }
+              }
             }
           }
         }

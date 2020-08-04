@@ -62,7 +62,10 @@
                         <div v-if="issueCreationModal.form.files.length != 0" class="modal__upload-wrapper">
                             <ul class="modal__upload-list">
                                 <li v-for="(file, i) in issueCreationModal.form.files">
-                                    <span>{{file.name}}</span>
+                                    <p class="name">{{file.name}}
+                                        <span class="remove" @click='removeFile(file, i)'><i
+                                                class="el-icon-circle-close"></i></span>
+                                    </p>
                                 </li>
                             </ul>
                         </div>
@@ -133,23 +136,36 @@
         },
         methods: {
             createIssue: async function () {
+                let formData = new FormData();
                 this.issueCreationModal.inProgress = true;
-                console.log(this.issueCreationModal.form);
-                // if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-                // 	let result = await this.$http.put(`/projects/${this._id}/issues`, this.issueCreationModal.form);
-                // 	this.issueCreationModal.inProgress = false;
-                // 	this.issueCreationModal.active = false;
-                // 	this.issueCreationModal.title = '';
-                // 	this.issueCreationModal.description = '';
-                // } else {
-                // 	this.$notify({
-                // 		title: 'Error',
-                // 		message: 'Your issue is invalid',
-                // 		duration: 3000,
-                // 		type: 'error'
-                // 	});
-                // 	this.issueCreationModal.inProgress = false;
-                // }
+                formData.append('title', this.issueCreationModal.form.title);
+                formData.append('description', this.issueCreationModal.form.description);
+                for (let i = 0; i < this.issueCreationModal.form.files; i++) {
+                    let file = this.this.issueCreationModal.form.files[i];
+                    formData.append('files[' + i + ']', file);
+                }
+                if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
+                    let result = await this.$http.put(`/projects/${this._id}/issues`,
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        });
+                    this.issueCreationModal.inProgress = false;
+                    this.issueCreationModal.active = false;
+                    this.issueCreationModal.title = '';
+                    this.issueCreationModal.description = '';
+                    console.log(result);
+                } else {
+                    this.$notify({
+                        title: 'Error',
+                        message: 'Your issue is invalid',
+                        duration: 3000,
+                        type: 'error'
+                    });
+                    this.issueCreationModal.inProgress = false;
+                }
             },
             chooseFiles: function () {
                 document.getElementById("uploadFiles").click()
@@ -166,7 +182,11 @@
                         type: 'error'
                     });
                 }
-                console.log(this.issueCreationModal.form.files);
+            },
+            removeFile: function (file, i) {
+                if (i > -1) {
+                    this.issueCreationModal.form.files.splice(i, 1);
+                }
             }
         }
     }

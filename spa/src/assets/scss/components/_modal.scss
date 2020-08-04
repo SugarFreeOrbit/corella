@@ -8,4 +8,26 @@
     float: left;
     width: 100%;
   }
+
+  &__upload-list {
+    position: relative;
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      width: 100%;
+      margin-bottom: 5px;
+
+      > .name {
+        
+      }
+      
+      > .remove {
+        cursor: pointer;
+      }
+    }
+  }
 }

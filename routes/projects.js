@@ -320,6 +320,10 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let issue = await Issue.findOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+			}
 			res.json(issue);
 		} else {
 			res.status(401);
@@ -333,7 +337,11 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let issue = await Issue.findOne({issueCode: req.params.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			let issue = await Issue.findOne({issueCode: req.query.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+			}
 			res.json(issue);
 		} else {
 			res.status(401);

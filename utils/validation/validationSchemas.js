@@ -274,6 +274,20 @@ const getHotfixesQuery = {
 		// }
 	}
 };
+
+const globalConfig = {
+	type: 'object',
+	properties: {
+		allowedFileTypes: {
+			type: 'array',
+			required: true,
+			items: {
+				type: 'string'
+			}
+		}
+	}
+}
+
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, globalConfig};

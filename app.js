@@ -45,6 +45,7 @@ app.use(cors());
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
 const projectsRouter = require('./routes/projects');
+const configRouter = require('./routes/config')
 // const issuesRouter = require('./routes/issues');
 
 //Add middleware and start the HTTP listener
@@ -53,6 +54,7 @@ app.use(bodyParser.json());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 app.use('/projects', passport.authenticate('jwt', {session: false}), projectsRouter);
+app.use('/config', passport.authenticate('jwt', {session: false}), configRouter);
 // app.use('/issues', passport.authenticate('jwt', {session: false}), issuesRouter);
 app.use('/', indexRouter);
 app.use(function (err, req, res, next) {

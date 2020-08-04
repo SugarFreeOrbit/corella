@@ -6,6 +6,13 @@
 		<div class="issue__assignee" v-if="assigneeReady">
 			{{assignee.username}}
 		</div>
+
+
+
+
+
+
+
 		<el-dialog :visible.sync="issueModalVisible">
 			<div v-if="!canEditIssues" class="issue__content" v-loading="modalLoading">
 				<p class="issue__content__title">{{title}}</p>
@@ -46,6 +53,12 @@
 				</el-form>
 			</div>
 		</el-dialog>
+
+
+
+
+
+
 	</el-card>
 </template>
 

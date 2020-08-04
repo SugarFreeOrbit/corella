@@ -41,10 +41,6 @@
         components: {
 
         },
-        props: {
-            name: String,
-            _id: String
-        },
         data() {
             return {
                 activeMenuItem: 'board',

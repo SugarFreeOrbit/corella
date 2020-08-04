@@ -38,8 +38,10 @@
 
     export default {
         name: "add-issue-modal",
-        components: {
-
+        props: {
+            projectId: {
+                type: String
+            }
         },
         data() {
             return {
@@ -66,7 +68,7 @@
                     formData.append('files', file);
                 });
                 if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-                    let result = await this.$http.put(`/projects/${this._id}/issues`,
+                    let result = await this.$http.put(`/projects/${this.projectId}/issues`,
                         formData,
                         {
                             headers: { 'Content-Type': 'multipart/form-data' }

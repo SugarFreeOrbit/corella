@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible.sync="issueCreationModal.active" title="New issue">
+    <el-dialog :visible="true" title="New hotfix" @close="close">
         <el-form v-model="issueCreationModal.form"
                  v-loading="issueCreationModal.inProgress">
             <el-form-item label="Title">
@@ -33,11 +33,10 @@
     </el-dialog>
 </template>
 
-
 <script>
 
     export default {
-        name: "add-issue-modal",
+        name: "add-hotfix-modal",
         props: {
             projectId: {
                 type: String
@@ -46,7 +45,6 @@
         data() {
             return {
                 issueCreationModal: {
-                    active: true,
                     inProgress: false,
                     form: {
                         title: '',
@@ -63,20 +61,27 @@
                 this.issueCreationModal.inProgress = true;
                 formData.append('title', this.issueCreationModal.form.title);
                 formData.append('description', this.issueCreationModal.form.description);
+                formData.append('priority', '0');
                 this.issueCreationModal.form.files.forEach((file, i) => {
                     formData.append('files', file);
                 });
-                if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-                    let result = await this.$http.put(`/projects/${this.projectId}/issues`,
+                try {
+                    let result = await this.$http.put(`/projects/${this.projectId}/hotfixes`,
                         formData,
                         {
                             headers: { 'Content-Type': 'multipart/form-data' }
                         });
+                    console.log(result);
                     this.issueCreationModal.inProgress = false;
                     //this.issueCreationModal.active = false;
                     this.close();
                     this.issueCreationModal.title = '';
                     this.issueCreationModal.description = '';
+                } catch (error) {
+                    console.log(error);
+                }
+/*                if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
+                    console.log('valid true');
                 } else {
                     this.$notify({
                         title: 'Error',
@@ -85,7 +90,7 @@
                         type: 'error'
                     });
                     this.issueCreationModal.inProgress = false;
-                }
+                }*/
             },
             chooseFiles: function () {
                 document.getElementById("uploadFiles").click()
@@ -109,7 +114,6 @@
                 }
             },
             close: function () {
-                //this.issueCreationModal.active = false;
                 this.$emit('close');
             }
         }

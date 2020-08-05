@@ -175,22 +175,21 @@
             },
             async handleFilesUpload() {
                 let files = this.$refs.files.files;
+                if(this.files.length >= 3) {
+                    this.$notify({
+                        title: 'Error',
+                        message: 'Too many files',
+                        duration: 3000,
+                        type: 'error'
+                    });
+                    return;
+                }
                 this.currentIssue.files.push(...files);
                 let formData = new FormData();
                 formData.append('files', files[files.length - 1]);
                 let response = await this.$http.post(`/projects/${this.projectId}/issues/${this.issueId}/attach`, formData);
                 this.currentIssue.files[this.currentIssue.files.length - 1]._id = response.data[0];
                 this.files[this.files.length - 1]._id = response.data[0];
-/*                if (this.currentIssue.files.length !== this.currentIssue.limitOfFiles) {
-                    this.currentIssue.files.push(...obj);
-                } else {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'To mach files',
-                        duration: 3000,
-                        type: 'error'
-                    });
-                }*/
             },
             removeFile: async function (file, i) {
                 if (i > -1) {

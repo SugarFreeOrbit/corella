@@ -179,7 +179,8 @@
                 let formData = new FormData();
                 formData.append('files', files[files.length - 1]);
                 let response = await this.$http.post(`/projects/${this.projectId}/issues/${this.issueId}/attach`, formData);
-                console.log(response);
+                this.currentIssue.files[this.currentIssue.files.length - 1]._id = response.data[0];
+                this.files[this.files.length - 1]._id = response.data[0];
 /*                if (this.currentIssue.files.length !== this.currentIssue.limitOfFiles) {
                     this.currentIssue.files.push(...obj);
                 } else {
@@ -191,8 +192,9 @@
                     });
                 }*/
             },
-            removeFile: function (file, i) {
+            removeFile: async function (file, i) {
                 if (i > -1) {
+                    await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}/detach/${this.files[i]._id}`);
                     this.files.splice(i, 1);
                 }
             },

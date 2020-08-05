@@ -168,7 +168,7 @@
 			this.roles = getRoles.data.roles;
 			this.loading = false;
 			let getUsers = await this.$http.get(`/users`);
-			this.users = getUsers.data;
+			this.users = getUsers.data.data;
 			this.viewMembersModal.ready = true;
 		},
 		methods: {

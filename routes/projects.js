@@ -257,15 +257,15 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let files = [];
 			if (req.files) {
-				let files = await Promise.all(req.files.map(File.uploadToGridFS));
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
 				await Issue.findByIdAndUpdate(req.params.issueId, {
 					$push: {files}
 				});
 				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			}
-			res.status(200);
-			res.end();
+			res.json(files);
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
@@ -393,6 +393,7 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 			if(!issue) {
 				res.status(404);
 				res.end();
+				return;
 			}
 			res.json(issue);
 		} else {

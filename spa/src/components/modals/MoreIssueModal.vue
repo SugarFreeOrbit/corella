@@ -4,6 +4,13 @@
             <p class="issue__content__title">{{currentIssue.title}}</p>
             <hr>
             <p class="issue__content_description">{{currentIssue.description}}</p>
+            <div class="issue__content_images">
+                <app-img v-for="file in currentIssue.files"
+                         :url="`/projects/${projectId}/issues/${issueId}/attachment/${file._id}`"
+                         :width="100"
+                         :height="100">
+                </app-img>
+            </div>
             <div class="issue__content__control">
                 <el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
                 <el-select v-model="targetColumn" placeholder="Move this issue to..." class="issue__content__control__move" @change="moveIssue">
@@ -24,10 +31,6 @@
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>
-<!--                <div class="issue__content_images">
-                    <div style="width: 100%;height: 50px;background-color: red"></div>
-                    <img :src="`http://127.0.0.1:9080/projects/${this.projectId}/issues/${this.issueId}/attachment/${currentIssue.files[0]._id}`" alt="">
-                </div>-->
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
                     <el-button type="primary" @click="updateIssue">Update</el-button>
@@ -46,6 +49,8 @@
 </template>
 
 <script>
+    import AppImg from "../AppImg";
+
     export default {
         name: "more-issue-modal",
         props: {
@@ -65,6 +70,9 @@
                 type: String
             }
         },
+        components: {
+            AppImg
+        },
         data() {
             return {
                 issueModalVisible: true,
@@ -77,19 +85,6 @@
             this.currentIssue = this.data;
         },
         mounted() {
-/*            this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}/attachment/${this.currentIssue.files[0]._id}`).then(response => {
-                // console.log(response);
-                // let test = document.getElementById('test');
-                // console.log(test);
-                // test.src = `data:image/jpeg;base64,${response.data}`;
-                let imageBlob = response.data;
-                let reader = new FileReader();
-                new Promise((resolve, reject) => {
-                    //reader.onloadend = () => resolve(reader.result as string);
-                    reader.readAsDataURL(imageBlob);
-                });
-                console.log(imageBlob);
-            });*/
         },
         computed: {
             canEditIssues: function () {
@@ -118,7 +113,6 @@
                 await this.$http.delete(`/projects/${this.projectId}/issues/${this.issueId}`);
                 this.$store.commit('removeIssue', this.issueId);
                 this.modalLoading = false;
-                //this.issueModalVisible = false;
                 this.close();
             },
             updateIssue: async function() {
@@ -153,7 +147,6 @@
                 }
             },
             close: function () {
-                console.log('close');
                 this.$emit('close');
             }
         }
@@ -164,10 +157,5 @@
     .issue__content_images {
         display: flex;
         flex-wrap: wrap;
-        > img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
     }
 </style>

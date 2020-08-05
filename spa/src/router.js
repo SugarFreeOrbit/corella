@@ -6,6 +6,7 @@ import Project from "./views/Project";
 import UserManagement from './views/UserManagement';
 import Login from './views/Login'
 import store from './store'
+import Config from "./views/Config";
 
 Vue.use(Router);
 
@@ -25,6 +26,15 @@ const router = new Router({
 			path: '/user-management',
 			name: 'userManagement',
 			component: UserManagement,
+			meta: {
+				requiresAuth: true,
+				requiresAdmin: true
+			}
+		},
+		{
+			path: '/config',
+			name: 'config',
+			component: Config,
 			meta: {
 				requiresAuth: true,
 				requiresAdmin: true

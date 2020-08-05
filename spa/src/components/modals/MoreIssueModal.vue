@@ -103,7 +103,8 @@
             this.currentIssue = this.data;
             this.files = this.data.files;
             this.files.forEach(file => {
-                file.name = file.filename;
+                if(file.name === undefined)
+                    file.name = file.filename;
             });
         },
         mounted() {

@@ -31,6 +31,23 @@
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>
+                <el-form-item>
+                    <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
+                    <input style="display: none" placeholder="upload files"
+                           type="file" id="uploadFiles" ref="files"
+                           multiple v-on:change="handleFilesUpload()" hidden/>
+                    <div class="el-upload__tip">jpg/png files with a size less than 500kb</div>
+                    <div v-if="files.length !== 0" class="modal__upload-wrapper">
+                        <ul class="modal__upload-list">
+                            <li v-for="(file, i) in files">
+                                <p class="name">{{file.name}}
+                                    <span class="remove" @click='removeFile(file, i)'><i
+                                            class="el-icon-circle-close"></i></span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </el-form-item>
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
                     <el-button type="primary" @click="updateIssue">Update</el-button>
@@ -79,10 +96,15 @@
                 modalLoading: false,
                 targetColumn: '',
                 currentIssue: {},
+                files: []
             }
         },
         created() {
             this.currentIssue = this.data;
+            this.files = this.data.files;
+            this.files.forEach(file => {
+                file.name = file.filename;
+            });
         },
         mounted() {
         },
@@ -118,10 +140,9 @@
             updateIssue: async function() {
                 this.modalLoading = true;
                 await this.$http.patch(`/projects/${this.projectId}/issues/${this.issueId}`, {
-                    title: this.title,
-                    description: this.description,
-                    color: this.color,
-                    assignee: this.assignee._id
+                    title: this.currentIssue.title,
+                    description: this.currentIssue.description,
+                    assignee: this.currentIssue.assignee._id
                 });
                 this.modalLoading = false;
             },
@@ -148,7 +169,33 @@
             },
             close: function () {
                 this.$emit('close');
-            }
+            },
+            chooseFiles: function () {
+                document.getElementById("uploadFiles").click()
+            },
+            async handleFilesUpload() {
+                let files = this.$refs.files.files;
+                this.currentIssue.files.push(...files);
+                let formData = new FormData();
+                formData.append('files', files[files.length - 1]);
+                let response = await this.$http.post(`/projects/${this.projectId}/issues/${this.issueId}/attach`, formData);
+                console.log(response);
+/*                if (this.currentIssue.files.length !== this.currentIssue.limitOfFiles) {
+                    this.currentIssue.files.push(...obj);
+                } else {
+                    this.$notify({
+                        title: 'Error',
+                        message: 'To mach files',
+                        duration: 3000,
+                        type: 'error'
+                    });
+                }*/
+            },
+            removeFile: function (file, i) {
+                if (i > -1) {
+                    this.files.splice(i, 1);
+                }
+            },
         }
     }
 </script>

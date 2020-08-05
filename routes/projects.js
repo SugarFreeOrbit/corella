@@ -643,13 +643,35 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 	async function (req, res, next) {
 	try {
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let limit = parseInt(req.query.limit) || 10;
-			let page = parseInt(req.query.page) || 1;
-			let sortingParams = {
-				priority: -1,
-				state: 1,
-				created: -1
-			};
+			let hotfix = await Hotfix.findOne({hotfixCode: req.query.hotfixCode, project: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(hotfix === null || req.query.hotfixCode === undefined){
+				let limit = parseInt(req.query.limit) || 10;
+				let page = parseInt(req.query.page) || 1;
+				let sortingParams = {
+					priority: -1,
+					state: 1,
+					created: -1
+				};
+				let query;
+				if (req.query ? req.query.showCompleted : false) {
+					query = await Promise.all([
+						Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+						Hotfix.estimatedDocumentCount()
+					]);
+				} else {
+					query = await Promise.all([
+						Hotfix.find({project: req.params.projectId, state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+						Hotfix.countDocuments({state: {$lt: 3}})
+					]);
+				}
+				res.json({
+					total: query[1],
+					pageCount: Math.ceil(query[1] / limit),
+					data: query[0]
+				});
+			}else{
+				res.json(hotfix);
+			}
 			// let translation = {
 			// 	'ASC': 1,
 			// 	'DESC': -1
@@ -663,23 +685,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			// if (req.query.sortByCreation) {
 			// 	sortingParams.creation = translation[req.query.sortByCreation];
 			// }
-			let query;
-			if (req.query ? req.query.showCompleted : false) {
-				query = await Promise.all([
-					Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
-					Hotfix.estimatedDocumentCount()
-				]);
-			} else {
-				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
-					Hotfix.countDocuments({state: {$lt: 3}})
-				]);
-			}
-			res.json({
-				total: query[1],
-				pageCount: Math.ceil(query[1] / limit),
-				data: query[0]
-			});
+
 		} else {
 			res.status(403);
 			res.end();

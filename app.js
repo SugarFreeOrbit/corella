@@ -74,15 +74,23 @@ let dbConnPromise = mongoose.connect(CONFIG.mongodb.connection);
 dbConnPromise.then((db) => {
 	logger.log('info', 'Connected to database!');
 	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
-		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {$set: {
+		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {
+			$set: {
 				username: "superadmin",
 				password: hash,
 				email: CONFIG.superadmin.email,
 				isAdmin: true
-			}}, {upsert: true}).then((superUser) => {
+			}
+		}, {upsert: true}).then((superUser) => {
 			global.CONFIG.superadmin.id = superUser.value._id;
 			logger.log('info', 'Assured superadmin user')
 		});
+	});
+	mongoose.connection.db.createCollection('globalConfig', {capped: true, size: 999999, max: 1}).then((collection) => {
+		collection.updateOne({}, { $setOnInsert: {
+				allowedFileTypes: ['txt', 'png', 'jpg', 'jpeg']
+			}}, { upsert: true });
+		logger.info('Create config collection')
 	});
 	server.listen(CONFIG.server.port);
 	logger.info(`App is listening on port ${server.address().port}!`);

@@ -1,8 +1,8 @@
 // const router = require('express').Router();
 // const validator = require('../utils/validation/validator');
 // const Project = require('../models/project');
-// // const Issue = require('../models/issue');
-//
+// const Issue = require('../models/issue');
+
 // router.put('/', [validator.checkBody('newIssue')], async function (req, res, next) {
 // 	try {
 // 		if(await Project.checkCreatorPermission(req.body.project, req.user._id) || req.user.isAdmin) {
@@ -29,4 +29,3 @@
 // 		next(e);
 // 	}
 // });
-// module.exports = router;

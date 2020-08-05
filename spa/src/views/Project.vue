@@ -44,7 +44,7 @@
             <Board v-if="activeMenuItem === 'board'"></Board>
             <RolesAndMembers v-if="activeMenuItem === 'roles'"></RolesAndMembers>
             <Hotfixes v-if="activeMenuItem === 'hotfixes'"></Hotfixes>
-            <add-issue-modal v-if="isAddIssueModal" :projectId="_id"></add-issue-modal>
+            <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="isAddIssueModal = false"></add-issue-modal>
         </div>
         <div v-else style="height: 100%" v-loading="projectReady"></div>
     </div>

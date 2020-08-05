@@ -11,7 +11,8 @@
 						  :columnList="columnList"
 						  :issueId="issueId"
 						  :currentColumnId="currentColumnId"
-						  :projectId="projectId">
+						  :projectId="projectId"
+						  @close="isMoreIssueModal = false">
 		</more-issue-modal>
 	</el-card>
 </template>

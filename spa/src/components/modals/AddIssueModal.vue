@@ -27,7 +27,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createIssue">Create</el-button>
-                <el-button @click="issueCreationModal.active = false">Cancel</el-button>
+                <el-button @click="close">Cancel</el-button>
             </el-form-item>
         </el-form>
     </el-dialog>
@@ -74,7 +74,8 @@
                             headers: { 'Content-Type': 'multipart/form-data' }
                         });
                     this.issueCreationModal.inProgress = false;
-                    this.issueCreationModal.active = false;
+                    //this.issueCreationModal.active = false;
+                    this.close();
                     this.issueCreationModal.title = '';
                     this.issueCreationModal.description = '';
                 } else {
@@ -107,6 +108,10 @@
                 if (i > -1) {
                     this.issueCreationModal.form.files.splice(i, 1);
                 }
+            },
+            close: function () {
+                //this.issueCreationModal.active = false;
+                this.$emit('close');
             }
         }
     }

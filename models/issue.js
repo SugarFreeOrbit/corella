@@ -43,6 +43,9 @@ const commentSchema = new Schema({
 });
 
 const issueSchema = new Schema({
+	projectId: {
+		type: ObjectId,
+	},
 	title: {
 		type: String,
 		required: true

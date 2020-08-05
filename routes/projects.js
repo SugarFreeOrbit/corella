@@ -147,6 +147,7 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 			'roles.$': 1
 		});
 		if (currentRoleQuery.roles.length > 0) {
+			currentRoleQuery.roles[0].members = undefined;
 			res.json(currentRoleQuery.roles[0]);
 		} else {
 			res.status(404);
@@ -218,6 +219,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
 			let newIssue = new Issue({
+				projectId: req.params.projectId,
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
@@ -255,15 +257,15 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let files = [];
 			if (req.files) {
-				let files = await Promise.all(req.files.map(File.uploadToGridFS));
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
 				await Issue.findByIdAndUpdate(req.params.issueId, {
 					$push: {files}
 				});
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			}
-			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
-			res.status(200);
-			res.end();
+			res.json(files);
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
@@ -306,17 +308,23 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 
 router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
-			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
+		if ((await Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let deleteIssue = await Issue.findOneAndDelete({
+				_id: ObjectId(req.params.issueId),
+				projectId: ObjectId(req.params.projectId)
+			});
+			if (!deleteIssue) {
+					res.status(404);
+					res.end();
+					return;
+			}
+
+			await Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
 					'columns.$[].issues': req.params.issueId
 				}
 			});
 
-			let results = await Promise.all([removeIssueFromColumn, deleteIssue]);
-			deleteIssue = results[1];
 			await Promise.all(deleteIssue.files.map(File.deleteById));
 			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
@@ -332,17 +340,22 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 
 router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
-		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
-			await Issue.findByIdAndUpdate(req.params.issueId, {
+		if((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let matchedIssuesCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
 				author: req.user._id
-			});
-			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
-			res.status(200);
-			res.end();
+			})).n;
+			if(matchedIssuesCount === 0) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+				res.status(200);
+				res.end();
+			}
 		} else {
 			res.status(403);
 			res.end();
@@ -376,7 +389,12 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let issue = await Issue.findById(req.params.issueId).populate('files', 'filename length');
+			let issue = await Issue.findOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+				return;
+			}
 			res.json(issue);
 		} else {
 			res.status(401);
@@ -389,15 +407,11 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 
 router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([
-			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
-			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
-		]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			let modified = (await Issue.updateOne({_id: ObjectId(req.params.issueId)}, {
+		if ((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let issueModifiedCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
 				$pull: { files: ObjectId(req.params.fileId) }
-			}));
-			if(modified.nModified === 0) {
+			})).nModified;
+			if(issueModifiedCount=== 0) {
 				res.status(404);
 				res.end();
 			}
@@ -419,7 +433,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body, req.user.isAdmin);
-		if (originalColumn) {
+		if (originalColumn !== req.body.targetColumn) {
 			// await Project.findOneAndUpdate({
 			// 	_id: req.params.projectId,
 			// 	"columns.id": originalColumn
@@ -632,7 +646,8 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 	}
 }) //
 
-router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
+	async function (req, res, next) {
 	try {
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 			let limit = parseInt(req.query.limit) || 10;

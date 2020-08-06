@@ -1,7 +1,7 @@
 <template>
   <div class="hotfixes">
     <div class="hotfixes__toolbar">
-      <el-button round icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
+      <el-button @click="isHotfixAddModal = true" round icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
       <div class="hotfixes__toolbar__showCompleted">
             Show completed <el-switch v-model="showCompleted" @change="handleQueryChange"></el-switch>
       </div>
@@ -34,49 +34,56 @@
         </template>
       </el-table-column>
     </data-tables-server>
+    <add-hotfix-modal v-if="isHotfixAddModal" :projectId="projectId" @close="isHotfixAddModal = false"></add-hotfix-modal>
   </div>
 </template>
 
 <script>
-export default {
-  name: "Hotfixes",
-  computed: {
-    projectId: function () {
-      return this.$store.state.currentProject._id
-    }
-  },
-  data() {
-    return {
-      hotfixes: [],
-      total: 0,
-      limit: 15,
-      page: 1,
-      showCompleted: false,
-      loading: false,
-      searchByTitle: ''
-    }
-  },
-  mounted() {
-    this.handleQueryChange();
-  },
-  methods: {
-    handleQueryChange: async function (queryInfo) {
-      if (queryInfo) {
-        this.limit = queryInfo.pageSize || this.limit;
-        this.page = queryInfo.page || this.page;
-      }
-      this.loading = true;
-      let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`)
-      this.total = fetchHotfixes.data.total;
-      this.hotfixes = fetchHotfixes.data.data;
-      this.loading = false;
+  import AddHotfixModal from "./modals/AddHotfixModal";
+
+  export default {
+    name: "Hotfixes",
+    components: {
+      AddHotfixModal
     },
-    convertDate: function (timestamp) {
-      let date = new Date(timestamp);
-      return date.toLocaleDateString();
+    computed: {
+      projectId: function () {
+        return this.$store.state.currentProject._id
+      }
+    },
+    data() {
+      return {
+        hotfixes: [],
+        total: 0,
+        limit: 15,
+        page: 1,
+        showCompleted: false,
+        loading: false,
+        searchByTitle: '',
+        isHotfixAddModal: false
+      }
+    },
+    mounted() {
+      this.handleQueryChange();
+    },
+    methods: {
+      handleQueryChange: async function (queryInfo) {
+        if (queryInfo) {
+          this.limit = queryInfo.pageSize || this.limit;
+          this.page = queryInfo.page || this.page;
+        }
+        this.loading = true;
+        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`)
+        this.total = fetchHotfixes.data.total;
+        this.hotfixes = fetchHotfixes.data.data;
+        this.loading = false;
+      },
+      convertDate: function (timestamp) {
+        let date = new Date(timestamp);
+        return date.toLocaleDateString();
+      },
     }
   }
-}
 </script>
 
 <style scoped lang="scss">

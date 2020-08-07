@@ -5,11 +5,12 @@
             <hr>
             <p class="issue__content_description">{{currentIssue.description}}</p>
             <div class="issue__content_images">
-                <app-img v-for="file in currentIssue.files"
+                <app-file v-for="file in currentIssue.files"
                          :url="`/projects/${projectId}/issues/${issueId}/attachment/${file._id}`"
+                         :file="file"
                          :width="100"
                          :height="100">
-                </app-img>
+                </app-file>
             </div>
             <div class="issue__content__control">
                 <el-button type="danger" @click="deleteIssue" v-if="canDeleteIssues">Delete</el-button>
@@ -66,7 +67,7 @@
 </template>
 
 <script>
-    import AppImg from "../AppImg";
+    import AppFile from "../AppFile";
 
     export default {
         name: "more-issue-modal",
@@ -88,7 +89,7 @@
             }
         },
         components: {
-            AppImg
+            AppFile
         },
         data() {
             return {

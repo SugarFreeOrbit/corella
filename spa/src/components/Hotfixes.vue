@@ -7,6 +7,7 @@
       <div class="hotfixes__toolbar__showCompleted">
         <el-switch
                 v-model="showCompleted"
+                @change="handleQueryChange"
                 active-text="Show completed"
                 inactive-text="">
         </el-switch>

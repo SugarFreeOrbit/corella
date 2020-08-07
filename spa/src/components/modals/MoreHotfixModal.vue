@@ -5,7 +5,7 @@
             <hr>
             <p class="issue__content_description">{{currentHotfix.description}}</p>
             <div class="issue__content_images">
-                <app-file v-for="file in currentHotfix.files"
+                <app-file v-for="file in files"
                           :url="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/${file._id}`"
                           :file="file"
                           :width="100"
@@ -14,13 +14,6 @@
             </div>
             <div class="issue__content__control">
                 <el-button type="danger" @click="deleteHotfix" v-if="canDeleteHotfixes">Delete</el-button>
-                <el-select v-model="state" placeholder="Move this issue to..." class="issue__content__control__move" @change="moveHotfix">
-                    <el-option v-for="col in states"
-                               :key="col.value"
-                               :label="col.label"
-                               :value="col.value">
-                    </el-option>
-                </el-select>
             </div>
         </div>
         <div class="issue__content" v-else v-loading="modalLoading">
@@ -53,8 +46,8 @@
                 <el-form-item>
                     <input style="display: none" placeholder="upload files"
                            type="file" id="uploadFiles" ref="files"
-                           v-on:change="handleFilesUpload()" hidden/>
-                    <div v-if="files.length !== 0" class="modal__upload-wrapper">
+                           multiple v-on:change="handleFilesUpload()" hidden/>
+                    <div class="modal__upload-wrapper">
                         <div class="modal__upload-list" style="display: flex">
                             <div class="modal__upload-list--item" v-for="(file, i) in files">
                                 <span class="remove" @click='removeFile(file, i)'>
@@ -66,7 +59,7 @@
                                           :height="100">
                                 </app-file>
                             </div>
-                            <div class="modal__upload-list--btn-add" @click="chooseFiles()">
+                            <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">
                                 +
                             </div>
                         </div>
@@ -132,6 +125,8 @@
                     label: 'Urgent'
                 }],
                 priority: '',
+                filesLimit: 3,
+                filesUploadLoading: false
             }
         },
         created() {
@@ -174,9 +169,6 @@
                 this.modalLoading = false;
                 this.close('DELETE');
             },
-            moveHotfix: function () {
-
-            },
             updateHotfix: async function () {
                 let data = {
                     title: this.currentHotfix.title,
@@ -204,25 +196,33 @@
                 document.getElementById("uploadFiles").click()
             },
             async handleFilesUpload() {
+                this.filesUploadLoading = true;
                 let files = this.$refs.files.files;
-                if(this.files.length >= 3) {
+                if(this.files.length >= this.filesLimit) {
                     this.$notify({
                         title: 'Error',
                         message: 'Too many files',
                         duration: 3000,
                         type: 'error'
                     });
+                    this.filesUploadLoading = false;
                     return;
                 }
+                for(let i = 0; i < files.length; ++i) {
+                    await this.uploadFile(files[i]);
+                }
+                this.data.files = this.files;
+                this.filesUploadLoading = false;
+            },
+            uploadFile: async function (file) {
                 let formData = new FormData();
-                formData.append('files', files[0]);
+                formData.append('files', file);
                 let response = await this.$http.post(`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`, formData);
-                this.data.files[this.currentHotfix.files.length - 1]._id = response.data[0];
                 this.files.push({
                     _id: response.data[0],
-                    name: files[0].name,
-                    filename: files[0].filename
-                })
+                    name: file.name,
+                    filename: file.filename
+                });
             },
             removeFile: async function (file, i) {
                 if (i > -1) {

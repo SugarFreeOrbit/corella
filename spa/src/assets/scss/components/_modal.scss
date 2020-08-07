@@ -22,9 +22,8 @@
 
       >.remove {
         position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 4000;
+        top: -15px;
+        right: -5px;
         &:hover {
           cursor: pointer;
         }

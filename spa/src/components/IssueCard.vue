@@ -35,7 +35,7 @@
 			return {
 				previewReady: false,
 				assigneeReady: false,
-				// isMoreIssueModal: false,
+				isMoreIssueModal: false,
 				currentIssue: {
 					title: '',
 					description: '',
@@ -48,10 +48,9 @@
 			}
 		},
 		computed: {
-			isMoreIssueModal() {
-				console.log(this.$route.query.issue === '1');
+			/*isMoreIssueModal() {
 				return this.$route.query.issue === '1';
-			}
+			}*/
 		},
 		async created() {
 			let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
@@ -88,10 +87,12 @@
 				}
 			},
 			showMoreModal: function () {
-				this.$router.push({query: { issue: '1' }});
+				this.isMoreIssueModal = true;
+				// this.$router.push({query: { issue: '1' }});
 			},
 			closeMoreModal: function () {
-				this.$router.push({query: { issue: undefined }});
+				this.isMoreIssueModal = false;
+				// this.$router.push({query: { issue: undefined }});
 			}
 		}
 	}

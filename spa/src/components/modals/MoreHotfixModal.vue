@@ -44,26 +44,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <input style="display: none" placeholder="upload files"
-                           type="file" id="uploadFiles" ref="files"
-                           multiple v-on:change="handleFilesUpload()" hidden/>
-                    <div class="modal__upload-wrapper">
-                        <div class="modal__upload-list" style="display: flex">
-                            <div class="modal__upload-list--item" v-for="(file, i) in files">
-                                <span class="remove" @click='removeFile(file, i)'>
-                                    <i class="el-icon-circle-close"></i>
-                                </span>
-                                <app-file :url="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/${file._id}`"
-                                          :file="file"
-                                          :width="100"
-                                          :height="100">
-                                </app-file>
-                            </div>
-                            <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">
-                                +
-                            </div>
-                        </div>
-                    </div>
+                    <file-upload :link="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/`"
+                                 :files="files"
+                                 :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"
+                                 :detachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/detach/`">
+                    </file-upload>
                 </el-form-item>
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
@@ -77,6 +62,7 @@
 
 <script>
     import AppFile from "../AppFile";
+    import FileUpload from "../FileUpload";
 
     export default {
         name: "more-hotfix-modal",
@@ -89,7 +75,8 @@
             }
         },
         components: {
-            AppFile
+            AppFile,
+            FileUpload
         },
         data() {
             return {
@@ -125,8 +112,6 @@
                     label: 'Urgent'
                 }],
                 priority: '',
-                filesLimit: 3,
-                filesUploadLoading: false
             }
         },
         created() {
@@ -192,44 +177,7 @@
                 else
                     this.$emit('close', param);
             },
-            chooseFiles: function () {
-                document.getElementById("uploadFiles").click()
-            },
-            async handleFilesUpload() {
-                this.filesUploadLoading = true;
-                let files = this.$refs.files.files;
-                if(this.files.length >= this.filesLimit) {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'Too many files',
-                        duration: 3000,
-                        type: 'error'
-                    });
-                    this.filesUploadLoading = false;
-                    return;
-                }
-                for(let i = 0; i < files.length; ++i) {
-                    await this.uploadFile(files[i]);
-                }
-                this.data.files = this.files;
-                this.filesUploadLoading = false;
-            },
-            uploadFile: async function (file) {
-                let formData = new FormData();
-                formData.append('files', file);
-                let response = await this.$http.post(`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`, formData);
-                this.files.push({
-                    _id: response.data[0],
-                    name: file.name,
-                    filename: file.filename
-                });
-            },
-            removeFile: async function (file, i) {
-                if (i > -1) {
-                    await this.$http.delete(`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/detach/${this.files[i]._id}`);
-                    this.files.splice(i, 1);
-                }
-            },
+
         }
     }
 </script>

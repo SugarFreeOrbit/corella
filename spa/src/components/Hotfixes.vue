@@ -16,12 +16,12 @@
     <data-tables-server class="hotfixes__table" :data="hotfixes" :total="total" @query-change="handleQueryChange"
                         :pagination-props="{pageSizes: [15, 30, 50]}" v-loading="loading">
       <el-table-column prop="title" label="Title"></el-table-column>
-      <el-table-column prop="created" label="Date">
+      <el-table-column prop="created" label="Date" width="120">
         <template slot-scope="scope">
           {{ convertDate(scope.row.created) }}
         </template>
       </el-table-column>
-      <el-table-column prop="priority" label="Priority">
+      <el-table-column prop="priority" label="Priority" width="120">
         <template slot-scope="scope">
           <p v-if="scope.row.priority === 1" style="color: #8cd681">Low</p>
           <p v-if="scope.row.priority === 2" style="color: #ff9752">Medium</p>
@@ -29,7 +29,7 @@
           <p v-if="scope.row.priority === 4" style="color: #ff0000; font-weight: bold">Urgent</p>
         </template>
       </el-table-column>
-      <el-table-column prop="state" label="State">
+      <el-table-column prop="state" label="State" width="160">
         <template slot-scope="scope">
           <p v-if="scope.row.state === 1">New</p>
           <p v-if="scope.row.state === 2">In Progress</p>
@@ -39,21 +39,24 @@
       </el-table-column>
       <el-table-column prop="state" label="State" width="80">
         <template slot-scope="scope">
-          <el-button class="btn-edit" type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button @click="showMoreModal(scope.row)" class="btn-edit" type="primary" icon="el-icon-view" circle></el-button>
         </template>
       </el-table-column>
     </data-tables-server>
     <add-hotfix-modal v-if="isHotfixAddModal" :projectId="projectId" @close="closeAddHotfixModal"></add-hotfix-modal>
+    <more-hotfix-modal v-if="isHotfixMoreModal" :projectId="projectId" :data="currentHotfix" @close="closeMoreModal"></more-hotfix-modal>
   </div>
 </template>
 
 <script>
   import AddHotfixModal from "./modals/AddHotfixModal";
+  import MoreHotfixModal from "./modals/MoreHotfixModal";
 
   export default {
     name: "Hotfixes",
     components: {
-      AddHotfixModal
+      AddHotfixModal,
+      MoreHotfixModal
     },
     computed: {
       projectId: function () {
@@ -69,7 +72,9 @@
         showCompleted: false,
         loading: false,
         searchByTitle: '',
-        isHotfixAddModal: false
+        isHotfixAddModal: false,
+        isHotfixMoreModal: false,
+        currentHotfix: {}
       }
     },
     mounted() {
@@ -82,7 +87,7 @@
           this.page = queryInfo.page || this.page;
         }
         this.loading = true;
-        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`)
+        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);
         this.total = fetchHotfixes.data.total;
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;
@@ -94,6 +99,16 @@
       closeAddHotfixModal: function () {
         this.isHotfixAddModal = false;
         this.handleQueryChange();
+      },
+      showMoreModal: function (data) {
+        this.currentHotfix = data;
+        this.isHotfixMoreModal = true;
+      },
+      closeMoreModal: function (event) {
+        if(event === 'DELETE') {
+          this.hotfixes.splice(this.hotfixes.indexOf(hotfix => hotfix._id === this.currentHotfix._id), 1);
+        }
+        this.isHotfixMoreModal = false;
       }
     }
   }

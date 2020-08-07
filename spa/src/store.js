@@ -77,12 +77,15 @@ const store = new Vuex.Store({
 		unsetCurrentProject(state) {
 			state.currentProject = {};
 		},
-		syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, issueTransitionMatrix}) {
+		syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, createHotfixes, editHotfixes, deleteHotfixes, issueTransitionMatrix}) {
 			state.currentProject.role = {
 				isManager,
 				isEditor,
 				isCreator,
 				isDestroyer,
+				createHotfixes,
+				editHotfixes,
+				deleteHotfixes,
 				issueTransitionMatrix
 			}
 		},
@@ -120,7 +123,9 @@ const store = new Vuex.Store({
 			if(!state.user.isAdmin) {
 				try {
 					let role = await axios.get(`/projects/${state.currentProject._id}/roles/me`);
-					commit('syncCurrentProjectRole', role.data)
+					console.log('##########');
+					console.log(role.data);
+					commit('syncCurrentProjectRole', role.data);
 				} catch (e) {
 					console.log(e)
 				}

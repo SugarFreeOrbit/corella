@@ -523,6 +523,30 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 	}
 })
 
+router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('newHotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
+		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
+			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+				title: req.body.title,
+				description: (req.body.description) ? req.body.description : "",
+				priority: req.body.priority,
+				author: req.user._id
+			});
+			// websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
 		let projectPermissionQueries = await Promise.all([

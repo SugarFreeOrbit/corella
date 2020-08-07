@@ -735,6 +735,48 @@ paths:
         '404':
           description: Not Found
   /project/{projectId}/hotfixes/{hotfixId}:
+    patch:
+      summary: Edit hotfix
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: hotfixId
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: true
+                description:
+                  type: string
+                priority:
+                  type: string
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                files:
+                  type: file
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
     delete:
       summary: Delete hotfix
       tags:

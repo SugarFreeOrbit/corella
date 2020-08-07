@@ -6,7 +6,7 @@
             <p class="issue__content_description">{{currentHotfix.description}}</p>
             <div class="issue__content_images">
                 <app-file v-for="file in currentHotfix.files"
-                          :url="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attachment/${file._id}`"
+                          :url="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/${file._id}`"
                           :file="file"
                           :width="100"
                           :height="100">
@@ -107,7 +107,6 @@
         created() {
             this.currentHotfix = this.data;
             this.files = this.data.files;
-            console.log(this.files);
             this.files.forEach(file => {
                 if(file.name === undefined)
                     file.name = file.filename;
@@ -146,8 +145,20 @@
             moveHotfix: function () {
 
             },
-            updateHotfix: function () {
-
+            updateHotfix: async function () {
+                console.log('start');
+                let data = {
+                    title: this.currentHotfix.title,
+                    description: this.currentHotfix.description,
+                    state: this.currentHotfix.state,
+                    priority: 1
+                };
+                try {
+                    await this.$http.patch(`/project/${this.projectId}/hotfixes/${this.currentHotfix._id}`, data);
+                    console.log('ok');
+                } catch (error) {
+                    console.log(error);
+                }
             },
 /*            deleteIssue: async function() {
                 await this.$confirm('This will permanently delete this issue. Continue?', 'Warning', {

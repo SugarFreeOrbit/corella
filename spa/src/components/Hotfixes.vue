@@ -88,6 +88,7 @@
         }
         this.loading = true;
         let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);
+        console.log(fetchHotfixes.data.data);
         this.total = fetchHotfixes.data.total;
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;

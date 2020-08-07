@@ -1,12 +1,24 @@
 <template>
     <el-dialog :visible="true" title="New hotfix" @close="close">
-        <el-form v-model="issueCreationModal.form"
-                 v-loading="issueCreationModal.inProgress">
+        <el-form v-model="newHotfix"
+                 v-loading="loading">
             <el-form-item label="Title">
-                <el-input required v-model="issueCreationModal.form.title"></el-input>
+                <el-input required v-model="newHotfix.title"></el-input>
             </el-form-item>
             <el-form-item label="Description">
-                <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
+                <el-input type="textarea" v-model="newHotfix.description" :rows="5"></el-input>
+            </el-form-item>
+            <el-form-item label="Priority">
+                <div style="width: 100%;display: flex">
+                    <el-select v-model="newHotfix.priority" placeholder="Select">
+                        <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
             </el-form-item>
             <el-form-item>
                 <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
@@ -14,9 +26,9 @@
                        type="file" id="uploadFiles" ref="files"
                        multiple v-on:change="handleFilesUpload()" hidden/>
                 <div class="el-upload__tip">jpg/png files with a size less than 500kb</div>
-                <div v-if="issueCreationModal.form.files.length !== 0" class="modal__upload-wrapper">
+                <div v-if="newHotfix.files.length !== 0" class="modal__upload-wrapper">
                     <ul class="modal__upload-list">
-                        <li v-for="(file, i) in issueCreationModal.form.files">
+                        <li v-for="(file, i) in newHotfix.files">
                             <p class="name">{{file.name}}
                                 <span class="remove" @click='removeFile(file, i)'><i
                                         class="el-icon-circle-close"></i></span>
@@ -44,25 +56,53 @@
         },
         data() {
             return {
-                issueCreationModal: {
-                    inProgress: false,
-                    form: {
-                        title: '',
-                        description: '',
-                        files: [],
-                        limitOfFiles: 3
-                    }
+                loading: false,
+                newHotfix: {
+                    title: '',
+                    description: '',
+                    files: [],
+                    limitOfFiles: 3,
+                    priority: '1'
                 },
+                options: [{
+                    value: '1',
+                    label: 'Low'
+                }, {
+                    value: '2',
+                    label: 'Medium'
+                }, {
+                    value: '3',
+                    label: 'High'
+                }, {
+                    value: '4',
+                    label: 'Urgent'
+                }],
             }
         },
         methods: {
             createIssue: async function () {
                 let formData = new FormData();
-                this.issueCreationModal.inProgress = true;
-                formData.append('title', this.issueCreationModal.form.title);
-                formData.append('description', this.issueCreationModal.form.description);
-                formData.append('priority', '0');
-                this.issueCreationModal.form.files.forEach((file, i) => {
+                this.loading = true;
+                if(this.newHotfix.title !== '') {
+                    formData.append('title', this.newHotfix.title);
+                } else {
+                    this.$notify.error({
+                        title: 'Error',
+                        message: 'Title must not be empty'
+                    });
+                    return;
+                }
+                if(this.newHotfix.description !== '') {
+                    formData.append('description', this.newHotfix.description);
+                } else {
+                    this.$notify.error({
+                        title: 'Error',
+                        message: 'Description must not be empty'
+                    });
+                    return;
+                }
+                formData.append('priority', this.newHotfix.priority);
+                this.newHotfix.files.forEach((file, i) => {
                     formData.append('files', file);
                 });
                 try {
@@ -71,34 +111,22 @@
                         {
                             headers: { 'Content-Type': 'multipart/form-data' }
                         });
-                    console.log(result);
-                    this.issueCreationModal.inProgress = false;
-                    //this.issueCreationModal.active = false;
+                    this.loading = false;
                     this.close();
-                    this.issueCreationModal.title = '';
-                    this.issueCreationModal.description = '';
+                    this.newHotfix.title = '';
+                    this.newHotfix.description = '';
                 } catch (error) {
                     console.log(error);
+                    this.loading = false;
                 }
-/*                if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-                    console.log('valid true');
-                } else {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'Your issue is invalid',
-                        duration: 3000,
-                        type: 'error'
-                    });
-                    this.issueCreationModal.inProgress = false;
-                }*/
             },
             chooseFiles: function () {
                 document.getElementById("uploadFiles").click()
             },
             handleFilesUpload() {
                 let obj = this.$refs.files.files;
-                if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
-                    this.issueCreationModal.form.files.push(...obj);
+                if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
+                    this.newHotfix.files.push(...obj);
                 } else {
                     this.$notify({
                         title: 'Error',

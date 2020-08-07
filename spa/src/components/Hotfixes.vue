@@ -1,13 +1,17 @@
 <template>
   <div class="hotfixes">
     <div class="hotfixes__toolbar">
-      <el-button @click="isHotfixAddModal = true" round icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
-      <div class="hotfixes__toolbar__showCompleted">
-            Show completed <el-switch v-model="showCompleted" @change="handleQueryChange"></el-switch>
-      </div>
       <div class="hotfixes__toolbar__searchByTitle">
         <el-input v-model="searchByTitle" placeholder="Search by title"></el-input>
       </div>
+      <div class="hotfixes__toolbar__showCompleted">
+        <el-switch
+                v-model="showCompleted"
+                active-text="Show completed"
+                inactive-text="">
+        </el-switch>
+      </div>
+      <el-button @click="isHotfixAddModal = true" icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
     </div>
     <data-tables-server class="hotfixes__table" :data="hotfixes" :total="total" @query-change="handleQueryChange"
                         :pagination-props="{pageSizes: [15, 30, 50]}" v-loading="loading">
@@ -33,8 +37,13 @@
           <p v-if="scope.row.state === 4">Declined</p>
         </template>
       </el-table-column>
+      <el-table-column prop="state" label="State" width="80">
+        <template slot-scope="scope">
+          <el-button class="btn-edit" type="primary" icon="el-icon-edit" circle></el-button>
+        </template>
+      </el-table-column>
     </data-tables-server>
-    <add-hotfix-modal v-if="isHotfixAddModal" :projectId="projectId" @close="isHotfixAddModal = false"></add-hotfix-modal>
+    <add-hotfix-modal v-if="isHotfixAddModal" :projectId="projectId" @close="closeAddHotfixModal"></add-hotfix-modal>
   </div>
 </template>
 
@@ -82,11 +91,18 @@
         let date = new Date(timestamp);
         return date.toLocaleDateString();
       },
+      closeAddHotfixModal: function () {
+        this.isHotfixAddModal = false;
+        this.handleQueryChange();
+      }
     }
   }
 </script>
 
 <style scoped lang="scss">
+  .btn-edit {
+    border-radius: 5px!important;
+  }
 .hotfixes {
   display: flex;
   padding: 20px;
@@ -103,10 +119,15 @@
     align-items: center;
     padding-bottom: 10px;
     &__showCompleted {
+      margin-top: -4px;
       padding-left: 20px;
+      padding-right: 20px;
     }
     &__searchByTitle {
       justify-self: end;
+    }
+    &__add {
+      margin-left: auto;
     }
   }
 

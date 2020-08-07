@@ -262,6 +262,28 @@ const newHotfix = {
 	}
 };
 
+const hotfix = {
+	type: "object",
+	properties: {
+		title: {
+			type: "string",
+			required: true
+		},
+		description: {
+			type: "string"
+		},
+		priority: {
+			type: "string",
+			enum: ['1', '2', '3', '4'],
+			required: true
+		},
+		state: {
+			type: "number",
+			required: true
+		}
+	}
+};
+
 const paginationQuery = {
 	type: 'object',
 	properties: {
@@ -299,4 +321,4 @@ const getHotfixesQuery = {
 };
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, hotfix};

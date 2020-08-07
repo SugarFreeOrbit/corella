@@ -523,7 +523,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 	}
 })
 
-router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('newHotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('hotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Project.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
@@ -533,6 +533,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('newHotfix')
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				priority: req.body.priority,
+				state: req.body.state,
 				author: req.user._id
 			});
 			// websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);

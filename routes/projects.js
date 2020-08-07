@@ -690,7 +690,10 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				]);
 			} else {
 				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
+						.sort(sortingParams).skip((page - 1) * limit)
+						.limit(limit)
+						.populate('files', 'filename length'),
 					Hotfix.countDocuments({state: {$lt: 3}})
 				]);
 			}

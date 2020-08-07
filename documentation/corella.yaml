@@ -1102,8 +1102,19 @@ components:
                 "files":{
                   "type": "array",
                   "items":{
-                      "type": "string",
-                      "format": "objectId"
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "format": "objectId"
+                        },
+                        "filename": {
+                          "type": "string"
+                        },
+                        "length": {
+                          "type": "integer"
+                        }
+                      }
                   }
                 },
                 "title":{

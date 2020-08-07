@@ -7,6 +7,9 @@ import UserManagement from './views/UserManagement';
 import Login from './views/Login'
 import store from './store'
 import Config from "./views/Config";
+import Board from "./components/Board";
+import Hotfixes from "./components/Hotfixes";
+import RolesAndMembers from "./components/RolesAndMembers";
 
 Vue.use(Router);
 
@@ -46,14 +49,27 @@ const router = new Router({
 			component: Login
 		},
 		{
-			path: '/projects/:_id',
+			path: '/projects/:_id/',
 			name: 'project',
 			component: Project,
+			children: [{
+				path: '',
+				component: Board
+			},{
+				path: 'board',
+				component: Board
+			},{
+				path: 'roles',
+				component: RolesAndMembers
+			},{
+				path: 'hotfixes',
+				component: Hotfixes
+			}],
 			meta: {
 				requiresAuth: true
 			},
 			props: true
-		}
+		},
 		// {
 		// 	path: '/about',
 		// 	name: 'about',

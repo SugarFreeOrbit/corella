@@ -1,6 +1,6 @@
 <template>
 	<el-card v-loading="!previewReady" class="issue">
-		<div class="issue__title" @click="isMoreIssueModal = true">
+		<div class="issue__title" @click="showMoreModal">
 			{{currentIssue.title}}
 		</div>
 		<div class="issue__assignee" v-if="assigneeReady">
@@ -12,7 +12,7 @@
 						  :issueId="issueId"
 						  :currentColumnId="currentColumnId"
 						  :projectId="projectId"
-						  @close="isMoreIssueModal = false">
+						  @close="closeMoreModal">
 		</more-issue-modal>
 	</el-card>
 </template>
@@ -35,7 +35,7 @@
 			return {
 				previewReady: false,
 				assigneeReady: false,
-				isMoreIssueModal: false,
+				// isMoreIssueModal: false,
 				currentIssue: {
 					title: '',
 					description: '',
@@ -45,6 +45,12 @@
 						username: ''
 					}
 				}
+			}
+		},
+		computed: {
+			isMoreIssueModal() {
+				console.log(this.$route.query.issue === '1');
+				return this.$route.query.issue === '1';
 			}
 		},
 		async created() {
@@ -80,6 +86,12 @@
 					this.assignee.username = assignee.data.username;
 					this.assigneeReady = true;
 				}
+			},
+			showMoreModal: function () {
+				this.$router.push({query: { issue: '1' }});
+			},
+			closeMoreModal: function () {
+				this.$router.push({query: { issue: undefined }});
 			}
 		}
 	}

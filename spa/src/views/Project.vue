@@ -4,19 +4,19 @@
             <Navbar></Navbar>
             <div class="project__menu">
                 <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'board'}"
-                     @click="activeMenuItem = 'board'">
+                     @click="goTo('board')">
                     <el-tooltip content="Board" placement="right-start">
                         <i class="el-icon-data-board"></i>
                     </el-tooltip>
                 </div>
                 <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'roles'}"
-                     v-if="canAccessRoles" @click="activeMenuItem = 'roles'">
+                     v-if="canAccessRoles" @click="goTo('roles')">
                     <el-tooltip content="Roles and members" placement="right-start">
                         <i class="el-icon-user"></i>
                     </el-tooltip>
                 </div>
                 <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'hotfixes'}"
-                     @click="activeMenuItem = 'hotfixes'">
+                     @click="goTo('hotfixes')">
                     <el-tooltip content="Hotfixes" placement="right-start">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                              viewBox="0 0 32 32">
@@ -41,9 +41,8 @@
                     </div>
                 </el-popover>
             </div>
-            <Board v-if="activeMenuItem === 'board'"></Board>
-            <RolesAndMembers v-if="activeMenuItem === 'roles'"></RolesAndMembers>
-            <Hotfixes v-if="activeMenuItem === 'hotfixes'"></Hotfixes>
+            <router-view />
+
             <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="isAddIssueModal = false"></add-issue-modal>
         </div>
         <div v-else style="height: 100%" v-loading="projectReady"></div>
@@ -103,6 +102,10 @@
 
         },
         methods: {
+            goTo: function (to) {
+                this.activeMenuItem = to;
+                this.$router.push(`/projects/${this._id}/${to}`);
+            }
         }
     }
 </script>

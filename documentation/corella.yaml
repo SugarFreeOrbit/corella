@@ -877,6 +877,15 @@ components:
                 "isEditor": {
                   "type": "boolean"
                 },
+                "createHotfixes": {
+                  "type": "boolean"
+                },
+                "deleteHotfixes": {
+                  "type": "boolean"
+                },
+                "editHotfixes": {
+                  "type": "boolean"
+                },
                 "issueTransitionMatrix": {
                   "type": "object"
                 }

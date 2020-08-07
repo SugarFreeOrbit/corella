@@ -558,14 +558,14 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 			File.uploadFiles(req, res, async (err) => {
 				try{
 					if (err) throw new Error('File upload error')
+					let files = [];
 					if (req.files) {
-						let files = await Promise.all(req.files.map(File.uploadToGridFS));
+						files = await Promise.all(req.files.map(File.uploadToGridFS));
 						await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 							$push: {files}
 						});
 					}
-					res.status(200);
-					res.end();
+					res.json(files);
 				}catch (e) {
 					File.clearTempFiles(req.files);
 					res.status(403);

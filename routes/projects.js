@@ -526,7 +526,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('hotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
-			Project.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
 			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
 		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
 			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {

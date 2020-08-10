@@ -45,7 +45,7 @@
         },
         data() {
             return {
-                filesLimit: 3,
+                filesLimit: 5,
                 filesUploadLoading: false
             }
         },

@@ -51,7 +51,7 @@
                         title: '',
                         description: '',
                         files: [],
-                        limitOfFiles: 3
+                        limitOfFiles: 5
                     }
                 },
             }

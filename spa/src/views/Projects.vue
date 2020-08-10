@@ -151,6 +151,9 @@
 						isCreator: false,
 						isDestroyer: false,
 						isEditor: false,
+            createHotfixes: false,
+            editHotfixes: false,
+            deleteHotfixes: false,
 						itm: {},
 						columns: []
 					}

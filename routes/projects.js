@@ -503,7 +503,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
-				priority: req.body.priority,
+				priority: + req.body.priority,
 				state: 1,
 				created: Date.now(),
 				files: files,
@@ -523,7 +523,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 	}
 })
 
-router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('hotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),

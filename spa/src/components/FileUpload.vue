@@ -69,7 +69,6 @@
                 for(let i = 0; i < files.length; ++i) {
                     await this.uploadFile(files[i]);
                 }
-                this.data.files = this.files;
                 this.filesUploadLoading = false;
             },
             uploadFile: async function (file) {

@@ -534,7 +534,32 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 	} catch (e) {
 		next(e);
 	}
-}) //
+})
+
+router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('hotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
+		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
+			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+				title: req.body.title,
+				description: (req.body.description) ? req.body.description : "",
+				priority: req.body.priority,
+				state: req.body.state,
+				author: req.user._id
+			});
+			// websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
 
 router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
@@ -546,14 +571,14 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 			File.uploadFiles(req, res, async (err) => {
 				try{
 					if (err) throw new Error('File upload error')
+					let files = [];
 					if (req.files) {
-						let files = await Promise.all(req.files.map(File.uploadToGridFS));
+						files = await Promise.all(req.files.map(File.uploadToGridFS));
 						await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 							$push: {files}
 						});
 					}
-					res.status(200);
-					res.end();
+					res.json(files);
 				}catch (e) {
 					File.clearTempFiles(req.files);
 					res.status(403);
@@ -570,7 +595,7 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 		File.clearTempFiles(req.files);
 		next(e);
 	}
-}); //
+});
 
 router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (req, res, next){
 	try{
@@ -593,9 +618,10 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			}
 		}
 	}catch (e) {
+		File.deleteById(ObjectId(req.params.fileId));
 		next(e);
 	}
-}); //
+});
 
 router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectIds()], async function (req, res, next){
 	try {
@@ -644,7 +670,7 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 	}catch (e) {
 		next(e);
 	}
-}) //
+})
 
 router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
 	async function (req, res, next) {
@@ -673,12 +699,15 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			let query;
 			if (req.query ? req.query.showCompleted : false) {
 				query = await Promise.all([
-					Hotfix.find({}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.find({project: req.params.projectId, state: {$eq: 4}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
 					Hotfix.estimatedDocumentCount()
 				]);
 			} else {
 				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
+					Hotfix.find({project: req.params.projectId, state: {$lt: 4}})
+						.sort(sortingParams).skip((page - 1) * limit)
+						.limit(limit)
+						.populate('files', 'filename length'),
 					Hotfix.countDocuments({state: {$lt: 3}})
 				]);
 			}

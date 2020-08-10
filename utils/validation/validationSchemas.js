@@ -52,6 +52,18 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
+					createHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					deleteHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					editHotfixes: {
+						type: "boolean",
+						required: true
+					},
 					issueTransitionMatrix: {
 						type: "object"
 					}
@@ -122,6 +134,18 @@ const roles = {
 				required: true
 			},
 			isEditor: {
+				type: "boolean",
+				required: true
+			},
+			createHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			deleteHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			editHotfixes: {
 				type: "boolean",
 				required: true
 			},
@@ -238,6 +262,28 @@ const newHotfix = {
 	}
 };
 
+const hotfix = {
+	type: "object",
+	properties: {
+		title: {
+			type: "string",
+			required: true
+		},
+		description: {
+			type: "string"
+		},
+		priority: {
+			type: "string",
+			enum: ['1', '2', '3', '4'],
+			required: true
+		},
+		state: {
+			type: "number",
+			required: true
+		}
+	}
+};
+
 const paginationQuery = {
 	type: 'object',
 	properties: {
@@ -289,4 +335,4 @@ const globalConfig = {
 
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, globalConfig};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, hotfix, globalConfig};

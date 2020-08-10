@@ -89,6 +89,7 @@
                         title: 'Error',
                         message: 'Title must not be empty'
                     });
+                    this.loading = false;
                     return;
                 }
                 if(this.newHotfix.description !== '') {
@@ -98,6 +99,7 @@
                         title: 'Error',
                         message: 'Description must not be empty'
                     });
+                    this.loading = false;
                     return;
                 }
                 formData.append('priority', this.newHotfix.priority);

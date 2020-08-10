@@ -99,16 +99,16 @@
                 }],
                 state: '',
                 priorities: [{
-                    value: '1',
+                    value: 1,
                     label: 'Low'
                 }, {
-                    value: '2',
+                    value: 2,
                     label: 'Medium'
                 }, {
-                    value: '3',
+                    value: 3,
                     label: 'High'
                 }, {
-                    value: '4',
+                    value: 4,
                     label: 'Urgent'
                 }],
                 priority: '',
@@ -121,7 +121,7 @@
                 if(file.name === undefined)
                     file.name = file.filename;
             });
-            this.priority = `${this.currentHotfix.priority}`;
+            this.priority = this.currentHotfix.priority;
             this.state = this.currentHotfix.state;
         },
         mounted() {
@@ -133,14 +133,6 @@
             canDeleteHotfixes: function () {
                 return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.deleteHotfixes;
             },
-            availableTransitions: function () {
-                if (this.$store.state.user.isAdmin) {
-                    return this.columnList
-                } else {
-                    let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[this.currentColumnId];
-                    return this.columnList.filter(col =>  allowedCols.includes(col.id));
-                }
-            }
         },
         methods: {
             deleteHotfix: async function () {
@@ -166,7 +158,7 @@
                     this.data.title = data.title;
                     this.data.description = data.description;
                     this.data.state = data.state;
-                    this.data.priority = Number.parseInt(data.priority);
+                    this.data.priority = data.priority;
                 } catch (error) {
                     console.log(error);
                 }

@@ -37,7 +37,8 @@ const store = new Vuex.Store({
 			username
 		},
 		currentProject: {},
-		socket
+		socket,
+		allowedFiles: []
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
 			localStorage.setItem('jwt', jwt);
@@ -113,6 +114,9 @@ const store = new Vuex.Store({
 				state.currentProject.columns[originalColIndex].issues = state.currentProject.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
 				state.currentProject.columns[targetColIndex].issues.splice(moveOperation.targetPosition, 0, moveOperation.issueId);
 			}
+		},
+		setAllowedFiles(state, data) {
+			state.allowedFiles = data;
 		}
 	}, actions: {
 		logOut({commit}) {

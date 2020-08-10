@@ -35,84 +35,106 @@
 
 <script>
 
-    export default {
-        name: "add-issue-modal",
-        props: {
-            projectId: {
-                type: String
-            }
-        },
-        data() {
-            return {
-                issueCreationModal: {
-                    active: true,
-                    inProgress: false,
-                    form: {
-                        title: '',
-                        description: '',
-                        files: [],
-                        limitOfFiles: 5
-                    }
-                },
-            }
-        },
-        methods: {
-            createIssue: async function () {
-                let formData = new FormData();
-                this.issueCreationModal.inProgress = true;
-                formData.append('title', this.issueCreationModal.form.title);
-                formData.append('description', this.issueCreationModal.form.description);
-                this.issueCreationModal.form.files.forEach((file, i) => {
-                    formData.append('files', file);
-                });
-                if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-                    let result = await this.$http.put(`/projects/${this.projectId}/issues`,
-                        formData,
-                        {
-                            headers: { 'Content-Type': 'multipart/form-data' }
-                        });
-                    this.issueCreationModal.inProgress = false;
-                    //this.issueCreationModal.active = false;
-                    this.close();
-                    this.issueCreationModal.title = '';
-                    this.issueCreationModal.description = '';
-                } else {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'Your issue is invalid',
-                        duration: 3000,
-                        type: 'error'
-                    });
-                    this.issueCreationModal.inProgress = false;
-                }
-            },
-            chooseFiles: function () {
-                document.getElementById("uploadFiles").click()
-            },
-            handleFilesUpload() {
-                let obj = this.$refs.files.files;
-                if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
-                    this.issueCreationModal.form.files.push(...obj);
-                } else {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'To mach files',
-                        duration: 3000,
-                        type: 'error'
-                    });
-                }
-            },
-            removeFile: function (file, i) {
-                if (i > -1) {
-                    this.issueCreationModal.form.files.splice(i, 1);
-                }
-            },
-            close: function () {
-                //this.issueCreationModal.active = false;
-                this.$emit('close');
-            }
-        }
+export default {
+  name: "add-issue-modal",
+  props: {
+    projectId: {
+      type: String
     }
+  },
+  data() {
+    return {
+      issueCreationModal: {
+        active: true,
+        inProgress: false,
+        form: {
+          title: '',
+          description: '',
+          files: [],
+          limitOfFiles: 5
+        }
+      },
+    }
+  },
+  computed: {
+    allowedFiles() {
+      return this.$store.state.allowedFiles;
+    }
+  },
+  methods: {
+    createIssue: async function () {
+      let formData = new FormData();
+      this.issueCreationModal.inProgress = true;
+      formData.append('title', this.issueCreationModal.form.title);
+      formData.append('description', this.issueCreationModal.form.description);
+      this.issueCreationModal.form.files.forEach((file, i) => {
+        formData.append('files', file);
+      });
+      if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
+        let result = await this.$http.put(`/projects/${this.projectId}/issues`,
+            formData,
+            {
+              headers: {'Content-Type': 'multipart/form-data'}
+            });
+        this.issueCreationModal.inProgress = false;
+        //this.issueCreationModal.active = false;
+        this.close();
+        this.issueCreationModal.title = '';
+        this.issueCreationModal.description = '';
+      } else {
+        this.$notify({
+          title: 'Error',
+          message: 'Your issue is invalid',
+          duration: 3000,
+          type: 'error'
+        });
+        this.issueCreationModal.inProgress = false;
+      }
+    },
+    chooseFiles: function () {
+      document.getElementById("uploadFiles").click()
+    },
+    handleFilesUpload() {
+      let obj = this.$refs.files.files;
+      let err = true;
+      for(let i = 0; i < obj.length; ++i) {
+        for(let j = 0; j < this.allowedFiles.length; ++j) {
+          if(obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+            err = false;
+          }
+        }
+      }
+      if(err) {
+        this.$notify({
+          title: 'Error',
+          message: 'Unsupported file type',
+          duration: 3000,
+          type: 'error'
+        });
+        this.$refs.files.value = [];
+        return;
+      }
+      if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
+        this.issueCreationModal.form.files.push(...obj);
+      } else {
+        this.$notify({
+          title: 'Error',
+          message: 'To mach files',
+          duration: 3000,
+          type: 'error'
+        });
+      }
+    },
+    removeFile: function (file, i) {
+      if (i > -1) {
+        this.issueCreationModal.form.files.splice(i, 1);
+      }
+    },
+    close: function () {
+      this.$emit('close');
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">

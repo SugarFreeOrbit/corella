@@ -122,19 +122,37 @@
             chooseFiles: function () {
                 document.getElementById("uploadFiles").click()
             },
-            handleFilesUpload() {
-                let obj = this.$refs.files.files;
-                if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
-                    this.newHotfix.files.push(...obj);
-                } else {
-                    this.$notify({
-                        title: 'Error',
-                        message: 'To mach files',
-                        duration: 3000,
-                        type: 'error'
-                    });
+          handleFilesUpload() {
+            let obj = this.$refs.files.files;
+            let err = true;
+            for (let i = 0; i < obj.length; ++i) {
+              for (let j = 0; j < this.allowedFiles.length; ++j) {
+                if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+                  err = false;
                 }
-            },
+              }
+            }
+            if (err) {
+              this.$notify({
+                title: 'Error',
+                message: 'Unsupported file type',
+                duration: 3000,
+                type: 'error'
+              });
+              this.$refs.files.value = [];
+              return;
+            }
+            if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
+              this.newHotfix.files.push(...obj);
+            } else {
+              this.$notify({
+                title: 'Error',
+                message: 'To mach files',
+                duration: 3000,
+                type: 'error'
+              });
+            }
+          },
             removeFile: function (file, i) {
                 if (i > -1) {
                     this.issueCreationModal.form.files.splice(i, 1);

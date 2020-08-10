@@ -98,12 +98,16 @@
             }
         },
         mounted() {
-
+          this.loadConfig();
         },
         methods: {
-            goTo: function (to) {
-                this.$router.push(`/projects/${this._id}/${to}`);
-            },
+          loadConfig: async function () {
+            let response = await this.$http(`/config`);
+            this.$store.commit('setAllowedFiles', response.data.allowedFileTypes);
+          },
+          goTo: function (to) {
+              this.$router.push(`/projects/${this._id}/${to}`);
+          },
           closeAddIssueModal: function () {
             this.isAddIssueModal = false;
           }

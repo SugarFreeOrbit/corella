@@ -159,6 +159,8 @@
                     this.data.description = data.description;
                     this.data.state = data.state;
                     this.data.priority = data.priority;
+                    if(this.state === 4)
+                      this.close('DELETE');
                 } catch (error) {
                     console.log(error);
                 }

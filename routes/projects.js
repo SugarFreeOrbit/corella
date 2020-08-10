@@ -690,20 +690,43 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			// 	sortingParams.creation = translation[req.query.sortByCreation];
 			// }
 			let query;
+
 			if (req.query ? req.query.showCompleted : false) {
-				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit)
-						.populate('files', 'filename length'),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
-				]);
+				if(req.query.findByTitle !== undefined){
+					query = await Promise.all([
+						Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
+						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length'),
+						Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.title}, {"state": {$gte : 3}}
+							]}).count()
+					]);
+				}else{
+					query = await Promise.all([
+						Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length'),
+						Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).count()
+					]);
+				}
 			} else {
-				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
-						.sort(sortingParams).skip((page - 1) * limit)
-						.limit(limit)
-						.populate('files', 'filename length'),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
-				]);
+				if(req.query.findByTitle !== undefined){
+					query = await Promise.all([
+						Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
+							]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length'),
+						Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.title}, {"state": {$lt: 3}}
+							]}).count()
+					]);
+				}else{
+					query = await Promise.all([
+						Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
+							.sort(sortingParams).skip((page - 1) * limit)
+							.limit(limit)
+							.populate('files', 'filename length'),
+						Hotfix.find({project: req.params.projectId, state: {$lt : 3}}).count()
+					]);
+				}
 			}
 			res.json({
 				total: query[1],

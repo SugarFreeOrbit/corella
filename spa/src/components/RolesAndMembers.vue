@@ -167,7 +167,16 @@
 			projectId: function () {
 				return this.$store.state.currentProject._id;
 			},
-			columns: function () {
+			columns: async function () {
+			  if(this.$store.state.currentProject.columns === undefined) {
+          try {
+            await this.$store.dispatch('syncCurrentProjectBoard');
+            this.loading = false;
+          } catch (e) {
+            this.loading = false;
+            console.log(e);
+          }
+        }
 				return this.$store.state.currentProject.columns.map(col => {
 					return {
 						id: col.id,

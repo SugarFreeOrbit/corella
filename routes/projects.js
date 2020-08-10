@@ -693,7 +693,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			if (req.query ? req.query.showCompleted : false) {
 				query = await Promise.all([
 					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit).count()
+					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
 				]);
 			} else {
 				query = await Promise.all([
@@ -701,7 +701,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 						.sort(sortingParams).skip((page - 1) * limit)
 						.limit(limit)
 						.populate('files', 'filename length'),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit).count()
+					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
 				]);
 			}
 			res.json({

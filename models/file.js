@@ -21,7 +21,13 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = function(req, file, cb) {
-    cb(null, !!(req.fileTypes && req.fileTypes.find((fileType) => file.originalname.endsWith('.' + fileType))));
+    if (req.fileTypes && req.fileTypes.find((fileType) => file.originalname.endsWith('.' + fileType))) {
+        cb(null, true);
+    } else {
+        let error = new Error('Unsupported file type');
+        error.name = 'FileUpload';
+        cb(error);
+    }
 }
 
 const upload = multer({

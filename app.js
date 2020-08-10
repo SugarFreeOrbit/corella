@@ -58,7 +58,7 @@ app.use('/config', passport.authenticate('jwt', {session: false}), configRouter)
 // app.use('/issues', passport.authenticate('jwt', {session: false}), issuesRouter);
 app.use('/', indexRouter);
 app.use(function (err, req, res, next) {
-	if(err.name === 'ValidationError' || err.name === 'CastError') {
+	if(err.name === 'ValidationError' || err.name === 'CastError' || err.name === 'FileUpload') {
 		res.status(400);
 		res.json(err.message);
 	} else {

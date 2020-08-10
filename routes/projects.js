@@ -561,30 +561,23 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 	}
 });
 
-router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds()], async function (req, res, next){
+router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds(), File.uploadFiles], async function (req, res, next){
 	try {
 		let projectPermissionQueries = await Promise.all([
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
 			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
 		]);
+
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
-			File.uploadFiles(req, res, async (err) => {
-				try{
-					if (err) throw new Error('File upload error')
-					let files = [];
-					if (req.files) {
-						files = await Promise.all(req.files.map(File.uploadToGridFS));
-						await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
-							$push: {files}
-						});
-					}
-					res.json(files);
-				}catch (e) {
-					File.clearTempFiles(req.files);
-					res.status(403);
-					res.end();
-				}
-			})
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+				await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+					$push: {files}
+				});
+				websocketService.emitUpdatedIssue(req.params.hotfixId, req.params.projectId);
+			}
+			res.json(files);
 		}
 		else{
 			File.clearTempFiles(req.files);
@@ -699,19 +692,17 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			let query;
 			if (req.query ? req.query.showCompleted : false) {
 				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$eq: 4}}).sort(sortingParams)
-						.skip((page - 1) * limit)
-						.limit(limit)
+					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit)
 						.populate('files', 'filename length'),
-					Hotfix.estimatedDocumentCount()
+					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
 				]);
 			} else {
 				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 4}})
+					Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
 						.sort(sortingParams).skip((page - 1) * limit)
 						.limit(limit)
 						.populate('files', 'filename length'),
-					Hotfix.countDocuments({state: {$lt: 3}})
+					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
 				]);
 			}
 			res.json({

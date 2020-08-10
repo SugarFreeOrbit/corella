@@ -2,7 +2,7 @@
   <div class="hotfixes">
     <div class="hotfixes__toolbar">
       <div class="hotfixes__toolbar__searchByTitle">
-        <el-input v-model="searchByTitle" placeholder="Search by title"></el-input>
+        <el-input v-model="searchByTitle" @input="handleQueryChange" placeholder="Search by title"></el-input>
       </div>
       <div class="hotfixes__toolbar__showCompleted">
         <el-switch
@@ -88,7 +88,7 @@
           this.page = queryInfo.page || this.page;
         }
         this.loading = true;
-        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);
+        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);//${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}
         this.total = fetchHotfixes.data.total;
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;

@@ -449,6 +449,32 @@ paths:
           description: ValidationError
         '403':
           description: Forbidden
+    get:
+      summary: Retrieves issue by
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: query
+          required: true
+          name: issueCode
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/issue'
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
 
   /projects/{projectId}/issues/{issueId}/attach:
     post:

@@ -407,6 +407,25 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 	}
 });
 
+router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let issue = await Issue.findOne({issueCode: req.query.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+				return;
+			}
+			res.json(issue);
+		} else {
+			res.status(401);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req, res, next) {
 	try {
 		if ((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {

@@ -3,19 +3,19 @@
         <div style="height: 100%" v-if="projectReady">
             <Navbar></Navbar>
             <div class="project__menu">
-                <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'board'}"
+                <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('board') !== -1}"
                      @click="goTo('board')">
                     <el-tooltip content="Board" placement="right-start">
                         <i class="el-icon-data-board"></i>
                     </el-tooltip>
                 </div>
-                <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'roles'}"
+                <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('roles') !== -1}"
                      v-if="canAccessRoles" @click="goTo('roles')">
                     <el-tooltip content="Roles and members" placement="right-start">
                         <i class="el-icon-user"></i>
                     </el-tooltip>
                 </div>
-                <div class="project__menu__item" v-bind:class="{active: activeMenuItem === 'hotfixes'}"
+                <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('hotfixes') !== -1}"
                      @click="goTo('hotfixes')">
                     <el-tooltip content="Hotfixes" placement="right-start">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -72,7 +72,6 @@
         },
         data() {
             return {
-                activeMenuItem: 'board',
                 isAddIssueModal: false,
                 projectReady: false
             }
@@ -103,7 +102,6 @@
         },
         methods: {
             goTo: function (to) {
-                this.activeMenuItem = to;
                 this.$router.push(`/projects/${this._id}/${to}`);
             },
           closeAddIssueModal: function () {
@@ -144,6 +142,9 @@
                     i {
                         color: #87A330;
                     }
+                  svg > path {
+                    fill: #87A330;
+                  }
                 }
                 &:hover {
                     cursor: pointer;

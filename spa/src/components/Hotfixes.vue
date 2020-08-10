@@ -107,7 +107,12 @@
       },
       closeMoreModal: function (event) {
         if(event === 'DELETE') {
-          this.hotfixes.splice(this.hotfixes.indexOf(hotfix => hotfix._id === this.currentHotfix._id), 1);
+          for(let i = 0; i < this.hotfixes.length; ++i) {
+            if(this.hotfixes[i]._id === this.currentHotfix._id) {
+              this.hotfixes.splice(i, 1);
+              break;
+            }
+          }
         }
         this.isHotfixMoreModal = false;
       }

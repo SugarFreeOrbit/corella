@@ -8,6 +8,7 @@
 		"body-parser": "~1.19.0",
 		"cors": "~2.8.5",
 		"debug": "~2.6.9",
+		"email-validator": "^2.0.4",
 		"express": "~4.16.0",
 		"jdenticon": "~2.2.0",
 		"jsonschema": "~1.2.4",

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible.sync="issueCreationModal.active" title="New issue">
+    <el-dialog :visible="true" title="New issue" @close="close">
         <el-form v-model="issueCreationModal.form"
                  v-loading="issueCreationModal.inProgress">
             <el-form-item label="Title">
@@ -13,7 +13,6 @@
                 <input style="display: none" placeholder="upload files"
                        type="file" id="uploadFiles" ref="files"
                        multiple v-on:change="handleFilesUpload()" hidden/>
-                <div class="el-upload__tip">jpg/png files with a size less than 500kb</div>
                 <div v-if="issueCreationModal.form.files.length !== 0" class="modal__upload-wrapper">
                     <ul class="modal__upload-list">
                         <li v-for="(file, i) in issueCreationModal.form.files">

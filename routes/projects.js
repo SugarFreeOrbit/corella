@@ -692,7 +692,10 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 		try {
 			if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
 				if (req.query.hotfixCode) {
-					let hotfix = await Hotfix.findOne({hotfixCode: req.query.hotfixCode, project: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+					let hotfix = await Hotfix.findOne({
+						hotfixCode: req.query.hotfixCode,
+						project: ObjectId(req.params.projectId)
+					}).populate('files', 'filename length');
 					if (hotfix) {
 						res.json(hotfix);
 					} else {
@@ -744,10 +747,10 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 						pageCount: Math.ceil(query[1] / limit),
 						data: query[0]
 					});
-				} else {
-					res.status(403);
-					res.end();
 				}
+			} else {
+				res.status(403);
+				res.end();
 			}
 		} catch (e) {
 			next(e);

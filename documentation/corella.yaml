@@ -781,6 +781,11 @@ paths:
           name: projectId
           schema:
             type: string
+        - in: query
+          required: false
+          name: hotfixCode
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -1333,6 +1338,9 @@ components:
                 "author":{
                   "type": "string",
                   "format": "objectId"
+                },
+                "hotfixCode":{
+                  "type": "integer"
                 }
               }
             }

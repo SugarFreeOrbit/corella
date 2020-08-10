@@ -43,7 +43,7 @@
             </div>
             <router-view />
 
-            <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="isAddIssueModal = false"></add-issue-modal>
+            <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="closeAddIssueModal"></add-issue-modal>
         </div>
         <div v-else style="height: 100%" v-loading="projectReady"></div>
     </div>
@@ -105,7 +105,10 @@
             goTo: function (to) {
                 this.activeMenuItem = to;
                 this.$router.push(`/projects/${this._id}/${to}`);
-            }
+            },
+          closeAddIssueModal: function () {
+            this.isAddIssueModal = false;
+          }
         }
     }
 </script>

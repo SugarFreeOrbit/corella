@@ -72,14 +72,24 @@
                 this.filesUploadLoading = false;
             },
             uploadFile: async function (file) {
+              try {
                 let formData = new FormData();
                 formData.append('files', file);
                 let response = await this.$http.post(this.attachLink, formData);
                 this.files.push({
-                    _id: response.data[0],
-                    name: file.name,
-                    filename: file.filename
+                  _id: response.data[0],
+                  name: file.name,
+                  filename: file.filename
                 });
+              } catch (error) {
+                if(error.response.status === 400) {
+                  this.$notify.error({
+                    title: 'Error',
+                    message: error.response.data
+                  });
+                }
+                console.log(error);
+              }
             },
             removeFile: async function (file, i) {
                 if (i > -1) {

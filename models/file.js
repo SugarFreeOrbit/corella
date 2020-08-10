@@ -25,7 +25,7 @@ const fileFilter = function(req, file, cb) {
         cb(null, true);
     } else {
         let error = new Error('Unsupported file type');
-        error.name = 'FileUpload';
+        error.name = 'MulterError';
         cb(error);
     }
 }

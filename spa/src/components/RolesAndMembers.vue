@@ -37,6 +37,15 @@
 					<el-form-item label="Edit">
 						<el-switch v-model="addRoleModal.isEditor"></el-switch>
 					</el-form-item>
+					<el-form-item label="Create Hotfixes">
+						<el-switch v-model="addRoleModal.createHotfixes"></el-switch>
+					</el-form-item>
+					<el-form-item label="Edit Hotfixes">
+						<el-switch v-model="addRoleModal.editHotfixes"></el-switch>
+					</el-form-item>
+					<el-form-item label="Delete Hotfixes">
+						<el-switch v-model="addRoleModal.deleteHotfixes"></el-switch>
+					</el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
 						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="addRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
 						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
@@ -85,6 +94,15 @@
 					<el-form-item label="Edit">
 						<el-switch v-model="editRoleModal.isEditor"></el-switch>
 					</el-form-item>
+					<el-form-item label="Create Hotfixes">
+						<el-switch v-model="editRoleModal.createHotfixes"></el-switch>
+					</el-form-item>
+					<el-form-item label="Edit Hotfixes">
+						<el-switch v-model="editRoleModal.editHotfixes"></el-switch>
+					</el-form-item>
+					<el-form-item label="Delete Hotfixes">
+						<el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
+					</el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
 						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
 						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
@@ -115,6 +133,9 @@
 					isCreator: false,
 					isDestroyer: false,
 					isEditor: false,
+					createHotfixes: false,
+					editHotfixes: false,
+					deleteHotfixes: false,
 					issueTransitionMatrix: {}
 				},
 				users: [],
@@ -135,6 +156,9 @@
 					isCreator: false,
 					isDestroyer: false,
 					isEditor: false,
+					createHotfixes: false,
+					editHotfixes: false,
+					deleteHotfixes: false,
 					issueTransitionMatrix: {}
 				}
 			}
@@ -190,6 +214,9 @@
 							isCreator: this.addRoleModal.isCreator,
 							isDestroyer: this.addRoleModal.isDestroyer,
 							isEditor: this.addRoleModal.isEditor,
+							createHotfixes: this.addRoleModal.createHotfixes,
+							editHotfixes: this.addRoleModal.editHotfixes,
+							deleteHotfixes: this.addRoleModal.deleteHotfixes,
 							issueTransitionMatrix: this.addRoleModal.issueTransitionMatrix,
 							members: []
 						};
@@ -277,6 +304,9 @@
 				this.editRoleModal.isDestroyer = this.roles[roleIndex].isDestroyer;
 				this.editRoleModal.isEditor = this.roles[roleIndex].isEditor;
 				this.editRoleModal.isManager = this.roles[roleIndex].isManager;
+				this.editRoleModal.createHotfixes = this.roles[roleIndex].createHotfixes;
+				this.editRoleModal.editHotfixes = this.roles[roleIndex].editHotfixes;
+				this.editRoleModal.deleteHotfixes = this.roles[roleIndex].deleteHotfixes;
 				this.editRoleModal.roleIndex = roleIndex;
 				this.editRoleModal.ready = true;
 				this.editRoleModal.visible = true;
@@ -290,6 +320,9 @@
 					this.roles[this.editRoleModal.roleIndex].isDestroyer = this.editRoleModal.isDestroyer;
 					this.roles[this.editRoleModal.roleIndex].isEditor = this.editRoleModal.isEditor;
 					this.roles[this.editRoleModal.roleIndex].isManager = this.editRoleModal.isManager;
+					this.roles[this.editRoleModal.roleIndex].createHotfixes = this.editRoleModal.createHotfixes;
+					this.roles[this.editRoleModal.roleIndex].editHotfixes = this.editRoleModal.editHotfixes;
+					this.roles[this.editRoleModal.roleIndex].deleteHotfixes = this.editRoleModal.deleteHotfixes;
 					this.roles[this.editRoleModal.roleIndex].issueTransitionMatrix = this.editRoleModal.issueTransitionMatrix;
 					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
 					this.editRoleModal.loading = false;

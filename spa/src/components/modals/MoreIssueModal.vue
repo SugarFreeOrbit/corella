@@ -33,21 +33,11 @@
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
-                    <input style="display: none" placeholder="upload files"
-                           type="file" id="uploadFiles" ref="files"
-                           multiple v-on:change="handleFilesUpload()" hidden/>
-                    <div class="el-upload__tip">jpg/png files with a size less than 500kb</div>
-                    <div v-if="files.length !== 0" class="modal__upload-wrapper">
-                        <ul class="modal__upload-list">
-                            <li v-for="(file, i) in files">
-                                <p class="name">{{file.name}}
-                                    <span class="remove" @click='removeFile(file, i)'><i
-                                            class="el-icon-circle-close"></i></span>
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
+                  <file-upload :link="`/projects/${projectId}/issues/${issueId}/attachment/`"
+                               :files="files"
+                               :attachLink="`/projects/${this.projectId}/issues/${issueId}/attach`"
+                               :detachLink="`/projects/${this.projectId}/issues/${issueId}/detach/`">
+                  </file-upload>
                 </el-form-item>
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
@@ -68,6 +58,7 @@
 
 <script>
     import AppFile from "../AppFile";
+    import FileUpload from "@/components/FileUpload";
 
     export default {
         name: "more-issue-modal",
@@ -89,7 +80,8 @@
             }
         },
         components: {
-            AppFile
+            AppFile,
+          FileUpload
         },
         data() {
             return {

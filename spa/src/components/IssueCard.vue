@@ -1,6 +1,6 @@
 <template>
 	<el-card v-loading="!previewReady" class="issue">
-		<div class="issue__title" @click="isMoreIssueModal = true">
+		<div class="issue__title" @click="showMoreModal">
 			{{currentIssue.title}}
 		</div>
 		<div class="issue__assignee" v-if="assigneeReady">
@@ -12,7 +12,7 @@
 						  :issueId="issueId"
 						  :currentColumnId="currentColumnId"
 						  :projectId="projectId"
-						  @close="isMoreIssueModal = false">
+						  @close="closeMoreModal">
 		</more-issue-modal>
 	</el-card>
 </template>
@@ -47,6 +47,11 @@
 				}
 			}
 		},
+		computed: {
+			/*isMoreIssueModal() {
+				return this.$route.query.issue === '1';
+			}*/
+		},
 		async created() {
 			let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
 			this.currentIssue.title = issue.data.title;
@@ -80,6 +85,14 @@
 					this.assignee.username = assignee.data.username;
 					this.assigneeReady = true;
 				}
+			},
+			showMoreModal: function () {
+				this.isMoreIssueModal = true;
+				// this.$router.push({query: { issue: '1' }});
+			},
+			closeMoreModal: function () {
+				this.isMoreIssueModal = false;
+				// this.$router.push({query: { issue: undefined }});
 			}
 		}
 	}

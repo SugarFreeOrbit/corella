@@ -108,7 +108,7 @@ export default {
     },
     handleFilesUpload() {
       let obj = this.$refs.files.files;
-      if(obj.length >= this.issueCreationModal.form.limitOfFiles) {
+      if(obj.length + this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles + 1) {
         this.$notify({
           title: 'Error',
           message: `You can\'t upload more than ${this.issueCreationModal.form.limitOfFiles} files`,

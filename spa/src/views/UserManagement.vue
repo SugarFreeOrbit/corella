@@ -47,7 +47,7 @@
 				<el-table-column prop="email" label="E-mail"></el-table-column>
 				<el-table-column prop="isAdmin" label="Admin" width="auto" custom>
 					<template slot-scope="props">
-						<el-switch v-model="props.row.isAdmin" @change="changeRole(props.row._id, props.row.isAdmin)"/>
+						<el-switch v-model="props.row.isAdmin" @change="changeRole(props.row._id, props.row)"/>
 					</template>
 				</el-table-column>
 				<el-table-column custom width="auto">
@@ -110,8 +110,21 @@
 				this.page = queryInfo.page;
 				this.loadUsers();
 			},
-			changeRole: async function (userId, isAdmin) {
-				await this.$http.patch(`/users/${userId}`, {isAdmin});
+			changeRole: async function (userId, data) {
+			  try {
+          await this.$http.patch(`/users/${userId}`, data);
+        } catch (e) {
+          if(e.response.status === 400) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data
+            });
+            data.isAdmin = !data.isAdmin;
+            console.log(e);
+            return;
+          }
+			    console.log(e);
+        }
 			},
 			deleteUser: async function(userId) {
 				await this.$confirm('This will permanently delete the user. Continue?', 'Warning', {

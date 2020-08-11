@@ -155,9 +155,13 @@
               for (let i = 0; i < obj.length; ++i) {
                 err = true;
                 for (let j = 0; j < this.allowedFiles.length; ++j) {
-                  if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1)
+                  if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
                     err = false;
+                    break;
+                  }
                 }
+                if(err)
+                  break;
               }
               if (err) {
                 this.$notify({

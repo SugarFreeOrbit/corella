@@ -104,9 +104,10 @@
 						<el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
 					</el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
-						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
-						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
-					</el-select>
+						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}
+            <el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
+						  <el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
+					  </el-select>
 					</el-form-item>
 					<el-form-item style="text-align: center">
 						<el-button @click="editRoleModal.visible = false">Cancel</el-button>
@@ -160,31 +161,13 @@
 					editHotfixes: false,
 					deleteHotfixes: false,
 					issueTransitionMatrix: {}
-				}
+				},
+        columns: []
 			}
 		},
 		computed: {
 			projectId: function () {
 				return this.$store.state.currentProject._id;
-			},
-			columns: async function () {
-			  if(this.$store.state.currentProject.columns === undefined) {
-          try {
-            await this.$store.dispatch('syncCurrentProjectBoard');
-            this.loading = false;
-          } catch (e) {
-            this.loading = false;
-            console.log(e);
-          }
-        }
-				return this.$store.state.currentProject.columns.map(col => {
-					return {
-						id: col.id,
-						name: col.name,
-						isStarting: col.isStarting,
-						isClosing: col.isClosing
-					};
-				});
 			},
 			members: function () {
 				let role = this.roles.find(r=> r.name === this.viewMembersModal.targetRole);
@@ -199,6 +182,23 @@
 			this.loading = true;
 			let getRoles = await this.$http.get(`/projects/${this.projectId}/roles`);
 			this.roles = getRoles.data.roles;
+      if(this.$store.state.currentProject.columns === undefined) {
+        try {
+          await this.$store.dispatch('syncCurrentProjectBoard');
+          this.loading = false;
+        } catch (e) {
+          this.loading = false;
+          console.log(e);
+        }
+      }
+			this.columns = this.$store.state.currentProject.columns.map(col => {
+        return {
+          id: col.id,
+          name: col.name,
+          isStarting: col.isStarting,
+          isClosing: col.isClosing
+        };
+      });
 			this.loading = false;
 			let getUsers = await this.$http.get(`/users`);
 			this.users = getUsers.data.data;

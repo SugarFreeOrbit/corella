@@ -244,7 +244,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		File.clearTempFiles(req.files);
@@ -272,7 +272,7 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		File.clearTempFiles(req.files);
@@ -302,7 +302,7 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 			});
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -334,7 +334,7 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -361,7 +361,7 @@ router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), va
 			}
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -382,7 +382,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 			res.json(project);
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -401,7 +401,7 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 			res.json(issue);
 		} else {
 			res.status(401);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -445,7 +445,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 			}
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -505,7 +505,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -519,7 +519,7 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 			res.json(projectMeta);
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e)
@@ -552,7 +552,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -577,7 +577,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 			res.end();
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -605,7 +605,7 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 		else{
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		File.clearTempFiles(req.files);
@@ -630,7 +630,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			else {
 				File.deleteById(ObjectId(req.params.fileId));
 				res.status(200);
-				res.end();
+				res.json("You don't have permission");
 			}
 		}
 	}catch (e) {
@@ -653,7 +653,7 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 			res.end();
 		}else{
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		next(e);
@@ -681,7 +681,7 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 			});
 		} else{
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		next(e);
@@ -703,7 +703,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					res.status(404);
 					res.end();
 				}
-			}else{
+			} else {
 				let limit = parseInt(req.query.limit) || 10;
 				let page = parseInt(req.query.page) || 1;
 				let sortingParams = {
@@ -711,55 +711,47 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					state: 1,
 					created: -1
 				};
-
-			}
-			// let translation = {
-			// 	'ASC': 1,
-			// 	'DESC': -1
-			// }
-			// if (req.query.sortByState) {
-			// 	sortingParams.state = translation[req.query.sortByState];
-			// }
-			// if (req.query.sortByPriority) {
-			// 	sortingParams.priority = translation[req.query.sortByPriority];
-			// }
-			// if (req.query.sortByCreation) {
-			// 	sortingParams.creation = translation[req.query.sortByCreation];
-			// }
-			let query;
-
-			if (req.query ? req.query.showCompleted : false) {
-				if(req.query.findByTitle !== undefined){
-					query = await Hotfix.find({
-						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
-						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
-				}else{
-					query = await Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
-						.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				let query;
+				if (req.query.showCompleted === "true") {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"state": {$gte: 3}},
+								{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$gte: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
+				} else {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
+								{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$lt: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
 				}
-			} else {
-				if(req.query.findByTitle !== undefined){
-					query = await Hotfix.find({
-						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
-						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
-				}else{
-					query = await Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
-						.sort(sortingParams).skip((page - 1) * limit)
-						.limit(limit)
-						.populate('files', 'filename length');
-				}
+				res.json({
+					total: query.length,
+					pageCount: Math.ceil(query.length / limit),
+					data: query
+				});
 			}
-
-			res.json({
-				total: query.length,
-				pageCount: Math.ceil(query.length / limit),
-				data: query
-			});
-		} else {
+		}else{
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
-	} catch (e) {
+	}catch (e) {
 		next(e);
 	}
 });

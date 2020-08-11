@@ -241,7 +241,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		File.clearTempFiles(req.files);
@@ -269,7 +269,7 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		File.clearTempFiles(req.files);
@@ -299,7 +299,7 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 			});
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -331,7 +331,7 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -358,7 +358,7 @@ router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), va
 			}
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -379,7 +379,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 			res.json(project);
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -398,7 +398,7 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 			res.json(issue);
 		} else {
 			res.status(401);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -423,7 +423,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 			}
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -483,7 +483,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -497,7 +497,7 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 			res.json(projectMeta);
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e)
@@ -529,7 +529,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 		} else {
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -554,7 +554,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 			res.end();
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -582,7 +582,7 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 		else{
 			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		File.clearTempFiles(req.files);
@@ -607,7 +607,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			else {
 				File.deleteById(ObjectId(req.params.fileId));
 				res.status(200);
-				res.end();
+				res.json("You don't have permission");
 			}
 		}
 	}catch (e) {
@@ -630,7 +630,7 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 			res.end();
 		}else{
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		next(e);
@@ -658,7 +658,7 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 			});
 		} else{
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	}catch (e) {
 		next(e);
@@ -712,7 +712,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			});
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);

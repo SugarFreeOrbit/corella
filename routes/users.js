@@ -117,7 +117,9 @@ router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBo
 			update.password = bcrypt.hashSync(update.password, 10);
 		}
 		if(!emailValidator.validate(req.body.email)){
-			delete update.email;
+			res.status(400);
+			res.json("Not valid email");
+			return;
 		}
 		User.updateOne({_id: req.params.userId}, update).then((result) => {
 			if (result.n < 1) {

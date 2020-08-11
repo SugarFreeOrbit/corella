@@ -64,6 +64,7 @@
                         duration: 3000,
                         type: 'error'
                     });
+                    this.$refs.files.value = '';
                     this.filesUploadLoading = false;
                     return;
                 }
@@ -71,6 +72,7 @@
                     await this.uploadFile(files[i]);
                 }
                 this.filesUploadLoading = false;
+                this.$refs.files.value = '';
             },
             uploadFile: async function (file) {
               try {

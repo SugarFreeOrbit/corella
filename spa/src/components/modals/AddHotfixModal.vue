@@ -148,7 +148,7 @@
                   duration: 3000,
                   type: 'error'
                 });
-                this.$refs.files.files = null;
+                this.$refs.files.value = '';
                 return;
               }
               let err = true;
@@ -166,7 +166,7 @@
                   duration: 3000,
                   type: 'error'
                 });
-                this.$refs.files.files = null;
+                this.$refs.files.value = '';
                 return;
               }
               if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
@@ -179,6 +179,7 @@
                   type: 'error'
                 });
               }
+              this.$refs.files.value = '';
             },
             removeFile: function (file, i) {
                 if (i > -1) {

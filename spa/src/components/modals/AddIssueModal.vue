@@ -115,7 +115,7 @@ export default {
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.files = null;
+        this.$refs.files.value = '';
         return;
       }
       let err = true;
@@ -133,7 +133,7 @@ export default {
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.files = null;
+        this.$refs.files.value = '';
         return;
       }
       if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
@@ -146,6 +146,7 @@ export default {
           type: 'error'
         });
       }
+      this.$refs.files.value = '';
     },
     removeFile: function (file, i) {
       if (i > -1) {

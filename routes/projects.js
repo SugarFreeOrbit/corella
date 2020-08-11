@@ -703,7 +703,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					res.status(404);
 					res.end();
 				}
-			}else{
+			} else {
 				let limit = parseInt(req.query.limit) || 10;
 				let page = parseInt(req.query.page) || 1;
 				let sortingParams = {
@@ -711,55 +711,47 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					state: 1,
 					created: -1
 				};
-
-			}
-			// let translation = {
-			// 	'ASC': 1,
-			// 	'DESC': -1
-			// }
-			// if (req.query.sortByState) {
-			// 	sortingParams.state = translation[req.query.sortByState];
-			// }
-			// if (req.query.sortByPriority) {
-			// 	sortingParams.priority = translation[req.query.sortByPriority];
-			// }
-			// if (req.query.sortByCreation) {
-			// 	sortingParams.creation = translation[req.query.sortByCreation];
-			// }
-			let query;
-
-			if (req.query ? req.query.showCompleted : false) {
-				if(req.query.findByTitle !== undefined){
-					query = await Hotfix.find({
-						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
-						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
-				}else{
-					query = await Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
-						.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				let query;
+				if (req.query.showCompleted === "true") {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte: 3}},
+								{"title": {$regex: options.search, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$gte: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
+				} else {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte: 3}},
+								{"title": {$regex: options.search, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$gte: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
 				}
-			} else {
-				if(req.query.findByTitle !== undefined){
-					query = await Hotfix.find({
-						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
-						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
-				}else{
-					query = await Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
-						.sort(sortingParams).skip((page - 1) * limit)
-						.limit(limit)
-						.populate('files', 'filename length');
-				}
+				res.json({
+					total: query.length,
+					pageCount: Math.ceil(query.length / limit),
+					data: query
+				});
 			}
-
-			res.json({
-				total: query.length,
-				pageCount: Math.ceil(query.length / limit),
-				data: query
-			});
-		} else {
+		}else{
 			res.status(403);
 			res.json("You don't have permission");
 		}
-	} catch (e) {
+	}catch (e) {
 		next(e);
 	}
 });

@@ -444,7 +444,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 				res.end();
 			}
 			else {
-				File.deleteById(ObjectId(req.params.fileId));
+				await File.deleteById(ObjectId(req.params.fileId));
 				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 				res.status(200);
 				res.end();
@@ -634,7 +634,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 				res.end();
 			}
 			else {
-				File.deleteById(ObjectId(req.params.fileId));
+				await File.deleteById(ObjectId(req.params.fileId));
 				res.status(200);
 				res.json("You don't have permission");
 			}

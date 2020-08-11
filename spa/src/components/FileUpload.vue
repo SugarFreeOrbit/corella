@@ -56,7 +56,7 @@
             async handleFilesUpload() {
                 this.filesUploadLoading = true;
                 let files = this.$refs.files.files;
-                if(this.files.length >= this.filesLimit) {
+                if(this.files.length + files.length >= this.filesLimit) {
                     this.$notify({
                         title: 'Error',
                         message: 'Too many files',

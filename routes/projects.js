@@ -437,7 +437,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 	try {
 		if ((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
 			let issueModifiedCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
-				$pull: { files: ObjectId(req.params.fileId) }
+				$pull: { files: req.params.fileId }
 			})).nModified;
 			if(issueModifiedCount=== 0) {
 				res.status(404);
@@ -627,7 +627,7 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 		]);
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let modified = (await Hotfix.updateOne({_id: ObjectId(req.params.hotfixId)}, {
-				$pull: { files: ObjectId(req.params.fileId) }
+				$pull: { files: req.params.fileId }
 			}));
 			if(modified.nModified === 0) {
 				res.status(404);

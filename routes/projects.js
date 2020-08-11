@@ -715,7 +715,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				if (req.query.showCompleted === "true") {
 					if (req.query.findByTitle !== undefined) {
 						query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"state": {$eq: 2}},
+							$and: [{"project": req.params.projectId}, {"state": {$gte: 2}},
 								{"title": {$regex: req.query.findByTitle, $options: "i"}}
 							]
 						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');

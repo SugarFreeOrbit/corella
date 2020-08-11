@@ -131,6 +131,11 @@ router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBo
 			res.end();
 		}).catch(err => {
 			res.status(400);
+			if (err.name === "MongoError") {
+				if (err.code === 11000) {
+					err.message = `User with username "${update.username}" already exists`;
+				}
+			}
 			res.json({message: err.message});
 		});
 	} else {

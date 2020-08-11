@@ -3,16 +3,11 @@ const Config = require('../models/config');
 const validator = require('../utils/validation/validator');
 
 router.get('/', async function (req, res, next) {
-    if (req.user.isAdmin) {
-        try {
-            config = await Config.findOne({}, { _id: 0, __v: 0 });
-            res.json(config);
-        } catch (e) {
-            next(e);
-        }
-    } else {
-        res.status(403);
-        res.end();
+    try {
+        config = await Config.findOne({}, { _id: 0, __v: 0 });
+        res.json(config);
+    } catch (e) {
+        next(e);
     }
 });
 

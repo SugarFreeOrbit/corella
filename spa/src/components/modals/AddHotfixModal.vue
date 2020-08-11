@@ -121,8 +121,17 @@
                     this.close();
                     this.newHotfix.title = '';
                     this.newHotfix.description = '';
-                } catch (error) {
-                    console.log(error);
+                } catch (e) {
+                    if(e.response.status === 400) {
+                      this.$notify.error({
+                        title: 'Error',
+                        message: e.response.data
+                      });
+                      console.log(e);
+                      this.loading = false;
+                      return;
+                    }
+                    console.log(e);
                     this.loading = false;
                 }
             },
@@ -131,13 +140,27 @@
             },
             handleFilesUpload() {
               let obj = this.$refs.files.files;
+              if(obj.length + this.newHotfix.files.length >= this.newHotfix.limitOfFiles + 1) {
+                this.$notify({
+                  title: 'Error',
+                  message: `You can\'t upload more than ${this.newHotfix.limitOfFiles} files`,
+                  duration: 3000,
+                  type: 'error'
+                });
+                this.$refs.files.value = '';
+                return;
+              }
               let err = true;
               for (let i = 0; i < obj.length; ++i) {
+                err = true;
                 for (let j = 0; j < this.allowedFiles.length; ++j) {
                   if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
                     err = false;
+                    break;
                   }
                 }
+                if(err)
+                  break;
               }
               if (err) {
                 this.$notify({
@@ -146,7 +169,7 @@
                   duration: 3000,
                   type: 'error'
                 });
-                this.$refs.files.value = [];
+                this.$refs.files.value = '';
                 return;
               }
               if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
@@ -159,10 +182,11 @@
                   type: 'error'
                 });
               }
+              this.$refs.files.value = '';
             },
             removeFile: function (file, i) {
                 if (i > -1) {
-                    this.issueCreationModal.form.files.splice(i, 1);
+                    this.newHotfix.files.splice(i, 1);
                 }
             },
             close: function () {

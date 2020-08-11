@@ -71,16 +71,28 @@ export default {
         formData.append('files', file);
       });
       if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-        let result = await this.$http.put(`/projects/${this.projectId}/issues`,
-            formData,
-            {
-              headers: {'Content-Type': 'multipart/form-data'}
+        try {
+          let result = await this.$http.put(`/projects/${this.projectId}/issues`,
+              formData,
+              {
+                headers: {'Content-Type': 'multipart/form-data'}
+              });
+          this.issueCreationModal.inProgress = false;
+          this.close();
+          this.issueCreationModal.title = '';
+          this.issueCreationModal.description = '';
+        } catch (e) {
+          if(e.response.status === 400) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data
             });
-        this.issueCreationModal.inProgress = false;
-        //this.issueCreationModal.active = false;
-        this.close();
-        this.issueCreationModal.title = '';
-        this.issueCreationModal.description = '';
+            console.log(e);
+            this.issueCreationModal.inProgress = false;
+            return;
+          }
+          console.log(e);
+        }
       } else {
         this.$notify({
           title: 'Error',
@@ -96,13 +108,27 @@ export default {
     },
     handleFilesUpload() {
       let obj = this.$refs.files.files;
+      if(obj.length + this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles + 1) {
+        this.$notify({
+          title: 'Error',
+          message: `You can\'t upload more than ${this.issueCreationModal.form.limitOfFiles} files`,
+          duration: 3000,
+          type: 'error'
+        });
+        this.$refs.files.value = '';
+        return;
+      }
       let err = true;
       for(let i = 0; i < obj.length; ++i) {
+        err = true;
         for(let j = 0; j < this.allowedFiles.length; ++j) {
           if(obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
             err = false;
+            break;
           }
         }
+        if(err)
+          break;
       }
       if(err) {
         this.$notify({
@@ -111,7 +137,7 @@ export default {
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.value = [];
+        this.$refs.files.value = '';
         return;
       }
       if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
@@ -124,6 +150,7 @@ export default {
           type: 'error'
         });
       }
+      this.$refs.files.value = '';
     },
     removeFile: function (file, i) {
       if (i > -1) {

@@ -124,7 +124,7 @@
         this.$router.push({query: { hotfix: this.currentHotfix.hotfixCode.toString() }});
       },
       closeMoreModal: function (event) {
-        if(event === 'DELETE') {
+        if(event === 'DELETE' && !this.showCompleted) {
           for(let i = 0; i < this.hotfixes.length; ++i) {
             if(this.hotfixes[i]._id === this.currentHotfix._id) {
               this.hotfixes.splice(i, 1);

@@ -691,10 +691,11 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			// }
 			let query;
 
-			if (req.query ? req.query.showCompleted : false) {
+			if (req.query.showCompleted === "true") {
 				if(req.query.findByTitle !== undefined){
 					query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}},
+								{ "title": { $regex: options.search, $options: "i" } }
 						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 				}else{
 					query = await Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
@@ -703,7 +704,8 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			} else {
 				if(req.query.findByTitle !== undefined){
 					query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
+							$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}},
+								{ "title": { $regex: options.search, $options: "i" } }
 							]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 				}else{
 					query = await Hotfix.find({project: req.params.projectId, state: {$lt: 3}})

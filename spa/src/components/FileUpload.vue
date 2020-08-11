@@ -5,7 +5,7 @@
                multiple v-on:change="handleFilesUpload()" hidden/>
         <div class="modal__upload-wrapper">
             <div class="modal__upload-list" style="display: flex">
-                <div class="modal__upload-list--item" v-for="(file, i) in files">
+                <div class="modal__upload-list--item" v-for="(file, i) in files" v-loading="loading">
                     <span class="remove" @click='removeFile(file, i)'>
                         <i class="el-icon-circle-close"></i>
                     </span>
@@ -46,7 +46,8 @@
         data() {
             return {
                 filesLimit: 5,
-                filesUploadLoading: false
+                filesUploadLoading: false,
+                loading: false
             }
         },
         mounted() {
@@ -93,8 +94,10 @@
             },
             removeFile: async function (file, i) {
                 if (i > -1) {
+                    this.loading = true;
                     await this.$http.delete(this.detachLink + this.files[i]._id);
                     this.files.splice(i, 1);
+                    this.loading = false;
                 }
             },
             chooseFiles: function () {

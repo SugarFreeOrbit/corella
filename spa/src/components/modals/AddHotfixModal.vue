@@ -182,7 +182,7 @@
             },
             removeFile: function (file, i) {
                 if (i > -1) {
-                    this.issueCreationModal.form.files.splice(i, 1);
+                    this.newHotfix.files.splice(i, 1);
                 }
             },
             close: function () {

@@ -128,7 +128,6 @@
                         message: e.response.data
                       });
                       console.log(e);
-                      this.issueCreationModal.inProgress = false;
                       this.loading = false;
                       return;
                     }

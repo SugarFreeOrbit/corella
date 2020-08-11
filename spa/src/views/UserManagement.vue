@@ -137,6 +137,20 @@
 				this.editModalVisible = true;
 			},
 			submitEditModal: async function() {
+        if(this.edit.username === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Username cannot be empty'
+          });
+          return;
+        }
+        if(this.edit.email === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Email cannot be empty'
+          });
+          return;
+        }
 				let update = {
 					username: this.edit.username,
 					isAdmin: this.edit.isAdmin,
@@ -146,6 +160,14 @@
 				if (update.password === '') {
 					delete update.password;
 				}
+				let result = update.email.match(/^[\w.-]+?@\w+?\.\w{2,6}$/);
+        if(result === null) {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Invalid email!'
+          });
+          return;
+        }
 				try {
 					await this.$http.patch(`/users/${this.edit._id}`, update);
 					this.loadUsers();
@@ -156,12 +178,34 @@
 				}
 			},
 			submitAddModal: async function() {
+        if(this.add.username === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Username cannot be empty'
+          });
+          return;
+        }
+        if(this.add.email === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Email cannot be empty'
+          });
+          return;
+        }
 				let newUser = {
 					username: this.add.username,
 					isAdmin: this.add.isAdmin,
 					password: this.add.password,
 					email: this.add.email
 				};
+        let result = newUser.email.match(/^[\w.-]+?@\w+?\.\w{2,6}$/);
+        if(result === null) {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Invalid email!'
+          });
+          return;
+        }
 				try {
 					await this.$http.put('/users', newUser);
 					this.loadUsers();

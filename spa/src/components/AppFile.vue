@@ -10,7 +10,8 @@
         <a v-else-if="type === 'unknown'"
            class="app-file__download"
            :href="src"
-           target="_blank">
+           target="_blank"
+           :download="file.name">
             <span>{{ file.name }}</span>
         </a>
     </div>

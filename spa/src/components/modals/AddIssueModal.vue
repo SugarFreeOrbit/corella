@@ -110,11 +110,10 @@ export default {
       let obj = this.$refs.files.files;
       let err = true;
       for(let i = 0; i < obj.length; ++i) {
+        err = true;
         for(let j = 0; j < this.allowedFiles.length; ++j) {
           if(obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1)
             err = false;
-          else
-            err = true;
         }
       }
       if(err) {
@@ -124,7 +123,7 @@ export default {
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.value = [];
+        this.$refs.files.files = null;
         return;
       }
       if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {

@@ -129,6 +129,7 @@
                       });
                       console.log(e);
                       this.issueCreationModal.inProgress = false;
+                      this.loading = false;
                       return;
                     }
                     console.log(e);
@@ -142,11 +143,10 @@
               let obj = this.$refs.files.files;
               let err = true;
               for (let i = 0; i < obj.length; ++i) {
+                err = true;
                 for (let j = 0; j < this.allowedFiles.length; ++j) {
                   if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1)
                     err = false;
-                  else
-                    err = true;
                 }
               }
               if (err) {
@@ -156,7 +156,7 @@
                   duration: 3000,
                   type: 'error'
                 });
-                this.$refs.files.value = [];
+                this.$refs.files.files = null;
                 return;
               }
               if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {

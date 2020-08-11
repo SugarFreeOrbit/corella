@@ -71,16 +71,28 @@ export default {
         formData.append('files', file);
       });
       if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
-        let result = await this.$http.put(`/projects/${this.projectId}/issues`,
-            formData,
-            {
-              headers: {'Content-Type': 'multipart/form-data'}
+        try {
+          let result = await this.$http.put(`/projects/${this.projectId}/issues`,
+              formData,
+              {
+                headers: {'Content-Type': 'multipart/form-data'}
+              });
+          this.issueCreationModal.inProgress = false;
+          this.close();
+          this.issueCreationModal.title = '';
+          this.issueCreationModal.description = '';
+        } catch (e) {
+          if(e.response.status === 400) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response
             });
-        this.issueCreationModal.inProgress = false;
-        //this.issueCreationModal.active = false;
-        this.close();
-        this.issueCreationModal.title = '';
-        this.issueCreationModal.description = '';
+            console.log(e);
+            this.issueCreationModal.inProgress = false;
+            return;
+          }
+          console.log(e);
+        }
       } else {
         this.$notify({
           title: 'Error',

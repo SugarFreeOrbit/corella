@@ -317,9 +317,9 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 				projectId: ObjectId(req.params.projectId)
 			});
 			if (!deleteIssue) {
-				res.status(404);
-				res.end();
-				return;
+					res.status(404);
+					res.end();
+					return;
 			}
 
 			await Project.findByIdAndUpdate(req.params.projectId, {
@@ -690,73 +690,79 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 
 router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')],
 	async function (req, res, next) {
-		try {
-			if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-				if (req.query.hotfixCode) {
-					let hotfix = await Hotfix.findOne({
-						hotfixCode: req.query.hotfixCode,
-						project: ObjectId(req.params.projectId)
-					}).populate('files', 'filename length');
-					if (hotfix) {
-						res.json(hotfix);
-					} else {
-						res.status(404);
-						res.end();
-					}
+	try {
+		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			if (req.query.hotfixCode) {
+				let hotfix = await Hotfix.findOne({
+					hotfixCode: req.query.hotfixCode,
+					project: ObjectId(req.params.projectId)
+				}).populate('files', 'filename length');
+				if (hotfix) {
+					res.json(hotfix);
 				} else {
-					let limit = parseInt(req.query.limit) || 10;
-					let page = parseInt(req.query.page) || 1;
-					let sortingParams = {
-						priority: -1,
-						state: 1,
-						created: -1
-					};
-					// let translation = {
-					// 	'ASC': 1,
-					// 	'DESC': -1
-					// }
-					// if (req.query.sortByState) {
-					// 	sortingParams.state = translation[req.query.sortByState];
-					// }
-					// if (req.query.sortByPriority) {
-					// 	sortingParams.priority = translation[req.query.sortByPriority];
-					// }
-					// if (req.query.sortByCreation) {
-					// 	sortingParams.creation = translation[req.query.sortByCreation];
-					// }
-					let query;
-					if (req.query ? req.query.showCompleted : false) {
-						query = await Promise.all([
-							Hotfix.find({
-								project: req.params.projectId,
-								state: {$gte: 3}
-							}).sort(sortingParams).skip((page - 1) * limit).limit(limit)
-								.populate('files', 'filename length'),
-							Hotfix.find({project: req.params.projectId, state: {$gte: 3}}).count()
-						]);
-					} else {
-						query = await Promise.all([
-							Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
-								.sort(sortingParams).skip((page - 1) * limit)
-								.limit(limit)
-								.populate('files', 'filename length'),
-							Hotfix.find({project: req.params.projectId, state: {$gte: 3}}).count()
-						]);
-					}
-					res.json({
-						total: query[1],
-						pageCount: Math.ceil(query[1] / limit),
-						data: query[0]
-					});
+					res.status(404);
+					res.end();
+				}
+			}else{
+				let limit = parseInt(req.query.limit) || 10;
+				let page = parseInt(req.query.page) || 1;
+				let sortingParams = {
+					priority: -1,
+					state: 1,
+					created: -1
+				};
+
+			}
+			// let translation = {
+			// 	'ASC': 1,
+			// 	'DESC': -1
+			// }
+			// if (req.query.sortByState) {
+			// 	sortingParams.state = translation[req.query.sortByState];
+			// }
+			// if (req.query.sortByPriority) {
+			// 	sortingParams.priority = translation[req.query.sortByPriority];
+			// }
+			// if (req.query.sortByCreation) {
+			// 	sortingParams.creation = translation[req.query.sortByCreation];
+			// }
+			let query;
+
+			if (req.query ? req.query.showCompleted : false) {
+				if(req.query.findByTitle !== undefined){
+					query = await Hotfix.find({
+						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
+						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				}else{
+					query = await Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
+						.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 				}
 			} else {
-				res.status(403);
-				res.end();
+				if(req.query.findByTitle !== undefined){
+					query = await Hotfix.find({
+						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
+						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				}else{
+					query = await Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
+						.sort(sortingParams).skip((page - 1) * limit)
+						.limit(limit)
+						.populate('files', 'filename length');
+				}
 			}
-		} catch (e) {
-			next(e);
+
+			res.json({
+				total: query.length,
+				pageCount: Math.ceil(query.length / limit),
+				data: query
+			});
+		} else {
+			res.status(403);
+			res.end();
 		}
-	});
+	} catch (e) {
+		next(e);
+	}
+});
 
 
 

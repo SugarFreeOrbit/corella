@@ -121,8 +121,17 @@
                     this.close();
                     this.newHotfix.title = '';
                     this.newHotfix.description = '';
-                } catch (error) {
-                    console.log(error);
+                } catch (e) {
+                    if(e.response.status === 400) {
+                      this.$notify.error({
+                        title: 'Error',
+                        message: e.response.data
+                      });
+                      console.log(e);
+                      this.issueCreationModal.inProgress = false;
+                      return;
+                    }
+                    console.log(e);
                     this.loading = false;
                 }
             },
@@ -134,9 +143,10 @@
               let err = true;
               for (let i = 0; i < obj.length; ++i) {
                 for (let j = 0; j < this.allowedFiles.length; ++j) {
-                  if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+                  if (obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1)
                     err = false;
-                  }
+                  else
+                    err = true;
                 }
               }
               if (err) {

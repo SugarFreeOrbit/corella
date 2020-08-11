@@ -117,8 +117,9 @@
           if(e.response.status === 400) {
             this.$notify.error({
               title: 'Error',
-              message: e.response
+              message: e.response.data
             });
+            data.isAdmin = !data.isAdmin;
             console.log(e);
             return;
           }

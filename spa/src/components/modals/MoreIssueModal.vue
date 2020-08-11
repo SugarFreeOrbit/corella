@@ -93,7 +93,7 @@
             }
         },
         created() {
-            this.currentIssue = this.data;
+            this.currentIssue = { ...this.data };
             this.files = this.data.files;
             this.files.forEach(file => {
                 if(file.name === undefined)

@@ -10,6 +10,7 @@ const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
+const contentDisposition = require('content-disposition');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -296,7 +297,7 @@ router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkPar
 		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])) {
 			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
 			downloadStream.on('file', file => {
-				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);
+				res.header('Content-Disposition', contentDisposition(file.filename));
 				res.type(file.contentType);
 			});
 			downloadStream.on('data', chunk => {
@@ -675,7 +676,7 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
 			downloadStream.on('file', file => {
-				res.header('Content-Disposition', `attachment; filename="${file.filename}"`);
+				res.header('Content-Disposition', contentDisposition(file.filename));
 				res.type(file.contentType);
 			});
 			downloadStream.on('data', chunk => {

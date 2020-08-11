@@ -141,6 +141,16 @@
             },
             handleFilesUpload() {
               let obj = this.$refs.files.files;
+              if(obj.length >= this.newHotfix.limitOfFiles) {
+                this.$notify({
+                  title: 'Error',
+                  message: `You can\'t upload more than ${this.newHotfix.limitOfFiles} files`,
+                  duration: 3000,
+                  type: 'error'
+                });
+                this.$refs.files.files = null;
+                return;
+              }
               let err = true;
               for (let i = 0; i < obj.length; ++i) {
                 err = true;

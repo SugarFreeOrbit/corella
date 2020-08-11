@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible="true" :before-close="close">
+    <el-dialog :visible="true" :before-close="close" :title="`Hotfix #${currentHotfix.hotfixCode}`">
         <div v-if="!canEditHotfixes" class="issue__content" v-loading="modalLoading">
             <p class="issue__content__title">{{currentHotfix.title}}</p>
             <hr>

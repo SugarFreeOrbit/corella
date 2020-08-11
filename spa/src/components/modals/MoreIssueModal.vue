@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible.sync="issueModalVisible" :before-close="close">
+    <el-dialog :visible.sync="issueModalVisible" :before-close="close" :title="`Issue #${currentIssue.issueCode}`">
         <div v-if="!canEditIssues" class="issue__content" v-loading="modalLoading">
             <p class="issue__content__title">{{currentIssue.title}}</p>
             <hr>
@@ -114,7 +114,7 @@
                     return this.columnList
                 } else {
                     let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[this.currentColumnId];
-                    return this.columnList.filter(col =>  allowedCols.includes(col.id));
+                    return allowedCols ? this.columnList.filter(col =>  allowedCols.includes(col.id)) : null;
                 }
             }
         },

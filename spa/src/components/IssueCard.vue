@@ -1,7 +1,7 @@
 <template>
 	<el-card v-loading="!previewReady" class="issue">
 		<div class="issue__title" @click="showMoreModal">
-			{{currentIssue.title}}
+			<span>{{currentIssue.title}}</span><i class="issue__code">#{{currentIssue.issueCode}}</i>
 		</div>
 		<div class="issue__assignee" v-if="assigneeReady">
 			{{currentIssue.assignee.username}}
@@ -39,6 +39,7 @@
 				currentIssue: {
 					title: '',
 					description: '',
+          issueCode: '',
 					files: [],
 					assignee: {
 						_id: this.issueId,
@@ -57,6 +58,7 @@
 			this.currentIssue.title = issue.data.title;
 			this.currentIssue.description = issue.data.description;
 			this.currentIssue.files = issue.data.files;
+			this.currentIssue.issueCode = issue.data.issueCode;
 			this.previewReady = true;
 			if (issue.data.assignee) {
 				this.currentIssue.assignee_id = issue.data.assignee;
@@ -103,10 +105,18 @@
 		margin-bottom: 10px;
 		&__title {
 			font-weight: bold;
+      transition: 0.3s;
+      display: flex;
+      >span {
+        display: block;
+        transition: 0.3s;
+      }
 			&:hover {
-				text-decoration: underline;
 				color: #a9c737;
 				cursor: pointer;
+        >span {
+          color: #a9c737;
+        }
 			}
 		}
 		&__assignee {
@@ -125,5 +135,10 @@
 				}
 			}
 		}
+    &__code {
+      margin-left: auto;
+      display: inline-block;
+      color: #797979;
+    }
 	}
 </style>

@@ -4,7 +4,8 @@ const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
-const File = require('../models/file')
+const File = require('../models/file');
+const Counter = require('../models/counter');
 const md5 = require('md5');
 //const multer = require('multer');
 //const upload = multer({dest: '../tmp'});
@@ -218,12 +219,14 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 			if (req.files) {
 				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
+			let issueCode = await Counter.getNextSequenceCount();
 			let newIssue = new Issue({
 				projectId: req.params.projectId,
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
 				files: files,
+				issueCode: issueCode,
 				author: req.user._id
 			});
 			await newIssue.save();
@@ -405,6 +408,25 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 	}
 });
 
+router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let issue = await Issue.findOne({issueCode: req.query.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+				return;
+			}
+			res.json(issue);
+		} else {
+			res.status(401);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req, res, next) {
 	try {
 		if ((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
@@ -512,7 +534,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			if (req.files) {
 				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
-
+			let hotfixCode = await Counter.getNextSequenceCount();
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
@@ -521,6 +543,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 				created: Date.now(),
 				files: files,
 				project: ObjectId(req.params.projectId),
+				hotfixCode: hotfixCode,
 				author: ObjectId(req.user._id)
 			});
 			await newHotfix.save();
@@ -665,17 +688,31 @@ router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkPa
 	}
 })
 
-router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')], 
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')],
 	async function (req, res, next) {
 	try {
 		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let limit = parseInt(req.query.limit) || 10;
-			let page = parseInt(req.query.page) || 1;
-			let sortingParams = {
-				priority: -1,
-				state: 1,
-				created: -1
-			};
+			if (req.query.hotfixCode) {
+				let hotfix = await Hotfix.findOne({
+					hotfixCode: req.query.hotfixCode,
+					project: ObjectId(req.params.projectId)
+				}).populate('files', 'filename length');
+				if (hotfix) {
+					res.json(hotfix);
+				} else {
+					res.status(404);
+					res.end();
+				}
+			}else{
+				let limit = parseInt(req.query.limit) || 10;
+				let page = parseInt(req.query.page) || 1;
+				let sortingParams = {
+					priority: -1,
+					state: 1,
+					created: -1
+				};
+
+			}
 			// let translation = {
 			// 	'ASC': 1,
 			// 	'DESC': -1
@@ -690,25 +727,33 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 			// 	sortingParams.creation = translation[req.query.sortByCreation];
 			// }
 			let query;
+
 			if (req.query ? req.query.showCompleted : false) {
-				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).sort(sortingParams).skip((page - 1) * limit).limit(limit)
-						.populate('files', 'filename length'),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
-				]);
+				if(req.query.findByTitle !== undefined){
+					query = await Hotfix.find({
+						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$gte : 3}}
+						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				}else{
+					query = await Hotfix.find({project: req.params.projectId, "state": {$gte : 3}}).sort(sortingParams)
+						.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				}
 			} else {
-				query = await Promise.all([
-					Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
+				if(req.query.findByTitle !== undefined){
+					query = await Hotfix.find({
+						$and: [{"project": req.params.projectId}, {"title": req.query.findByTitle}, {"state": {$lt: 3}}
+						]}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+				}else{
+					query = await Hotfix.find({project: req.params.projectId, state: {$lt: 3}})
 						.sort(sortingParams).skip((page - 1) * limit)
 						.limit(limit)
-						.populate('files', 'filename length'),
-					Hotfix.find({project: req.params.projectId, state: {$gte : 3}}).count()
-				]);
+						.populate('files', 'filename length');
+				}
 			}
+
 			res.json({
-				total: query[1],
-				pageCount: Math.ceil(query[1] / limit),
-				data: query[0]
+				total: query.length,
+				pageCount: Math.ceil(query.length / limit),
+				data: query
 			});
 		} else {
 			res.status(403);

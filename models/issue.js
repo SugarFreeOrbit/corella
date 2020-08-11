@@ -78,8 +78,14 @@ const issueSchema = new Schema({
 			"orange",
 			"yellow"
 		]
+	},
+	issueCode: {
+		type: Number,
+		required: true
 	}
 });
+
+issueSchema.index({issueCode:1}, {unique:true});
 
 // Expects an array of multer files
 // Issue.methods.addAttachments = async function (localFiles) {

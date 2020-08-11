@@ -127,8 +127,6 @@ const store = new Vuex.Store({
 			if(!state.user.isAdmin) {
 				try {
 					let role = await axios.get(`/projects/${state.currentProject._id}/roles/me`);
-					console.log('##########');
-					console.log(role.data);
 					commit('syncCurrentProjectRole', role.data);
 				} catch (e) {
 					console.log(e)

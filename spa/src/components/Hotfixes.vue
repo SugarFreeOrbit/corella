@@ -2,7 +2,7 @@
   <div class="hotfixes">
     <div class="hotfixes__toolbar">
       <div class="hotfixes__toolbar__searchByTitle">
-        <el-input v-model="searchByTitle" placeholder="Search by title"></el-input>
+        <el-input v-model="searchByTitle" @input="handleQueryChange" placeholder="Search by title"></el-input>
       </div>
       <div class="hotfixes__toolbar__showCompleted">
         <el-switch
@@ -24,18 +24,23 @@
       </el-table-column>
       <el-table-column prop="priority" label="Priority" width="120">
         <template slot-scope="scope">
-          <p v-if="scope.row.priority === 1" style="color: #8cd681">Low</p>
-          <p v-if="scope.row.priority === 2" style="color: #ff9752">Medium</p>
-          <p v-if="scope.row.priority === 3" style="color: #ff6666">High</p>
-          <p v-if="scope.row.priority === 4" style="color: #ff0000; font-weight: bold">Urgent</p>
+          <span v-if="scope.row.priority === 1" style="color: #8cd681">Low</span>
+          <span v-if="scope.row.priority === 2" style="color: #ff9752">Medium</span>
+          <span v-if="scope.row.priority === 3" style="color: #ff6666">High</span>
+          <span v-if="scope.row.priority === 4" style="color: #ff0000; font-weight: bold">Urgent</span>
         </template>
       </el-table-column>
-      <el-table-column prop="state" label="State" width="160">
+      <el-table-column prop="state" label="State" width="100">
         <template slot-scope="scope">
-          <p v-if="scope.row.state === 1">New</p>
-          <p v-if="scope.row.state === 2">In Progress</p>
-          <p v-if="scope.row.state === 3">Done</p>
-          <p v-if="scope.row.state === 4">Declined</p>
+          <span v-if="scope.row.state === 1">New</span>
+          <span v-if="scope.row.state === 2">In Progress</span>
+          <span v-if="scope.row.state === 3">Done</span>
+          <span v-if="scope.row.state === 4">Declined</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="hotfixCode" label="Code" width="80">
+        <template slot-scope="scope">
+          #{{scope.row.hotfixCode}}
         </template>
       </el-table-column>
       <el-table-column prop="state" label="State" width="80">
@@ -88,7 +93,7 @@
           this.page = queryInfo.page || this.page;
         }
         this.loading = true;
-        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);
+        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);//${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}
         this.total = fetchHotfixes.data.total;
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;

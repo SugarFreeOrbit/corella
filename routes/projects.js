@@ -258,7 +258,7 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 	}
 });
 
-// endpoint for attach files to issue when edit
+// attaches new files to existing issues
 router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), File.uploadFiles], async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
@@ -286,7 +286,7 @@ router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjec
 	}
 });
 
-// endpoint for get attachment file
+// downloads attachment based on it's id
 router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let projectPermissionQueries = await Promise.all([
@@ -578,7 +578,6 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 				state: req.body.state,
 				author: req.user._id
 			});
-			// websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {

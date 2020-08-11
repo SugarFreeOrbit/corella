@@ -96,7 +96,7 @@
           this.page = queryInfo.page || this.page;
         }
         this.loading = true;
-        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}`);//${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}
+        let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}`);
         this.total = fetchHotfixes.data.total;
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;

@@ -5,7 +5,7 @@
                multiple v-on:change="handleFilesUpload()" hidden/>
         <div class="modal__upload-wrapper">
             <div class="modal__upload-list" style="display: flex">
-                <div class="modal__upload-list--item" v-for="(file, i) in files" v-loading="loading">
+                <div v-if="!loading" class="modal__upload-list--item" v-for="(file, i) in files" v-loading="loading">
                     <span class="remove" @click='removeFile(file, i)'>
                         <i class="el-icon-circle-close"></i>
                     </span>
@@ -15,6 +15,7 @@
                               :height="100">
                     </app-file>
                 </div>
+                <div v-else style="width: 100px;height: 100px" v-loading="loading"></div>
                 <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">+</div>
             </div>
         </div>

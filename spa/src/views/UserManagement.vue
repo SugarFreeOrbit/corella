@@ -173,6 +173,14 @@
 					this.loadUsers();
 					this.editModalVisible = false;
 				} catch (e) {
+          if(e.response.status === 400 && e.response.data.message !== undefined) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data.message
+            });
+            console.log(e);
+            return;
+          }
 					console.log(e);
 					throw e;
 				}
@@ -211,6 +219,14 @@
 					this.loadUsers();
 					this.addModalVisible = false;
 				} catch (e) {
+          if(e.response.status === 400 && e.response.data.message !== undefined) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data.message
+            });
+            console.log(e);
+            return;
+          }
 					console.log(e);
 					throw e;
 				}

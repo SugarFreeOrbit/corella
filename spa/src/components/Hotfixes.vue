@@ -70,6 +70,14 @@
       },
       canAddHotfix() {
         return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.createHotfixes;
+      },
+      isHotfixMoreModal: function() {
+        if(this.$route.query.hotfix === undefined)
+          return false;
+        else if(this.currentHotfix === undefined || this.currentHotfix.hotfixCode === undefined)
+          return false;
+        else
+          return this.$route.query.hotfix === this.currentHotfix.hotfixCode.toString();
       }
     },
     data() {
@@ -82,12 +90,14 @@
         loading: false,
         searchByTitle: '',
         isHotfixAddModal: false,
-        isHotfixMoreModal: false,
         currentHotfix: {}
       }
     },
-    mounted() {
-      this.handleQueryChange();
+    async mounted() {
+      await this.handleQueryChange();
+      if(this.$route.query.hotfix !== undefined) {
+        this.currentHotfix = this.hotfixes.find(hotfix => hotfix.hotfixCode.toString() === this.$route.query.hotfix);
+      }
     },
     methods: {
       handleQueryChange: async function (queryInfo) {
@@ -111,7 +121,7 @@
       },
       showMoreModal: function (data) {
         this.currentHotfix = data;
-        this.isHotfixMoreModal = true;
+        this.$router.push({query: { hotfix: this.currentHotfix.hotfixCode.toString() }});
       },
       closeMoreModal: function (event) {
         if(event === 'DELETE') {
@@ -122,7 +132,7 @@
             }
           }
         }
-        this.isHotfixMoreModal = false;
+        this.$router.push({query: { hotfix: undefined }});
       }
     }
   }

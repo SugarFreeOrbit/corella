@@ -715,7 +715,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				if (req.query.showCompleted === "true") {
 					if (req.query.findByTitle !== undefined) {
 						query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"state": {$gte: 3}},
+							$and: [{"project": req.params.projectId}, {"state": {$eq: 2}},
 								{"title": {$regex: req.query.findByTitle, $options: "i"}}
 							]
 						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
@@ -729,7 +729,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				} else {
 					if (req.query.findByTitle !== undefined) {
 						query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
+							$and: [{"project": req.params.projectId}, {"state": {$lt: 2}},
 								{"title": {$regex: req.query.findByTitle, $options: "i"}}
 							]
 						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');

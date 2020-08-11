@@ -152,6 +152,7 @@
                 };
                 this.$store.commit('moveIssue', payload);
                 this.modalLoading = false;
+                this.close();
                 try {
                     let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
                 } catch (e) {

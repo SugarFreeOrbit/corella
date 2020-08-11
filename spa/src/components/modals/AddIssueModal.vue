@@ -119,7 +119,7 @@ export default {
       } else {
         this.$notify({
           title: 'Error',
-          message: 'To mach files',
+          message: 'Too many files',
           duration: 3000,
           type: 'error'
         });

@@ -12,7 +12,7 @@
                 inactive-text="">
         </el-switch>
       </div>
-      <el-button @click="isHotfixAddModal = true" icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
+      <el-button v-if="canAddHotfix" @click="isHotfixAddModal = true" icon="el-icon-plus" type="primary" class="hotfixes__toolbar__add">Add new hotfix</el-button>
     </div>
     <data-tables-server class="hotfixes__table" :data="hotfixes" :total="total" @query-change="handleQueryChange"
                         :pagination-props="{pageSizes: [15, 30, 50]}" v-loading="loading">
@@ -67,6 +67,9 @@
     computed: {
       projectId: function () {
         return this.$store.state.currentProject._id
+      },
+      canAddHotfix() {
+        return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.createHotfixes;
       }
     },
     data() {

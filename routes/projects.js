@@ -147,12 +147,17 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 		}, {
 			'roles.$': 1
 		});
-		if (currentRoleQuery.roles.length > 0) {
-			currentRoleQuery.roles[0].members = undefined;
-			res.json(currentRoleQuery.roles[0]);
+		if (currentRoleQuery) {
+			if (currentRoleQuery.roles.length > 0) {
+				currentRoleQuery.roles[0].members = undefined;
+				res.json(currentRoleQuery.roles[0]);
+			} else {
+				res.status(404);
+				res.end()
+			}
 		} else {
-			res.status(404);
-			res.end()
+			res.status(403);
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);

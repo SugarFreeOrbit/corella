@@ -138,6 +138,8 @@
                     description: this.currentIssue.description,
                     assignee: this.currentIssue.assignee._id
                 });
+                this.data.title = this.currentIssue.title;
+                this.data.description = this.currentIssue.description;
                 this.modalLoading = false;
             },
             moveIssue: async function(targetColumn) {

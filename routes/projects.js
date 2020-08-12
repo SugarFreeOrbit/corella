@@ -544,6 +544,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
+				branch: req.body.branch,
 				priority: + req.body.priority,
 				state: 1,
 				created: Date.now(),
@@ -574,6 +575,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
+				branch: (req.body.branch) ? req.body.branch : "",
 				priority: req.body.priority,
 				state: req.body.state,
 				author: req.user._id

@@ -14,13 +14,15 @@ dbConnPromise.then(async db => {
 	 let projects = await Project.find({}, {columns: 1});
 	 for (let i= 0; i < projects.length; i++) {
 		 for (let j = 0; j < projects[i].columns.length; j++) {
-		 	try {
-				let nextCode = await Counter.getNextSequenceCount();
-				await Issue.updateOne({_id: projects[i].columns[j]}, {$set: {projectId: projects[i]._id, files: [], issueCode: nextCode}});
-			} catch (e) {
-				console.log(`Woops, something went wrong! Issue id: ${projects[i].columns[j]}, project id: ${projects[i]._id}`);
-				console.log(e);
-			}
+			 for (let k = 0; k < projects[i].columns[j].issues.length; k++) {
+				 try {
+					 let nextCode = await Counter.getNextSequenceCount();
+					 await Issue.updateOne({_id: projects[i].columns[j].issues[k]}, {$set: {projectId: projects[i]._id, files: [], issueCode: nextCode}});
+				 } catch (e) {
+					 console.log(`Woops, something went wrong! Issue id: ${projects[i].columns[j]}, project id: ${projects[i]._id}`);
+					 console.log(e);
+				 }
+			 }
 		 }
 	 }
 	 console.log('Migration has finished');

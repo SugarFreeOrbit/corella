@@ -4,6 +4,9 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useNewUrlParser', true);
 
+const logger = require('../../utils/loggerConfig');
+global.logger = logger;
+
 let CONFIG = require('../../configuration');
 let Project = require('../../models/project');
 let Issue = require('../../models/issue');

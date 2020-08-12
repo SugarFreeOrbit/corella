@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
+const File = require('./file')
 
 const historyEntrySchema = new Schema({
 	timestamp: {
@@ -42,6 +43,9 @@ const commentSchema = new Schema({
 });
 
 const issueSchema = new Schema({
+	projectId: {
+		type: ObjectId,
+	},
 	title: {
 		type: String,
 		required: true
@@ -52,7 +56,10 @@ const issueSchema = new Schema({
 	history: [historyEntrySchema],
 	checklist: [checklistItemSchema],
 	comments: [commentSchema],
-	files: [ObjectId],
+	files: [{
+		type: ObjectId,
+		ref: File
+	}],
 	author: {
 		type: ObjectId,
 		ref: User,
@@ -71,13 +78,25 @@ const issueSchema = new Schema({
 			"orange",
 			"yellow"
 		]
+	},
+	issueCode: {
+		type: Number,
+		required: true
 	}
 });
+
+issueSchema.index({issueCode:1}, {unique:true});
 
 // Expects an array of multer files
 // Issue.methods.addAttachments = async function (localFiles) {
 //
 // };
+issueSchema.statics.checkFileIsAttached = async function (issueId, fileId) {
+	return (await this.countDocuments({
+		_id: issueId,
+		files: fileId
+	})) !== 0;
+};
 
 const Issue = mongoose.model('Issue', issueSchema, 'issues');
 module.exports = Issue;

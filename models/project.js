@@ -98,7 +98,7 @@ const projectRoleSchema = new Schema({
 		required: true
 	},
 	issueTransitionMatrix: {
-		type: Map,
+		type: Map,//ключи - айдишники колонок, значения - массивы айдишников колонок
 		of: [String]
 	},
 	isCreator: {
@@ -110,6 +110,18 @@ const projectRoleSchema = new Schema({
 		required: true
 	},
 	isEditor: {
+		type: Boolean,
+		required: true
+	},
+	createHotfixes: {
+		type: Boolean,
+		required: true
+	},
+	deleteHotfixes: {
+		type: Boolean,
+		required: true
+	},
+	editHotfixes: {
 		type: Boolean,
 		required: true
 	},
@@ -179,6 +191,15 @@ projectSchema.statics.checkEditorPermission = async function (projectId, userId,
 };
 projectSchema.statics.checkManagerPermission = async function (projectId, userId, isAdmin) {
 	return await this.checkPermission(projectId, userId, 'isManager', isAdmin);
+};
+projectSchema.statics.checkCreateHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'createHotfixes', isAdmin);
+};
+projectSchema.statics.checkEditHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'editHotfixes', isAdmin);
+};
+projectSchema.statics.checkDeleteHotfixesPermission = async function (projectId, userId, isAdmin) {
+	return await this.checkPermission(projectId, userId, 'deleteHotfixes', isAdmin);
 };
 projectSchema.statics.checkReaderPermission = async function (projectId, userId, isAdmin) {
 	let permissionTest = await this.findOne({

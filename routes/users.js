@@ -2,44 +2,51 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const validator = require('../utils/validation/validator');
+const emailValidator = require("email-validator");
 
-router.put('/', function (req, res) {
-	if (req.body.username && req.body.password && req.body.email && typeof req.body.isAdmin === 'boolean') {
-		bcrypt.hash(req.body.password, 10).then(hash => {
-			let newUser = new User({
-				username: req.body.username,
-				password: hash,
-				isAdmin: req.body.isAdmin,
-				email: req.body.email
-			});
-			newUser.save().then(() => {
-				res.status(201);
-				res.end();
-				newUser.setAvatar().then(() => {
-					logger.debug('Avatar generated');
+router.put('/', [validator.checkBody('newUser')], function (req, res) {
+	if (req.user.isAdmin) {
+		if(emailValidator.validate(req.body.email)){
+			bcrypt.hash(req.body.password, 10).then(hash => {
+				let newUser = new User({
+					username: req.body.username,
+					password: hash,
+					isAdmin: req.body.isAdmin,
+					email: req.body.email
+				});
+				newUser.save().then(() => {
+					res.status(201);
+					res.end();
+					newUser.setAvatar().then(() => {
+						logger.debug('Avatar generated');
+					}).catch(err => {
+						logger.error(err.message);
+					});
 				}).catch(err => {
-					logger.error(err.message);
+					res.status(400);
+					res.json({message: err.message});
 				});
 			}).catch(err => {
-				res.status(400);
-				res.json({message: err.message});
+				logger.error(err.message);
+				res.status(500);
+				res.end();
 			});
-		}).catch(err => {
-			logger.error(err.message);
-			res.status(500);
+		} else{
+			res.status(400);
 			res.end();
-		});
-	} else {
-		res.status(400);
+		}
+	}
+	else {
+		res.status(403);
 		res.end();
 	}
 });
 
-router.get('/', async function (req, res, next) {
-	if (!isNaN(parseInt(req.query.limit)) && !isNaN(parseInt(req.query.page))) {
+router.get('/',[validator.checkQuery('paginationQuery')], async function (req, res, next) {
+	if (req.user.isAdmin) {
 		try {
-			let limit = parseInt(req.query.limit);
-			let page = parseInt(req.query.page);
+			let limit = parseInt(req.query.limit) || 10;
+			let page = parseInt(req.query.page) || 1;
 			let query = await Promise.all([
 				User.find({}, {username: 1, email: 1, isAdmin: 1}).skip((page - 1) * limit).limit(limit),
 				User.estimatedDocumentCount()
@@ -52,29 +59,43 @@ router.get('/', async function (req, res, next) {
 		} catch (e) {
 			next(e);
 		}
-	} else {
+	}
+	else {
+		res.status(403);
+		res.end();
+	}
+});
+
+router.get('/:userId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	if (req.user.isAdmin) {
 		try {
-			let users = await User.find({}, {username: 1, email: 1});
-			res.json(users);
+			let user = await User.findById(req.params.userId, {username: 1});
+			if (!user) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				res.json(user)
+			}
 		} catch (e) {
-			next(e);
+			next(e)
 		}
 	}
-});
-
-router.get('/:userId', async function (req, res, next) {
-	try {
-		let user = await User.findById(req.params.userId, {username: 1});
-		res.json(user)
-	} catch (e) {
-		next(e)
+	else {
+		res.status(403);
+		res.end();
 	}
 });
 
-router.delete('/:userId', function (req, res) {
+router.delete('/:userId', [validator.checkParamsForObjectIds()], function (req, res) {
 	if(req.user.isAdmin) {
-		User.deleteOne({_id: req.params.userId}).then(() => {
-			res.status(200);
+		User.deleteOne({_id: req.params.userId}).then((result) => {
+			if (result.n < 1) {
+				res.status(404);
+			}
+			else {
+				res.status(200);
+			}
 			res.end();
 		}).catch(err => {
 			res.status(400);
@@ -86,18 +107,35 @@ router.delete('/:userId', function (req, res) {
 	}
 });
 
-router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res) {
-	if(req.user.isAdmin || req.user._id === req.params.userId) {
+router.patch('/:userId', [validator.checkParamsForObjectIds(), validator.checkBody('updateUser')], function (req, res) {
+	if(req.user.isAdmin) {
 		let update = req.body;
 		if(update._id) {
 			delete update._id;
 		}
-		update.password = bcrypt.hashSync(update.password, 10);
-		User.findByIdAndUpdate(req.params.userId, update).then(() => {
-			res.status(200);
+		if (update.password) {
+			update.password = bcrypt.hashSync(update.password, 10);
+		}
+		if(!emailValidator.validate(req.body.email)){
+			res.status(400);
+			res.json("Not valid email");
+			return;
+		}
+		User.updateOne({_id: req.params.userId}, update).then((result) => {
+			if (result.n < 1) {
+				res.status(404);
+			}
+			else {
+				res.status(200);
+			}
 			res.end();
 		}).catch(err => {
 			res.status(400);
+			if (err.name === "MongoError") {
+				if (err.code === 11000) {
+					err.message = `User with username "${update.username}" already exists`;
+				}
+			}
 			res.json({message: err.message});
 		});
 	} else {
@@ -106,7 +144,7 @@ router.patch('/:userId', [validator.checkBody('updateUser')], function (req, res
 	}
 });
 
-router.get('/:userId/avatar', async function (req, res) {
+router.get('/:userId/avatar', [validator.checkParamsForObjectIds()], async function (req, res) {
 	try {
 		let downloadStream = await User.downloadAvatarByUserId(req.params.userId);
 		downloadStream.on('file', file => {

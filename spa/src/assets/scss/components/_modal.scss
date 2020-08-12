@@ -1,0 +1,57 @@
+.modal {
+
+  &__upload-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+    float: left;
+    width: 100%;
+  }
+
+  &__upload-list {
+    position: relative;
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &--item {
+      position: relative;
+
+      >.remove {
+        position: absolute;
+        top: -15px;
+        right: -5px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+    }
+
+    &--btn-add {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      border: 1px solid #87a330;
+      border-radius: 5px;
+      color: #87a330;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 400;
+      font-size: 24px;
+      transition: 0.3s;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #87a330;
+        color: white;
+      }
+
+    }
+
+  }
+}

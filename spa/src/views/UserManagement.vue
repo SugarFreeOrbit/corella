@@ -47,7 +47,7 @@
 				<el-table-column prop="email" label="E-mail"></el-table-column>
 				<el-table-column prop="isAdmin" label="Admin" width="auto" custom>
 					<template slot-scope="props">
-						<el-switch v-model="props.row.isAdmin" @change="changeRole(props.row._id, props.row.isAdmin)"/>
+						<el-switch v-model="props.row.isAdmin" @change="changeRole(props.row._id, props.row)"/>
 					</template>
 				</el-table-column>
 				<el-table-column custom width="auto">
@@ -110,8 +110,21 @@
 				this.page = queryInfo.page;
 				this.loadUsers();
 			},
-			changeRole: async function (userId, isAdmin) {
-				await this.$http.patch(`/users/${userId}`, {isAdmin});
+			changeRole: async function (userId, data) {
+			  try {
+          await this.$http.patch(`/users/${userId}`, data);
+        } catch (e) {
+          if(e.response.status === 400) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data
+            });
+            data.isAdmin = !data.isAdmin;
+            console.log(e);
+            return;
+          }
+			    console.log(e);
+        }
 			},
 			deleteUser: async function(userId) {
 				await this.$confirm('This will permanently delete the user. Continue?', 'Warning', {
@@ -137,6 +150,20 @@
 				this.editModalVisible = true;
 			},
 			submitEditModal: async function() {
+        if(this.edit.username === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Username cannot be empty'
+          });
+          return;
+        }
+        if(this.edit.email === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Email cannot be empty'
+          });
+          return;
+        }
 				let update = {
 					username: this.edit.username,
 					isAdmin: this.edit.isAdmin,
@@ -146,27 +173,73 @@
 				if (update.password === '') {
 					delete update.password;
 				}
+				let result = update.email.match(/^[\w.-]+?@\w+?\.\w{2,6}$/);
+        if(result === null) {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Invalid email!'
+          });
+          return;
+        }
 				try {
 					await this.$http.patch(`/users/${this.edit._id}`, update);
 					this.loadUsers();
 					this.editModalVisible = false;
 				} catch (e) {
+          if(e.response.status === 400 && e.response.data.message !== undefined) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data.message
+            });
+            console.log(e);
+            return;
+          }
 					console.log(e);
 					throw e;
 				}
 			},
 			submitAddModal: async function() {
+        if(this.add.username === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Username cannot be empty'
+          });
+          return;
+        }
+        if(this.add.email === '') {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Email cannot be empty'
+          });
+          return;
+        }
 				let newUser = {
 					username: this.add.username,
 					isAdmin: this.add.isAdmin,
 					password: this.add.password,
 					email: this.add.email
 				};
+        let result = newUser.email.match(/^[\w.-]+?@\w+?\.\w{2,6}$/);
+        if(result === null) {
+          this.$notify.error({
+            title: 'Error',
+            message: 'Invalid email!'
+          });
+          return;
+        }
 				try {
 					await this.$http.put('/users', newUser);
 					this.loadUsers();
 					this.addModalVisible = false;
 				} catch (e) {
+          if(e.response.status === 400 && e.response.data.message !== undefined) {
+            this.$notify.error({
+              title: 'Error',
+              message: e.response.data.message
+            });
+            console.log(e);
+            return;
+          }
 					console.log(e);
 					throw e;
 				}

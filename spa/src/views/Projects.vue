@@ -75,6 +75,15 @@
 							<el-form-item label="Edit">
 								<el-switch v-model="projectBuilder.newRole.isEditor"></el-switch>
 							</el-form-item>
+							<el-form-item label="Create Hotfixes">
+								<el-switch v-model="projectBuilder.newRole.createHotfixes"></el-switch>
+							</el-form-item>
+							<el-form-item label="Edit Hotfixes">
+								<el-switch v-model="projectBuilder.newRole.editHotfixes"></el-switch>
+							</el-form-item>
+							<el-form-item label="Delete Hotfixes">
+								<el-switch v-model="projectBuilder.newRole.deleteHotfixes"></el-switch>
+							</el-form-item>
 							<el-form-item v-for="startingColumn in projectBuilder.columns" v-bind:key="startingColumn.name" class="projectBuilder__content__roles__add__transitions">
 								{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="projectBuilder.newRole.itm[startingColumn.name]" multiple placeholder="Select transitions">
 									<el-option v-for="targetColumn in projectBuilder.columns" :label="targetColumn.name" :key="targetColumn.name" :value="targetColumn.name" v-if="startingColumn.name !== targetColumn.name"></el-option>
@@ -142,6 +151,9 @@
 						isCreator: false,
 						isDestroyer: false,
 						isEditor: false,
+            createHotfixes: false,
+            editHotfixes: false,
+            deleteHotfixes: false,
 						itm: {},
 						columns: []
 					}
@@ -230,6 +242,9 @@
 						isEditor: this.projectBuilder.newRole.isEditor,
 						isDestroyer: this.projectBuilder.newRole.isDestroyer,
 						isCreator: this.projectBuilder.newRole.isCreator,
+						createHotfixes: this.projectBuilder.newRole.createHotfixes,
+						editHotfixes: this.projectBuilder.newRole.editHotfixes,
+						deleteHotfixes: this.projectBuilder.newRole.deleteHotfixes,
 						issueTransitionMatrix: this.projectBuilder.newRole.itm
 					});
 					this.projectBuilder.newRole.visible = false;
@@ -261,6 +276,9 @@
 							isCreator: role.isCreator,
 							isManager: role.isManager,
 							isDestroyer: role.isDestroyer,
+							createHotfixes: role.createHotfixes,
+							editHotfixes: role.editHotfixes,
+							deleteHotfixes: role.deleteHotfixes,
 							issueTransitionMatrix: sanitizedItm
 						});
 					}
@@ -293,6 +311,9 @@
 								isCreator: false,
 								isDestroyer: false,
 								isEditor: false,
+								createHotfixes: false,
+								editHotfixes: false,
+								deleteHotfixes: false,
 								itm: {},
 								columns: []
 							}

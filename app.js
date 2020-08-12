@@ -45,6 +45,7 @@ app.use(cors());
 const usersRouter = require('./routes/users');
 const indexRouter = require('./routes/index');
 const projectsRouter = require('./routes/projects');
+const configRouter = require('./routes/config')
 // const issuesRouter = require('./routes/issues');
 
 //Add middleware and start the HTTP listener
@@ -53,10 +54,11 @@ app.use(bodyParser.json());
 app.use(morgan("combined", { stream: logger.stream }));
 app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 app.use('/projects', passport.authenticate('jwt', {session: false}), projectsRouter);
+app.use('/config', passport.authenticate('jwt', {session: false}), configRouter);
 // app.use('/issues', passport.authenticate('jwt', {session: false}), issuesRouter);
 app.use('/', indexRouter);
 app.use(function (err, req, res, next) {
-	if(err.name === 'ValidationError' || err.name === 'CastError') {
+	if(err.name === 'ValidationError' || err.name === 'CastError' || err.name === 'MulterError') {
 		res.status(400);
 		res.json(err.message);
 	} else {
@@ -74,14 +76,23 @@ let dbConnPromise = mongoose.connect(CONFIG.mongodb.connection);
 dbConnPromise.then((db) => {
 	logger.log('info', 'Connected to database!');
 	bcrypt.hash(CONFIG.superadmin.password, 10).then(hash => {
-		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {$set: {
+		mongoose.connection.db.collection('users').findOneAndUpdate({username: "superadmin"}, {
+			$set: {
 				username: "superadmin",
 				password: hash,
 				email: CONFIG.superadmin.email,
 				isAdmin: true
-			}}, {upsert: true}).then((superUser) => {
+			}
+		}, {upsert: true}).then((superUser) => {
 			global.CONFIG.superadmin.id = superUser.value._id;
 			logger.log('info', 'Assured superadmin user')
+		});
+	});
+	mongoose.connection.db.createCollection('globalConfig', {capped: true, size: 999999, max: 1}).then((collection) => {
+		collection.updateOne({}, { $setOnInsert: {
+			allowedFileTypes: ['txt', 'png', 'jpg', 'jpeg']
+		}}, { upsert: true }).then(() => {
+			logger.info('Assured the config collection');
 		});
 	});
 	server.listen(CONFIG.server.port);

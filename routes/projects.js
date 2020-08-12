@@ -1,11 +1,16 @@
 const router = require('express').Router();
+const ObjectId = require('mongoose').Types.ObjectId;
 const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
+const Hotfix = require('../models/hotfix');
+const File = require('../models/file');
+const Counter = require('../models/counter');
 const md5 = require('md5');
-const multer = require('multer');
-const upload = multer({dest: '../tmp'});
+//const multer = require('multer');
+//const upload = multer({dest: '../tmp'});
 const websocketService = require('../services/websocketService');
+const contentDisposition = require('content-disposition');
 
 router.put('/', [validator.checkBody('newProject')],  function (req, res) {
 	if(req.user.isAdmin) {
@@ -143,11 +148,17 @@ router.get('/:projectId/roles/me', [validator.checkParamsForObjectIds()], async 
 		}, {
 			'roles.$': 1
 		});
-		if (currentRoleQuery.roles.length > 0) {
-			res.json(currentRoleQuery.roles[0]);
+		if (currentRoleQuery) {
+			if (currentRoleQuery.roles.length > 0) {
+				currentRoleQuery.roles[0].members = undefined;
+				res.json(currentRoleQuery.roles[0]);
+			} else {
+				res.status(404);
+				res.end()
+			}
 		} else {
-			res.status(404);
-			res.end()
+			res.status(403);
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -207,13 +218,21 @@ router.patch('/:projectId/roles', [validator.checkBody('roles'), validator.check
 });
 
 //issue manipulations go here
-router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()], async function (req, res, next) {
+router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uploadFiles, validator.checkBody('newIssue')], async function (req, res, next) {
 	try {
 		if(await Project.checkCreatorPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+			}
+			let issueCode = await Counter.getNextSequenceCount();
 			let newIssue = new Issue({
+				projectId: req.params.projectId,
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
+				files: files,
+				issueCode: issueCode,
 				author: req.user._id
 			});
 			await newIssue.save();
@@ -229,8 +248,67 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 			res.status(201);
 			res.end();
 		} else {
+			File.clearTempFiles(req.files);
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		File.clearTempFiles(req.files);
+		next(e);
+	}
+});
+
+// attaches new files to existing issues
+router.post('/:projectId/issues/:issueId/attach', [validator.checkParamsForObjectIds(), File.uploadFiles], async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+				await Issue.findByIdAndUpdate(req.params.issueId, {
+					$push: {files}
+				});
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+			}
+			res.json(files);
+		} else {
+			File.clearTempFiles(req.files);
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		File.clearTempFiles(req.files);
+		next(e);
+	}
+});
+
+// downloads attachment based on it's id
+router.get('/:projectId/issues/:issueId/attachment/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId),
+			Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin),
+			Issue.checkFileIsAttached(req.params.issueId, req.params.fileId)
+		]);
+		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])) {
+			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
+			downloadStream.on('file', file => {
+				res.header('Content-Disposition', contentDisposition(file.filename));
+				res.type(file.contentType);
+			});
+			downloadStream.on('data', chunk => {
+				res.write(chunk);
+			});
+			downloadStream.on('end', () => {
+				res.end();
+			});
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -239,21 +317,30 @@ router.put('/:projectId/issues', [validator.checkBody('newIssue'), validator.che
 
 router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
-		if ((projectPermissionQueries[1] && projectPermissionQueries[0])) {
-			let deleteIssue = Issue.findByIdAndRemove(req.params.issueId);
-			let removeIssueFromColumn = Project.findByIdAndUpdate(req.params.projectId, {
+		if ((await Project.checkDestroyerPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let deleteIssue = await Issue.findOneAndDelete({
+				_id: ObjectId(req.params.issueId),
+				projectId: ObjectId(req.params.projectId)
+			});
+			if (!deleteIssue) {
+					res.status(404);
+					res.end();
+					return;
+			}
+
+			await Project.findByIdAndUpdate(req.params.projectId, {
 				$pull: {
 					'columns.$[].issues': req.params.issueId
 				}
 			});
-			await Promise.all([removeIssueFromColumn, deleteIssue]);
+
+			await Promise.all(deleteIssue.files.map(File.deleteById));
 			websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -262,20 +349,25 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 
 router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
-		let projectPermissionQueries = await Promise.all([Project.validateProjectToIssueRelation(req.params.projectId, req.params.issueId), Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
-		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
-			await Issue.findByIdAndUpdate(req.params.issueId, {
+		if((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let matchedIssuesCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
 				author: req.user._id
-			});
-			websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
-			res.status(200);
-			res.end();
+			})).n;
+			if(matchedIssuesCount === 0) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+				res.status(200);
+				res.end();
+			}
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -296,7 +388,7 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 			res.json(project);
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -306,7 +398,31 @@ router.get('/:projectId/columns', [validator.checkParamsForObjectIds()], async f
 router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
-			let issue = await Issue.findById(req.params.issueId);
+			let issue = await Issue.findOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+				return;
+			}
+			res.json(issue);
+		} else {
+			res.status(401);
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+router.get('/:projectId/issues', [validator.checkParamsForObjectIds()], async function (req, res, next) {
+	try {
+		if(await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let issue = await Issue.findOne({issueCode: req.query.issueCode, projectId: ObjectId(req.params.projectId)}).populate('files', 'filename length');
+			if(!issue) {
+				res.status(404);
+				res.end();
+				return;
+			}
 			res.json(issue);
 		} else {
 			res.status(401);
@@ -317,10 +433,35 @@ router.get('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds()],
 	}
 });
 
+router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req, res, next) {
+	try {
+		if ((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
+			let issueModifiedCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
+				$pull: { files: req.params.fileId }
+			})).nModified;
+			if(issueModifiedCount=== 0) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				await File.deleteById(ObjectId(req.params.fileId));
+				websocketService.emitUpdatedIssue(req.params.issueId, req.params.projectId);
+				res.status(200);
+				res.end();
+			}
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body, req.user.isAdmin);
-		if (originalColumn) {
+		if (originalColumn !== req.body.targetColumn) {
 			// await Project.findOneAndUpdate({
 			// 	_id: req.params.projectId,
 			// 	"columns.id": originalColumn
@@ -370,7 +511,7 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 			res.end();
 		} else {
 			res.status(403);
-			res.end()
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -384,11 +525,242 @@ router.get('/:projectId/meta', [validator.checkParamsForObjectIds()], async func
 			res.json(projectMeta);
 		} else {
 			res.status(403);
-			res.end();
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e)
 	}
 });
+
+
+router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.uploadFiles, validator.checkBody('newHotfix')], async function (req, res, next) {
+	try {
+		if (await Project.checkCreateHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+			}
+			let hotfixCode = await Counter.getNextSequenceCount();
+			let newHotfix = new Hotfix({
+				title: req.body.title,
+				description: req.body.description,
+				priority: + req.body.priority,
+				state: 1,
+				created: Date.now(),
+				files: files,
+				project: ObjectId(req.params.projectId),
+				hotfixCode: hotfixCode,
+				author: ObjectId(req.user._id)
+			});
+			await newHotfix.save();
+			res.status(200);
+			res.end();
+		} else {
+			File.clearTempFiles(req.files);
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		next(e);
+	}
+})
+
+router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfix'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
+		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
+			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+				title: req.body.title,
+				description: (req.body.description) ? req.body.description : "",
+				priority: req.body.priority,
+				state: req.body.state,
+				author: req.user._id
+			});
+			res.status(200);
+			res.end();
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	} catch (e) {
+		next(e);
+	}
+});
+
+router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForObjectIds(), File.uploadFiles], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let files = [];
+			if (req.files) {
+				files = await Promise.all(req.files.map(File.uploadToGridFS));
+				await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
+					$push: {files}
+				});
+				websocketService.emitUpdatedIssue(req.params.hotfixId, req.params.projectId);
+			}
+			res.json(files);
+		}
+		else{
+			File.clearTempFiles(req.files);
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}catch (e) {
+		File.clearTempFiles(req.files);
+		next(e);
+	}
+});
+
+router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (req, res, next){
+	try{
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let modified = (await Hotfix.updateOne({_id: ObjectId(req.params.hotfixId)}, {
+				$pull: { files: req.params.fileId }
+			}));
+			if(modified.nModified === 0) {
+				res.status(404);
+				res.end();
+			}
+			else {
+				await File.deleteById(ObjectId(req.params.fileId));
+				res.status(200);
+				res.json("You don't have permission");
+			}
+		}
+	}catch (e) {
+		File.deleteById(ObjectId(req.params.fileId));
+		next(e);
+	}
+});
+
+router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectIds()], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Project.checkDeleteHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let deleteHotfix = await Hotfix.findByIdAndRemove(req.params.hotfixId);
+			await Promise.all(deleteHotfix.files.map(File.deleteById));
+			//websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
+			res.status(200);
+			res.end();
+		}else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}catch (e) {
+		next(e);
+	}
+});
+
+router.get('/:projectId/hotfixes/:hotfixId/attached/:fileId', [validator.checkParamsForObjectIds()], async function (req, res, next){
+	try {
+		let projectPermissionQueries = await Promise.all([
+			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
+			Hotfix.checkFileIsAttached(req.params.hotfixId, req.params.fileId),
+			Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)
+		]);
+		if ((projectPermissionQueries[2] && projectPermissionQueries[1] && projectPermissionQueries[0])){
+			let downloadStream = File.downloadById(ObjectId(req.params.fileId));
+			downloadStream.on('file', file => {
+				res.header('Content-Disposition', contentDisposition(file.filename));
+				res.type(file.contentType);
+			});
+			downloadStream.on('data', chunk => {
+				res.write(chunk);
+			});
+			downloadStream.on('end', () => {
+				res.end();
+			});
+		} else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}catch (e) {
+		next(e);
+	}
+})
+
+router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validator.checkQuery('getHotfixesQuery')],
+	async function (req, res, next) {
+	try {
+		if (await Project.checkReaderPermission(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			if (req.query.hotfixCode) {
+				let hotfix = await Hotfix.findOne({
+					hotfixCode: req.query.hotfixCode,
+					project: ObjectId(req.params.projectId)
+				}).populate('files', 'filename length');
+				if (hotfix) {
+					res.json(hotfix);
+				} else {
+					res.status(404);
+					res.end();
+				}
+			} else {
+				let limit = parseInt(req.query.limit) || 10;
+				let page = parseInt(req.query.page) || 1;
+				let sortingParams = {
+					priority: -1,
+					state: 1,
+					created: -1
+				};
+				let query;
+				if (req.query.showCompleted === "true") {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"state": {$gte: 2}},
+								{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$gte: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
+				} else {
+					if (req.query.findByTitle !== undefined) {
+						query = await Hotfix.find({
+							$and: [{"project": req.params.projectId}, {"state": {$lt: 2}},
+								{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							]
+						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					} else {
+						query = await Hotfix.find({
+							project: req.params.projectId,
+							"state": {$lt: 3}
+						}).sort(sortingParams)
+							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+					}
+				}
+				res.json({
+					total: query.length,
+					pageCount: Math.ceil(query.length / limit),
+					data: query
+				});
+			}
+		}else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}catch (e) {
+		next(e);
+	}
+});
+
+
 
 module.exports = router;

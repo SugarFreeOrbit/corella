@@ -37,7 +37,8 @@ const store = new Vuex.Store({
 			username
 		},
 		currentProject: {},
-		socket
+		socket,
+		allowedFiles: []
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
 			localStorage.setItem('jwt', jwt);
@@ -77,12 +78,15 @@ const store = new Vuex.Store({
 		unsetCurrentProject(state) {
 			state.currentProject = {};
 		},
-		syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, issueTransitionMatrix}) {
+		syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, createHotfixes, editHotfixes, deleteHotfixes, issueTransitionMatrix}) {
 			state.currentProject.role = {
 				isManager,
 				isEditor,
 				isCreator,
 				isDestroyer,
+				createHotfixes,
+				editHotfixes,
+				deleteHotfixes,
 				issueTransitionMatrix
 			}
 		},
@@ -110,6 +114,9 @@ const store = new Vuex.Store({
 				state.currentProject.columns[originalColIndex].issues = state.currentProject.columns[originalColIndex].issues.filter(i => i !== moveOperation.issueId);
 				state.currentProject.columns[targetColIndex].issues.splice(moveOperation.targetPosition, 0, moveOperation.issueId);
 			}
+		},
+		setAllowedFiles(state, data) {
+			state.allowedFiles = data;
 		}
 	}, actions: {
 		logOut({commit}) {
@@ -120,7 +127,7 @@ const store = new Vuex.Store({
 			if(!state.user.isAdmin) {
 				try {
 					let role = await axios.get(`/projects/${state.currentProject._id}/roles/me`);
-					commit('syncCurrentProjectRole', role.data)
+					commit('syncCurrentProjectRole', role.data);
 				} catch (e) {
 					console.log(e)
 				}

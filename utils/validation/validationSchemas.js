@@ -52,6 +52,18 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
+					createHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					deleteHotfixes: {
+						type: "boolean",
+						required: true
+					},
+					editHotfixes: {
+						type: "boolean",
+						required: true
+					},
 					issueTransitionMatrix: {
 						type: "object"
 					}
@@ -122,6 +134,18 @@ const roles = {
 				required: true
 			},
 			isEditor: {
+				type: "boolean",
+				required: true
+			},
+			createHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			deleteHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			editHotfixes: {
 				type: "boolean",
 				required: true
 			},
@@ -197,13 +221,19 @@ const updateUser = {
 	type: 'object',
 	properties: {
 		username: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		email: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		password: {
-			type: "string"
+			type: "string",
+			minLength: 3,
+			maxLength: 50
 		},
 		isAdmin: {
 			type: "boolean"
@@ -211,4 +241,99 @@ const updateUser = {
 	}
 };
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser};
+const newUser = Object.assign({}, updateUser);
+newUser.required = ['username', 'password', 'email', 'isAdmin'];
+
+const newHotfix = {
+	type: "object",
+	properties: {
+		title: {
+			type: "string",
+			required: true
+		},
+		description: {
+			type: "string"
+		},
+		priority: {
+			type: "string",
+			enum: ['1', '2', '3', '4'],
+			required: true
+		}
+	}
+};
+
+const updateHotfix = {
+	type: "object",
+	properties: {
+		title: {
+			type: "string",
+			required: true
+		},
+		description: {
+			type: "string"
+		},
+		priority: {
+			type: "number",
+			minimum: 1,
+			maximum: 4,
+			required: true
+		},
+		state: {
+			type: "number",
+			required: true
+		}
+	}
+};
+
+const paginationQuery = {
+	type: 'object',
+	properties: {
+		limit: {
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
+		},
+		page: {
+			type: 'string',
+			pattern: "^[0-9]{1,4}$"
+		},
+	}
+};
+
+const getHotfixesQuery = {
+	type: 'object',
+	properties: {
+		showCompleted: {
+			type: 'string',
+			enum: ['true', 'false']
+		}
+		// sortByPriority: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// },
+		// sortByState: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// },
+		// sortByCreation: {
+		// 	type: 'string',
+		// 	enum: ['ASC', 'DESC']
+		// }
+	}
+};
+
+const globalConfig = {
+	type: 'object',
+	properties: {
+		allowedFileTypes: {
+			type: 'array',
+			required: true,
+			items: {
+				type: 'string'
+			}
+		}
+	}
+}
+
+Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
+
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig};

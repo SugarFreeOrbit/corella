@@ -9,10 +9,20 @@ Validator.prototype.customFormats.objectId = function(input) {
 
 const validator = function () {
 	this.v = new Validator();
-	this.checkBody = ((schema) => {
+		this.checkBody = ((schema) => {
 		return ((req, res, next) => {
 			let validationResult = this.v.validate(req.body, validationSchemas[schema]);
-			console.log(validationResult.errors);
+			if (validationResult.errors.length) {
+				res.status(400);
+				res.end();
+			} else {
+				next();
+			}
+		})
+	});
+	this.checkQuery = ((schema) => {
+		return ((req, res, next) => {
+			let validationResult = this.v.validate(req.query, validationSchemas[schema]);
 			if (validationResult.errors.length) {
 				res.status(400);
 				res.end();

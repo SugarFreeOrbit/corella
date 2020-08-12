@@ -43,7 +43,7 @@
           #{{scope.row.hotfixCode}}
         </template>
       </el-table-column>
-      <el-table-column prop="state" label="State" width="80">
+      <el-table-column label="Actions" width="80">
         <template slot-scope="scope">
           <el-button @click="showMoreModal(scope.row)" class="btn-edit" type="primary" icon="el-icon-view" circle></el-button>
         </template>

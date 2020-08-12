@@ -92,7 +92,7 @@ dbConnPromise.then((db) => {
 		collection.updateOne({}, { $setOnInsert: {
 			allowedFileTypes: ['txt', 'png', 'jpg', 'jpeg']
 		}}, { upsert: true }).then(() => {
-			logger.info('Create config collection');
+			logger.info('Assured the config collection');
 		});
 	});
 	server.listen(CONFIG.server.port);

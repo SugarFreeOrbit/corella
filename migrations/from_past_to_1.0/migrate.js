@@ -12,7 +12,7 @@ dbConnPromise.then(async db => {
 	 let projects = await Project.find({}, {columns: 1});
 	 projects.forEach(async project => {
 	 	project.columns.async.forEach(async issue => {
-	 		await Issue.updateOne({_id: issue}, {projectId: project._id});
+	 		await Issue.updateOne({_id: issue}, {$set: {projectId: project._id, files: []}});
 		});
 	 });
 });

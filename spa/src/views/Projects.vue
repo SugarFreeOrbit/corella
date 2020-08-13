@@ -107,14 +107,16 @@
 			<div class="projects__tools" v-if="isAdmin">
 				<el-button round icon="el-icon-plus" type="primary" @click="projectBuilder.visible = true">Create new project</el-button>
 			</div>
-			<el-card v-for="project in projects" class="project" v-bind:key="project._id">
-				<div slot="header" class="clearfix">
-					<span><router-link :to="'/projects/' + project._id" class="project__name">{{project.name}}</router-link></span>
-				</div>
-				<div v-if="project.description !== undefined">
-					{{project.description}}
-				</div>
-			</el-card>
+      <div class="projects__list">
+        <el-card v-for="project in projects" class="project" v-bind:key="project._id">
+          <div slot="header" class="clearfix">
+            <span><router-link :to="'/projects/' + project._id" class="project__name">{{project.name}}</router-link></span>
+          </div>
+          <div v-if="project.description !== undefined">
+            {{project.description}}
+          </div>
+        </el-card>
+      </div>
 		</div>
 	</div>
 </template>
@@ -361,6 +363,13 @@
 			padding-top: 25px;
 			box-sizing: border-box;
 		}
+
+    &__list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
 	}
 	.project {
 		width: 350px;

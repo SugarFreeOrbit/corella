@@ -97,16 +97,8 @@
                     this.loading = false;
                     return;
                 }
-                if(this.newHotfix.description !== '') {
-                    formData.append('description', this.newHotfix.description);
-                } else {
-                    this.$notify.error({
-                        title: 'Error',
-                        message: 'Description must not be empty'
-                    });
-                    this.loading = false;
-                    return;
-                }
+                if(this.newHotfix.description !== '')
+                  formData.append('description', this.newHotfix.description);
                 formData.append('priority', this.newHotfix.priority);
                 this.newHotfix.files.forEach((file, i) => {
                     formData.append('files', file);

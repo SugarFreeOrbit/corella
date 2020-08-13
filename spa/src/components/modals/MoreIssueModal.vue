@@ -141,6 +141,7 @@
                 this.data.title = this.currentIssue.title;
                 this.data.description = this.currentIssue.description;
                 this.modalLoading = false;
+                this.close();
             },
             moveIssue: async function(targetColumn) {
                 this.modalLoading = true;

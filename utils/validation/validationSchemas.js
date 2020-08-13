@@ -254,6 +254,9 @@ const newHotfix = {
 		description: {
 			type: "string"
 		},
+		branch: {
+			type:"string"
+		},
 		priority: {
 			type: "string",
 			enum: ['1', '2', '3', '4'],
@@ -270,6 +273,9 @@ const updateHotfix = {
 			required: true
 		},
 		description: {
+			type: "string"
+		},
+		branch: {
 			type: "string"
 		},
 		priority: {

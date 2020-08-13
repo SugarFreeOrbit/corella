@@ -102,14 +102,7 @@
                     return;
                 }
                 if(this.newHotfix.description !== '') {
-                    formData.append('description', this.newHotfix.description);
-                } else {
-                    this.$notify.error({
-                        title: 'Error',
-                        message: 'Description must not be empty'
-                    });
-                    this.loading = false;
-                    return;
+                  formData.append('description', this.newHotfix.description);
                 }
                 formData.append('branch', this.newHotfix.branch);
                 formData.append('priority', this.newHotfix.priority);

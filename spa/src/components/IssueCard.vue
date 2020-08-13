@@ -105,8 +105,11 @@
       transition: 0.3s;
       display: flex;
       >span {
-        display: block;
+        display: inline-block;
         transition: 0.3s;
+        margin-right: 5px;
+        max-width: 180px;
+        word-wrap: break-word;
       }
 			&:hover {
 				color: #a9c737;

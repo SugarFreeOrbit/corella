@@ -204,4 +204,9 @@
         display: flex;
         flex-wrap: wrap;
     }
+
+    .issue__content__control__move {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
 </style>

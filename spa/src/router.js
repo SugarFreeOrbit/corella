@@ -10,6 +10,7 @@ import Config from "./views/Config";
 import Board from "./components/Board";
 import Hotfixes from "./components/Hotfixes";
 import RolesAndMembers from "./components/RolesAndMembers";
+import Page404 from "@/views/Page404";
 
 Vue.use(Router);
 
@@ -69,6 +70,11 @@ const router = new Router({
 				requiresAuth: true
 			},
 			props: true
+		},
+		{
+			path: '*',
+			name: 'page404',
+			component: Page404
 		},
 		// {
 		// 	path: '/about',

@@ -1,8 +1,9 @@
 <template>
   <div class="page404">
-    <h1>This page does not exist.</h1>
-    <h2>Go to <router-link to="/">Home page</router-link></h2>
-    <img src="https://bench.co/gifs/bigfoot.gif" alt="">
+    <div>
+      <img src="../assets/birb.svg" alt="">
+      <h1>Whoops, the page you are looking for is either unavailable to you or does not exist!</h1>
+    </div>
   </div>
 </template>
 
@@ -16,26 +17,26 @@ export default {
 
 <style scoped lang="scss">
 .page404 {
-  padding-top: 100px;
-  background-color: #EFEDE8;
+  background-color: #87A330;
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  > h1 {
-    margin: 0 auto;
-    width: max-content;
-  }
+  > div {
+    margin-top: -200px;
+    text-align: center;
 
-  > h2 {
-    margin: 10px auto;
-    width: max-content;
-    font-size: 22px;
-  }
+    > img {
+      width: 300px;
+      object-fit: contain;
+    }
 
-  > img {
-    display: block;
-    margin: 0 auto;
-    width: 900px;
-    object-fit: contain;
+    > h1 {
+      max-width: 900px;
+      margin-top: -100px;
+    }
+
   }
 
 }

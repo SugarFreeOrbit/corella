@@ -78,7 +78,11 @@
         },
         async created() {
             this.$store.commit('setCurrentProject', {_id: this._id});
-            await Promise.all([this.$store.dispatch('syncCurrentProjectRole'), this.$store.dispatch('syncCurrentProjectMeta')]);
+            try {
+              await Promise.all([this.$store.dispatch('syncCurrentProjectRole'), this.$store.dispatch('syncCurrentProjectMeta')]);
+            } catch (e) {
+              this.$router.push('/not-found');
+            }
             this.projectReady = true;
         },
         computed: {

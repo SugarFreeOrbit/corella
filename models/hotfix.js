@@ -13,6 +13,9 @@ const hotfixSchema = new Schema({
 	description: {
 		type: String
 	},
+	branch: {
+		type: String
+	},
 	priority: {
 		type: Number,
 		required: true

@@ -36,6 +36,9 @@
                     </ul>
                 </div>
             </el-form-item>
+            <el-form-item label="Branch">
+              <el-input required v-model="newHotfix.branch"></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createIssue">Create</el-button>
                 <el-button @click="close">Cancel</el-button>
@@ -61,7 +64,8 @@
                     description: '',
                     files: [],
                     limitOfFiles: 5,
-                    priority: '1'
+                    priority: '1',
+                    branch: ''
                 },
                 options: [{
                     value: '1',
@@ -98,15 +102,9 @@
                     return;
                 }
                 if(this.newHotfix.description !== '') {
-                    formData.append('description', this.newHotfix.description);
-                } else {
-                    this.$notify.error({
-                        title: 'Error',
-                        message: 'Description must not be empty'
-                    });
-                    this.loading = false;
-                    return;
+                  formData.append('description', this.newHotfix.description);
                 }
+                formData.append('branch', this.newHotfix.branch);
                 formData.append('priority', this.newHotfix.priority);
                 this.newHotfix.files.forEach((file, i) => {
                     formData.append('files', file);

@@ -12,6 +12,9 @@
                           :height="100">
                 </app-file>
             </div>
+            <div v-if="currentHotfix.branch !== undefined && currentHotfix.branch !== null" class="issue__content_branch">
+              Branch: {{currentHotfix.branch}}
+            </div>
             <div class="issue__content__control">
                 <el-button type="danger" @click="deleteHotfix" v-if="canDeleteHotfixes">Delete</el-button>
             </div>
@@ -49,6 +52,9 @@
                                  :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"
                                  :detachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/detach/`">
                     </file-upload>
+                </el-form-item>
+                <el-form-item label="Branch">
+                  <el-input v-model="currentHotfix.branch"></el-input>
                 </el-form-item>
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
@@ -151,16 +157,22 @@
                     title: this.currentHotfix.title,
                     description: this.currentHotfix.description,
                     state: this.state,
-                    priority: this.priority
+                    priority: this.priority,
+                    branch: this.currentHotfix.branch
                 };
+                if(this.currentHotfix.branch === '' || this.currentHotfix.branch === null || this.currentHotfix.branch === undefined)
+                  delete data.branch;
                 try {
                     await this.$http.patch(`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}`, data);
                     this.data.title = data.title;
                     this.data.description = data.description;
                     this.data.state = data.state;
                     this.data.priority = data.priority;
+                    this.data.branch = data.branch;
                     if(this.state === 4 || this.state === 3)
                       this.close('DELETE');
+                    else
+                      this.close();
                 } catch (error) {
                     console.log(error);
                 }

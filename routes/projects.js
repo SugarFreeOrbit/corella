@@ -544,6 +544,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			let newHotfix = new Hotfix({
 				title: req.body.title,
 				description: req.body.description,
+				branch: req.body.branch,
 				priority: + req.body.priority,
 				state: 1,
 				created: Date.now(),
@@ -574,6 +575,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
+				branch: (req.body.branch) ? req.body.branch : "",
 				priority: req.body.priority,
 				state: req.body.state,
 				author: req.user._id
@@ -720,21 +722,19 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 				if (req.query.showCompleted === "true") {
 					if (req.query.findByTitle !== undefined) {
 						query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"state": {$gte: 2}},
+							$and: [{"project": req.params.projectId},
 								{"title": {$regex: req.query.findByTitle, $options: "i"}}
 							]
 						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 					} else {
 						query = await Hotfix.find({
-							project: req.params.projectId,
-							"state": {$gte: 3}
-						}).sort(sortingParams)
+							project: req.params.projectId}).sort(sortingParams)
 							.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 					}
 				} else {
 					if (req.query.findByTitle !== undefined) {
 						query = await Hotfix.find({
-							$and: [{"project": req.params.projectId}, {"state": {$lt: 2}},
+							$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
 								{"title": {$regex: req.query.findByTitle, $options: "i"}}
 							]
 						}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');

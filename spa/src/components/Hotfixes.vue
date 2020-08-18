@@ -16,7 +16,11 @@
     </div>
     <data-tables-server class="hotfixes__table" :data="hotfixes" :total="total" @query-change="handleQueryChange"
                         :pagination-props="{pageSizes: [15, 30, 50]}" v-loading="loading">
-      <el-table-column prop="title" label="Title"></el-table-column>
+      <el-table-column prop="title" label="Title">
+        <template slot-scope="scope">
+          <span class="hotfixes__title" @click="showMoreModal(scope.row)">{{scope.row.title}}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="created" label="Date" width="120">
         <template slot-scope="scope">
           {{ convertDate(scope.row.created) }}
@@ -146,6 +150,12 @@
   display: flex;
   padding: 20px;
   flex-wrap: wrap;
+
+  &__title {
+    &:hover {
+      cursor: pointer;
+    }
+  }
 
   &__table {
     width: 100%;

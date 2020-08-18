@@ -107,6 +107,8 @@
       >span {
         display: block;
         transition: 0.3s;
+        word-break: break-word;
+        width: 80%;
       }
 			&:hover {
 				color: #a9c737;

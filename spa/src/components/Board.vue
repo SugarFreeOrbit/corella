@@ -92,7 +92,6 @@
 		    console.log(this.columns);
       },
       moveIssue: async function (param) {
-		    console.log(param);
         let fromId = param.from.classList[0];
         let toId = param.to.classList[0];
         let issueId = param.item.id;
@@ -105,16 +104,10 @@
         try {
           let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
         } catch (e) {
-          this.$store.commit('moveIssue', {
-            issueId: payload.issueId,
-            targetColumn: fromId,
-            targetPosition: 0,
-            originalColumn: param.oldIndex
-          });
+          this.loading = true;
+          await this.$store.dispatch('syncCurrentProjectBoard');
+          this.loading = false;
         }
-      },
-      test: function (param) {
-		    console.log(param);
       },
     }
 	}

@@ -1,15 +1,18 @@
 <template>
 	<div class="board" v-loading="loading">
-		<el-card class="board__column" v-for="column in columns" v-bind:key="column.id">
+		<el-card class="board__column" v-for="(column, i) in columns" v-bind:key="column.id">
 			<div class="board__column__header" slot="header">
 				<p>{{column.name}}</p>
 			</div>
 			<div class="board__column__content">
-				<issue-card v-for="issueId in column.issues" v-bind:key="issueId"
-							v-bind:issueId="issueId"
-							v-bind:projectId="projectId"
-							v-bind:columnList="columnList"
-							v-bind:currentColumnId="column.id"></issue-card>
+        <draggable :class="column.id" :list="column.issues === undefined ? [] : column.issues" group="people" style="height: calc(100vh - 172px)" @add="moveIssue" @update="moveIssue">
+          <issue-card v-for="issueId in column.issues" v-bind:key="issueId"
+                      :id="issueId"
+                      v-bind:issueId="issueId"
+                      v-bind:projectId="projectId"
+                      v-bind:columnList="columnList"
+                      v-bind:currentColumnId="column.id"></issue-card>
+        </draggable>
 			</div>
 		</el-card>
 	</div>
@@ -17,10 +20,15 @@
 
 <script>
 	import IssueCard from "./IssueCard";
+  import draggable from 'vuedraggable';
+
 	export default {
 		name: "Board",
-		components: {IssueCard},
-		computed: {
+		components: {
+		  IssueCard,
+      draggable
+    },
+    computed: {
 			projectId: function () {
 				return this.$store.state.currentProject._id
 			},
@@ -78,7 +86,37 @@
 				this.loading = false;
 				console.log(e);
 			}
-		}
+		},
+    methods: {
+		  debug: function () {
+		    console.log(this.columns);
+      },
+      moveIssue: async function (param) {
+		    console.log(param);
+        let fromId = param.from.classList[0];
+        let toId = param.to.classList[0];
+        let issueId = param.item.id;
+        let payload = {
+          issueId: issueId,
+          targetColumn: toId,
+          targetPosition: param.newIndex,
+          originalColumn: fromId
+        };
+        try {
+          let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
+        } catch (e) {
+          this.$store.commit('moveIssue', {
+            issueId: payload.issueId,
+            targetColumn: fromId,
+            targetPosition: 0,
+            originalColumn: param.oldIndex
+          });
+        }
+      },
+      test: function (param) {
+		    console.log(param);
+      },
+    }
 	}
 </script>
 

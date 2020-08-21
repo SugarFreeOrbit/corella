@@ -4,8 +4,8 @@
 			<div class="board__column__header" slot="header">
 				<p>{{column.name}}</p>
 			</div>
-			<div class="board__column__content">
-        <draggable :class="column.id" :list="column.issues === undefined ? [] : column.issues" group="people" style="height: calc(100vh - 172px)" @add="moveIssue" @update="moveIssue">
+			<div class="board__column__content" :class="{ crowded: column.issues.length > column.limit }">
+        <draggable :class="column.id" :list="column.issues === undefined ? [] : column.issues" group="people" style="height: calc(100vh - 212px)" @add="moveIssue" @update="moveIssue">
           <issue-card v-for="issueId in column.issues" v-bind:key="issueId"
                       :id="issueId"
                       v-bind:issueId="issueId"
@@ -130,9 +130,22 @@
 				vertical-align: middle;
 			}
 			&__content {
-				height: calc(100vh - 172px);
+				height: calc(100vh - 144px);
 				overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
 			}
 		}
+
+    .crowded {
+      background-color: rgba(255, 204, 204, 0.5);
+    }
+
 	}
+</style>
+
+<style>
+  .board__column > .el-card__body {
+    padding: 0!important;
+  }
 </style>

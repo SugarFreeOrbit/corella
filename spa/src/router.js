@@ -11,6 +11,7 @@ import Board from "./components/Board";
 import Hotfixes from "./components/Hotfixes";
 import RolesAndMembers from "./components/RolesAndMembers";
 import Page404 from "@/views/Page404";
+import Setting from "@/components/Setting";
 
 Vue.use(Router);
 
@@ -65,6 +66,9 @@ const router = new Router({
 			},{
 				path: 'hotfixes',
 				component: Hotfixes
+			},{
+				path: 'setting',
+				component: Setting
 			}],
 			meta: {
 				requiresAuth: true

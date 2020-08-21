@@ -461,8 +461,7 @@ router.delete('/:projectId/issues/:issueId/detach/:fileId', async function (req,
 router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), validator.checkParamsForObjectIds()], async function (req, res, next) {
 	try {
 		let originalColumn = await Project.checkMovePermission(req.params.projectId, req.user._id, req.body, req.user.isAdmin);
-		let originalPosition = await Project;
-		//if (originalColumn === req.body.targetColumn) {
+		if (originalColumn || req.user.isAdmin) {
 			// await Project.findOneAndUpdate({
 			// 	_id: req.params.projectId,
 			// 	"columns.id": originalColumn
@@ -510,10 +509,10 @@ router.post('/:projectId/issues/move', [validator.checkBody('moveOperation'), va
 			}, req.params.projectId);
 			res.status(200);
 			res.end();
-//		} else {
-//			res.status(403);
-//			res.json("You don't have permission");
-//		}
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
+		}
 	} catch (e) {
 		next(e);
 	}

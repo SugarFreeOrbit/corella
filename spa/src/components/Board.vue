@@ -88,9 +88,6 @@
 			}
 		},
     methods: {
-		  debug: function () {
-		    console.log(this.columns);
-      },
       moveIssue: async function (param) {
         let fromId = param.from.classList[0];
         let toId = param.to.classList[0];

@@ -112,6 +112,10 @@
         this.loading = true;
         let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}`);
         this.total = fetchHotfixes.data.total;
+        if(this.total === 0)
+          document.getElementsByClassName('el-pagination')[0].style.display = 'none';
+        else
+          document.getElementsByClassName('el-pagination')[0].style.display = 'block';
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;
       },

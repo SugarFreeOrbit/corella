@@ -22,9 +22,6 @@ export default {
     projectId: function () {
       return this.$store.state.currentProject._id
     },
-    canCreateIssues: function () {
-      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
-    },
     columnList: function () {
       return this.$store.state.currentProject.columns.map(col => {
         return {
@@ -44,7 +41,9 @@ export default {
       newColumn: []
     }
   },
-  mounted() {
+  async mounted() {
+    if(this.columns === undefined)
+      await this.$store.dispatch('syncCurrentProjectBoard');
     this.newColumn = this.columns;
   },
   methods: {
@@ -52,10 +51,11 @@ export default {
       try {
         let requests = [];
         this.newColumn.forEach(item => {
-          requests.push(this.$http.patch(`/${this.projectId}/${item.id}/limit`));
+          requests.push(this.$http.patch(`/projects/${this.projectId}/${item.id}/limit`, { limit: item.limit }));
         });
         let responses = await Promise.all(requests);
         console.log(responses);
+        this.$store.dispatch('syncCurrentProjectBoard');
       } catch (e) {
         console.log(e);
       }

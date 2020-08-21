@@ -767,13 +767,16 @@ router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit
 			Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);
 		if (permissions[0] && permissions[1]) {
 
-			let matchedCount = await Project.updateOne({
+			let matchedCount = (await Project.updateOne({
 					_id:req.params.projectId, 'columns.id': req.params.columnId
 				},
 				{
 					$set:{'columns.$.limit': req.body.limit}
-				}).n;
-			res.status(200);
+				})).n;
+			if (matchedCount === 0) {
+				res.status(400);
+			} else
+				res.status(200);
 		}
 		else {
 			res.status(403);

@@ -82,27 +82,38 @@
 					<el-form-item label="Role name">
 						<el-input autocomplete="off" v-model="editRoleModal.name"></el-input>
 					</el-form-item>
-					<el-form-item label="Manage">
-						<el-switch v-model="editRoleModal.isManager"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create">
-						<el-switch v-model="editRoleModal.isCreator"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete">
-						<el-switch v-model="editRoleModal.isDestroyer"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit">
-						<el-switch v-model="editRoleModal.isEditor"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create Hotfixes">
-						<el-switch v-model="editRoleModal.createHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit Hotfixes">
-						<el-switch v-model="editRoleModal.editHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete Hotfixes">
-						<el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
-					</el-form-item>
+          <el-form-item>
+            <div class="switch-group">
+              <div class="switch-group__item">
+                <label>Manage</label>
+                <el-switch v-model="editRoleModal.isManager"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Create</label>
+                <el-switch v-model="editRoleModal.isCreator"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Delete</label>
+                <el-switch v-model="editRoleModal.isDestroyer"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Edit</label>
+                <el-switch v-model="editRoleModal.isEditor"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Create Hotfixes</label>
+                <el-switch v-model="editRoleModal.createHotfixes"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Edit Hotfixes</label>
+                <el-switch v-model="editRoleModal.editHotfixes"></el-switch>
+              </div>
+              <div class="switch-group__item">
+                <label>Delete Hotfixes</label>
+                <el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
+              </div>
+            </div>
+          </el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
 						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}
             <el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
@@ -382,4 +393,31 @@
 			}
 		}
 	}
+
+  .switch-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px auto;
+
+    &__item {
+      width: max-content;
+      margin-right: 30px;
+      margin-left: 30px;
+
+      > label {
+        display: block;
+        margin: 0;
+        font-weight: 600;
+        line-height: 30px;
+      }
+
+      >.el-switch {
+        margin: 10px auto;
+        display: block;
+        width: max-content;
+      }
+
+    }
+
+  }
 </style>

@@ -37,7 +37,10 @@ export default {
     },
     columns: function () {
       return this.$store.state.currentProject.columns;
-    }
+    },
+    canEditIssues: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isEditor;
+    },
   },
   data() {
     return {
@@ -46,6 +49,8 @@ export default {
     }
   },
   async mounted() {
+    if(!this.canEditIssues)
+      this.$router.push('/not-found');
     if(this.columns === undefined)
       await this.$store.dispatch('syncCurrentProjectBoard');
     this.newColumn = this.columns;

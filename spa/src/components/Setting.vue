@@ -4,7 +4,7 @@
     <div class="setting__form">
       <div v-for="column in newColumn" :key="column.id" class="setting__form__column">
         <label>{{column.name}} limit</label>
-        <el-input-number v-model="column.limit" :min="1" :max="100"></el-input-number>
+        <el-input-number v-model="column.limit" :min="1" :max="1000"></el-input-number>
       </div>
     </div>
     <el-button @click="patchLimit" type="primary">Update</el-button>

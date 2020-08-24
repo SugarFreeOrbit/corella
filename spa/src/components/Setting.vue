@@ -1,8 +1,11 @@
 <template>
   <div class="setting" v-loading="loading">
-    <div v-for="column in newColumn" :key="column.id" class="setting__column">
-      <label>{{column.name}} limit</label>
-      <el-input-number v-model="column.limit" :min="1" :max="100"></el-input-number>
+    <h2>Editing column limit</h2>
+    <div class="setting__form">
+      <div v-for="column in newColumn" :key="column.id" class="setting__form__column">
+        <label>{{column.name}} limit</label>
+        <el-input-number v-model="column.limit" :min="1" :max="100"></el-input-number>
+      </div>
     </div>
     <el-button @click="patchLimit" type="primary">Update</el-button>
   </div>
@@ -91,20 +94,28 @@ export default {
 
 <style scoped lang="scss">
 .setting {
-  height: calc(100% - 60px);
-  padding-top: 5px;
+  padding-top: 15px;
   padding-left: 70px!important;
+  height: calc(100% - 60px);
 
-  &__column {
-    width: 100%;
-    height: 80px;
+  > h2 {
+    font-weight: 700;
+  }
 
-    > label {
-      display: block;
-      margin-bottom: 3px;
-      font-weight: 500;
+  &__form {
+    display: flex;
+
+    &__column {
+      width: 200px;
+      height: 80px;
+
+      > label {
+        display: block;
+        margin-bottom: 3px;
+        font-weight: 500;
+      }
+
     }
-
   }
 
 }

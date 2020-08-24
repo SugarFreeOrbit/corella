@@ -28,7 +28,7 @@
                 <el-form-item label="Title">
                     <el-input v-model="currentIssue.title"></el-input>
                 </el-form-item>
-                <hr>
+                <!--<hr>-->
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>

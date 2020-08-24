@@ -2,9 +2,9 @@
   <div class="setting" v-loading="loading">
     <div v-for="column in newColumn" :key="column.id" class="setting__column">
       <label>{{column.name}} limit</label>
-      <el-input-number v-model="column.limit" :min="1"></el-input-number>
+      <el-input-number v-model="column.limit" :min="1" :max="100"></el-input-number>
     </div>
-    <el-button @click="patchLimit" type="success">Update</el-button>
+    <el-button @click="patchLimit" type="primary">Update</el-button>
   </div>
 </template>
 

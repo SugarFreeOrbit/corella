@@ -19,3 +19,9 @@
 .el-dialog__title {
   font-weight: 700!important;
 }
+
+.default {
+  &__control-btn {
+    border-radius: 5px!important;
+  }
+}

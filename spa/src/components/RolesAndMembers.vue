@@ -1,7 +1,7 @@
 <template>
 	<div class="roles" v-loading="loading">
 		<div class="roles__control">
-			<el-button round icon="el-icon-plus" type="primary" @click="addRoleModal.visible = true">Add new role</el-button>
+			<el-button icon="el-icon-plus" type="primary" @click="addRoleModal.visible = true">Add new role</el-button>
 		</div>
 		<el-card class="roles__role" v-for="role in roles" v-bind:key="role.name">
 			<div class="roles__role__name" slot="header">
@@ -9,13 +9,13 @@
 			</div>
 			<div class="roles__role__controls">
 				<el-tooltip placement="bottom" content="View members">
-					<el-button circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Edit role">
-					<el-button circle type="primary" icon="el-icon-edit" @click="showEditModal(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="primary" icon="el-icon-edit" @click="showEditModal(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Delete role and it's members">
-					<el-button circle type="danger" icon="el-icon-delete" @click="deleteRole(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="danger" icon="el-icon-delete" @click="deleteRole(role.name)"></el-button>
 				</el-tooltip>
 			</div>
 		</el-card>

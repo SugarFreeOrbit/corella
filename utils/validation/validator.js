@@ -14,7 +14,7 @@ const validator = function () {
 			let validationResult = this.v.validate(req.body, validationSchemas[schema]);
 			if (validationResult.errors.length) {
 				res.status(400);
-				res.end();
+				res.json(validationResult.errors.map(err => err.message).join('; '));
 			} else {
 				next();
 			}
@@ -25,7 +25,7 @@ const validator = function () {
 			let validationResult = this.v.validate(req.query, validationSchemas[schema]);
 			if (validationResult.errors.length) {
 				res.status(400);
-				res.end();
+				res.json(validationResult.errors.map(err => err.message).join('; '));
 			} else {
 				next();
 			}

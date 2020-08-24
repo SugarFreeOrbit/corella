@@ -364,9 +364,11 @@
 
 <style scoped lang="scss">
 	.roles {
+    width: calc(100vw - 80px);
 		height: 100%;
-		padding-left: 80px;
+		//padding-left: 80px;
 		padding-right: 55px;
+    margin-left: auto;
 		&__modal {
 			&_viewMembers {
 				&__search {

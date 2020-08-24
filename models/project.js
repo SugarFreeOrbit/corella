@@ -180,6 +180,20 @@ projectSchema.statics.checkPermission = async function (projectId, userId, permi
 	}, {projectName: 1});
 	return !!permissionTest || isAdmin;
 };
+
+projectSchema.statics.checkAnyManagerPermission = async function (userId, isAdmin) {
+	if (isAdmin) return true;
+	let permissionTest = await this.findOne({
+		roles: {
+			$elemMatch: {
+				members: userId,
+				isManager: true
+			}
+		}
+	}, {projectName: 1});
+	return !!permissionTest;
+};
+
 projectSchema.statics.checkCreatorPermission = async function (projectId, userId, isAdmin) {
 	return await this.checkPermission(projectId, userId, 'isCreator', isAdmin);
 };

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const Project = require('../models/project');
 const validator = require('../utils/validation/validator');
 const emailValidator = require("email-validator");
 
@@ -43,7 +44,7 @@ router.put('/', [validator.checkBody('newUser')], function (req, res) {
 });
 
 router.get('/',[validator.checkQuery('paginationQuery')], async function (req, res, next) {
-	if (req.user.isAdmin) {
+	if (await Project.checkAnyManagerPermission(req.user._id, req.user.isAdmin)) {
 		try {
 			let limit = parseInt(req.query.limit) || 10;
 			let page = parseInt(req.query.page) || 1;

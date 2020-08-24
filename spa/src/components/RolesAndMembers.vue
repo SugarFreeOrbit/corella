@@ -365,10 +365,10 @@
 <style scoped lang="scss">
 	.roles {
     width: calc(100vw - 80px);
-		height: 100%;
-		//padding-left: 80px;
+    height: calc(100vh - 52px);
 		padding-right: 55px;
     margin-left: auto;
+    overflow-y: scroll;
 		&__modal {
 			&_viewMembers {
 				&__search {

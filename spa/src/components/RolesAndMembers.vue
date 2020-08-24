@@ -397,7 +397,8 @@
   .switch-group {
     display: flex;
     flex-wrap: wrap;
-    margin: 10px auto;
+    margin: 10px 0;
+    justify-content: center;
 
     &__item {
       width: max-content;

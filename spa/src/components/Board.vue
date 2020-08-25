@@ -65,7 +65,6 @@
 			this.loading = true;
 			this.boardSocket = this.$store.state.socket;
 			this.boardSocket.on('newIssue', (message) => {
-			  console.log(message);
 				if (message.projectId === this.projectId) {
 					this.$store.commit('addIssue', message.issueId)
 				}

@@ -32,7 +32,7 @@
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item class="file-upload-wrapper">
                   <file-upload :link="`/projects/${projectId}/issues/${issueId}/attachment/`"
                                :files="files"
                                :attachLink="`/projects/${this.projectId}/issues/${issueId}/attach`"
@@ -208,5 +208,10 @@
     .issue__content__control__move {
       margin-left: 10px;
       margin-right: 10px;
+    }
+
+    .file-upload-wrapper {
+      height: 150px;
+      margin-top: 10px;
     }
 </style>

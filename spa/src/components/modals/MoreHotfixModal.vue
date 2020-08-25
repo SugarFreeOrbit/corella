@@ -56,7 +56,7 @@
                       </div>
                     </div>
                 </el-form-item>
-                <el-form-item style="height: 160px">
+                <el-form-item class="file-upload-wrapper">
                     <file-upload :link="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/`"
                                  :files="files"
                                  :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"
@@ -211,5 +211,10 @@
         }
       }
 
+    }
+
+    .file-upload-wrapper {
+      height: 150px;
+      margin-top: 10px;
     }
 </style>

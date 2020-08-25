@@ -1,17 +1,17 @@
 <template>
     <div class="file-upload">
-      <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" :includeStyling="true" :createImageThumbnails="false" @vdropzone-drag-over="test" @vdropzone-drag-enter="test">
+      <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" :includeStyling="true" :createImageThumbnails="false"  @vdropzone-removed-file="dzRemove" @vdropzone-file-added="drag">
       </vue-dropzone>
         <input style="display: none" placeholder="upload files"
                type="file" id="uploadFiles" ref="files"
                multiple v-on:change="handleFilesUpload()" hidden/>
         <div class="modal__upload-wrapper">
             <div class="modal__upload-list" style="display: flex">
-                <div v-if="!loading" class="modal__upload-list--item" v-for="(file, i) in files" v-loading="loading">
+                <div v-if="!loading" class="modal__upload-list--item file-upload__view-file" v-for="(file, i) in files" v-loading="loading">
                     <span class="remove" @click='removeFile(file, i)'>
                         <i class="el-icon-circle-close"></i>
                     </span>
-                    <app-file class="file-upload__view-file" :url="link + file._id"
+                    <app-file :url="link + file._id"
                               :file="file"
                               :width="100"
                               :height="100">
@@ -68,28 +68,34 @@
 
         },
         methods: {
-            test: function () {
-              console.log('test');
+            drag: function (param) {
+              this.handleFilesUpload(param);
             },
-            async handleFilesUpload() {
+            dzRemove: function () {
+
+            },
+            async handleFilesUpload(file) {
                 this.filesUploadLoading = true;
-                let files = this.$refs.files.files;
-                if(this.files.length + files.length >= this.filesLimit + 1) {
+                //let files = this.$refs.files.files;
+
+                if(this.files.length >= this.filesLimit) {
                     this.$notify({
                         title: 'Error',
                         message: 'Too many files',
                         duration: 3000,
                         type: 'error'
                     });
-                    this.$refs.files.value = '';
+                    //this.$refs.files.value = '';
                     this.filesUploadLoading = false;
                     return;
                 }
-                for(let i = 0; i < files.length; ++i) {
+
+                await this.uploadFile(file);
+/*                for(let i = 0; i < files.length; ++i) {
                     await this.uploadFile(files[i]);
-                }
+                }*/
                 this.filesUploadLoading = false;
-                this.$refs.files.value = '';
+                //this.$refs.files.value = '';
             },
             uploadFile: async function (file) {
               try {
@@ -130,15 +136,17 @@
     .file-upload {
         width: 100%;
         position: relative;
+        padding-top: 10px;
+        padding-bottom: 10px;
 
         #dropzone {
           position: absolute;
           top: 0;
           z-index: 100;
           width: 100%;
-          height: 120px;
-          min-height: 120px;
-          max-height: 120px;
+          height: 140px;
+          min-height: 140px;
+          max-height: 140px;
         }
 
         &__view-file {
@@ -155,15 +163,22 @@
     border: none;
 
     &.dz-drag-hover {
-      border: 1px solid green;
+      border: 1px solid #87a330;
+      border-radius: 5px;
+      z-index: 100;
       > .dz-message > span {
-        color: red;
+        color: #87a330;
         float: right;
+        font-weight: 600;
       }
     }
 
     > .dz-message > span {
       color: transparent;
+    }
+
+    .dz-preview {
+      display: none;
     }
 
   }

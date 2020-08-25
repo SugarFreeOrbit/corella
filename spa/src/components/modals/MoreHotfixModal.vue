@@ -56,7 +56,7 @@
                       </div>
                     </div>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item style="height: 160px">
                     <file-upload :link="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/`"
                                  :files="files"
                                  :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"

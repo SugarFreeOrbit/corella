@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible="true" title="New issue" @close="close">
+    <el-dialog class="add-issue-modal" :visible="true" title="New issue" @close="close">
         <el-form v-model="issueCreationModal.form"
                  v-loading="issueCreationModal.inProgress">
             <el-form-item label="Title">
@@ -9,7 +9,10 @@
                 <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
+              <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-removed-file="dzRemove" @vdropzone-file-added="drag"></vue-dropzone>
+
+              <!--
+              <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
                 <input style="display: none" placeholder="upload files"
                        type="file" id="uploadFiles" ref="files"
                        multiple v-on:change="handleFilesUpload()" hidden/>
@@ -23,6 +26,8 @@
                         </li>
                     </ul>
                 </div>
+              -->
+
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createIssue">Create</el-button>
@@ -34,6 +39,8 @@
 
 
 <script>
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
 export default {
   name: "add-issue-modal",
@@ -41,6 +48,9 @@ export default {
     projectId: {
       type: String
     }
+  },
+  components: {
+    vueDropzone: vue2Dropzone
   },
   data() {
     return {
@@ -54,6 +64,13 @@ export default {
           limitOfFiles: 5
         }
       },
+      dropzoneOptions: {
+        url: 'https://kostil.com',
+        thumbnailWidth: 150,
+        maxFilesize: 10,
+        autoProcessQueue: false,
+        addRemoveLinks: true
+      }
     }
   },
   computed: {
@@ -62,6 +79,19 @@ export default {
     }
   },
   methods: {
+    dzRemove: function (param) {
+      let i = 0;
+      for(let file of this.issueCreationModal.form.files) {
+        if(file === param) {
+          this.issueCreationModal.form.files.splice(i, 1);
+          break;
+        }
+        ++i;
+      }
+    },
+    drag: function (param) {
+      this.handleFilesUpload(param);
+    },
     createIssue: async function () {
       let formData = new FormData();
       this.issueCreationModal.inProgress = true;
@@ -106,29 +136,23 @@ export default {
     chooseFiles: function () {
       document.getElementById("uploadFiles").click()
     },
-    handleFilesUpload() {
-      let obj = this.$refs.files.files;
-      if(obj.length + this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles + 1) {
+    handleFilesUpload(file) {
+      if(this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles) {
         this.$notify({
           title: 'Error',
           message: `You can\'t upload more than ${this.issueCreationModal.form.limitOfFiles} files`,
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.value = '';
+        this.$refs.dropzone.removeFile(file);
         return;
       }
       let err = true;
-      for(let i = 0; i < obj.length; ++i) {
-        err = true;
-        for(let j = 0; j < this.allowedFiles.length; ++j) {
-          if(obj[i].name.slice(obj[i].name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
-            err = false;
-            break;
-          }
-        }
-        if(err)
+      for(let j = 0; j < this.allowedFiles.length; ++j) {
+        if(file.name.slice(file.name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+          err = false;
           break;
+        }
       }
       if(err) {
         this.$notify({
@@ -137,7 +161,7 @@ export default {
           duration: 3000,
           type: 'error'
         });
-        this.$refs.files.value = '';
+        this.$refs.dropzone.removeFile(file);
         return;
       }
       if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
@@ -150,7 +174,8 @@ export default {
           type: 'error'
         });
       }
-      this.$refs.files.value = '';
+      /*if(file === undefined)
+        this.$refs.files.value = '';*/
     },
     removeFile: function (file, i) {
       if (i > -1) {
@@ -166,4 +191,10 @@ export default {
 
 <style scoped lang="scss">
 
+</style>
+
+<style>
+  .add-issue-modal .dz-progress {
+    display: none!important;
+  }
 </style>

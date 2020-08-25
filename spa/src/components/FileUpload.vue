@@ -60,7 +60,6 @@
                   maxFilesize: 10,
                   autoProcessQueue: false,
                   addRemoveLinks: true,
-                  // dictDefaultMessage: '+'
                 }
             }
         },
@@ -76,7 +75,6 @@
             },
             async handleFilesUpload(file) {
                 this.filesUploadLoading = true;
-                //let files = this.$refs.files.files;
 
                 if(this.files.length >= this.filesLimit) {
                     this.$notify({
@@ -85,17 +83,12 @@
                         duration: 3000,
                         type: 'error'
                     });
-                    //this.$refs.files.value = '';
                     this.filesUploadLoading = false;
                     return;
                 }
 
                 await this.uploadFile(file);
-/*                for(let i = 0; i < files.length; ++i) {
-                    await this.uploadFile(files[i]);
-                }*/
                 this.filesUploadLoading = false;
-                //this.$refs.files.value = '';
             },
             uploadFile: async function (file) {
               try {

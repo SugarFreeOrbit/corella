@@ -1,5 +1,7 @@
 <template>
     <div class="file-upload">
+      <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" :includeStyling="true" :createImageThumbnails="false" @vdropzone-drag-over="test" @vdropzone-drag-enter="test">
+      </vue-dropzone>
         <input style="display: none" placeholder="upload files"
                type="file" id="uploadFiles" ref="files"
                multiple v-on:change="handleFilesUpload()" hidden/>
@@ -9,14 +11,14 @@
                     <span class="remove" @click='removeFile(file, i)'>
                         <i class="el-icon-circle-close"></i>
                     </span>
-                    <app-file :url="link + file._id"
+                    <app-file class="file-upload__view-file" :url="link + file._id"
                               :file="file"
                               :width="100"
                               :height="100">
                     </app-file>
                 </div>
                 <div v-else style="width: 100px;height: 100px" v-loading="loading"></div>
-                <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">+</div>
+              <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">+</div>
             </div>
         </div>
     </div>
@@ -24,6 +26,8 @@
 
 <script>
     import AppFile from "./AppFile";
+    import vue2Dropzone from 'vue2-dropzone'
+    import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
     export default {
         name: "file-upload",
@@ -42,19 +46,31 @@
             }
         },
         components: {
-            AppFile
+            AppFile,
+            vueDropzone: vue2Dropzone
         },
         data() {
             return {
                 filesLimit: 5,
                 filesUploadLoading: false,
-                loading: false
+                loading: false,
+                dropzoneOptions: {
+                  url: 'https://kostil.com',
+                  thumbnailWidth: 150,
+                  maxFilesize: 10,
+                  autoProcessQueue: false,
+                  addRemoveLinks: true,
+                  // dictDefaultMessage: '+'
+                }
             }
         },
         mounted() {
 
         },
         methods: {
+            test: function () {
+              console.log('test');
+            },
             async handleFilesUpload() {
                 this.filesUploadLoading = true;
                 let files = this.$refs.files.files;
@@ -113,5 +129,42 @@
 <style scoped lang="scss">
     .file-upload {
         width: 100%;
+        position: relative;
+
+        #dropzone {
+          position: absolute;
+          top: 0;
+          z-index: 100;
+          width: 100%;
+          height: 120px;
+          min-height: 120px;
+          max-height: 120px;
+        }
+
+        &__view-file {
+          z-index: 101;
+        }
+
     }
+</style>
+
+<style lang="scss">
+  .file-upload .vue-dropzone {
+    background-color: transparent;
+
+    border: none;
+
+    &.dz-drag-hover {
+      border: 1px solid green;
+      > .dz-message > span {
+        color: red;
+        float: right;
+      }
+    }
+
+    > .dz-message > span {
+      color: transparent;
+    }
+
+  }
 </style>

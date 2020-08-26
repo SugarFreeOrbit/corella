@@ -4,7 +4,7 @@
       </vue-dropzone>
         <input style="display: none" placeholder="upload files"
                type="file" id="uploadFiles" ref="files"
-               multiple v-on:change="handleFilesUpload()" hidden/>
+               multiple hidden/>
         <div class="modal__upload-wrapper">
             <div class="modal__upload-list" style="display: flex">
                 <div v-if="!loading" class="modal__upload-list--item file-upload__view-file" v-for="(file, i) in files" v-loading="loading">
@@ -119,7 +119,7 @@
                 }
             },
             chooseFiles: function () {
-                document.getElementById("uploadFiles").click()
+                document.getElementById('dropzone').click();
             },
         }
     }

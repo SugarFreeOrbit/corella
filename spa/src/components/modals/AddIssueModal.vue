@@ -165,7 +165,7 @@ export default {
         return;
       }
       if (this.issueCreationModal.form.files.length !== this.issueCreationModal.form.limitOfFiles) {
-        this.issueCreationModal.form.files.push(...obj);
+        this.issueCreationModal.form.files.push(file);
       } else {
         this.$notify({
           title: 'Error',
@@ -174,8 +174,6 @@ export default {
           type: 'error'
         });
       }
-      /*if(file === undefined)
-        this.$refs.files.value = '';*/
     },
     removeFile: function (file, i) {
       if (i > -1) {

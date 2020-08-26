@@ -9,9 +9,6 @@
                 <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
             </el-form-item>
             <el-form-item>
-              <!--
-              <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-removed-file="dzRemove" @vdropzone-file-added="drag"></vue-dropzone>
-              -->
               <file-upload-local v-model="issueCreationModal.form.files"></file-upload-local>
             </el-form-item>
             <el-form-item>
@@ -24,8 +21,6 @@
 
 
 <script>
-//import vue2Dropzone from 'vue2-dropzone';
-//import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import FileUploadLocal from "@/components/FileUploadLocal";
 
 export default {
@@ -36,7 +31,6 @@ export default {
     }
   },
   components: {
-    //vueDropzone: vue2Dropzone
     FileUploadLocal
   },
   data() {

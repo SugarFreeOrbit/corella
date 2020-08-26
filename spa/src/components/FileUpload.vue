@@ -135,7 +135,7 @@
         #dropzone {
           position: absolute;
           top: 0;
-          z-index: 100;
+          z-index: 10;
           width: 100%;
           height: 140px;
           min-height: 140px;
@@ -143,7 +143,7 @@
         }
 
         &__view-file {
-          z-index: 101;
+          z-index: 11;
         }
 
     }
@@ -158,7 +158,7 @@
     &.dz-drag-hover {
       border: 1px solid #87a330;
       border-radius: 5px;
-      z-index: 100;
+      z-index: 10;
       > .dz-message > span {
         color: #87a330;
         float: right;

@@ -27,7 +27,7 @@
                 type: String
             },
             file: {
-                type: Object
+
             },
             width: {
                 type: Number
@@ -40,12 +40,16 @@
             MoreIssueModal
         },
         computed: {
+          /*
             loading() {
                 return this.src === undefined;
             }
+
+           */
         },
         data() {
             return {
+                loading: true,
                 src: undefined,
                 type: ''
             }
@@ -56,13 +60,26 @@
                 this.type = 'img';
             else
                 this.type = 'unknown'
-            this.loadImage();
+
+            if(this.url !== null)
+              this.loadImage();
+            else {
+              console.log('########################');
+              console.log(this.file);
+              setTimeout(() => {
+                this.src = this.file.dataURL;
+                this.loading = false;
+              }, 300);
+              //this.file.onload = () => this.$set(this, 'src', this.file.dataURL);
+            }
         },
         methods: {
             loadImage: async function () {
+                this.loading = true;
                 try {
                     let response = await this.$http.get(this.url, { responseType: 'blob' });
                     this.src = window.URL.createObjectURL(response.data);
+                    this.loading = false;
                 } catch (error) {
                     console.log(error);
                 }

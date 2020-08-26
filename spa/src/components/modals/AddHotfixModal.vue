@@ -27,22 +27,6 @@
             </el-form-item>
             <el-form-item>
               <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-removed-file="dzRemove" @vdropzone-file-added="drag"></vue-dropzone>
-              <!--
-                <el-button @click="chooseFiles()" size="small" type="primary">Click to upload</el-button>
-                <input style="display: none" placeholder="upload files"
-                       type="file" id="uploadFiles" ref="files"
-                       multiple v-on:change="handleFilesUpload()" hidden/>
-                <div v-if="newHotfix.files.length !== 0" class="modal__upload-wrapper">
-                    <ul class="modal__upload-list">
-                        <li v-for="(file, i) in newHotfix.files">
-                            <p class="name">{{file.name}}
-                                <span class="remove" @click='removeFile(file, i)'><i
-                                        class="el-icon-circle-close"></i></span>
-                            </p>
-                        </li>
-                    </ul>
-                </div>
-                -->
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createIssue">Create</el-button>

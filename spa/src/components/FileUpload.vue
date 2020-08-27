@@ -119,6 +119,7 @@
                     this.loading = true;
                     await this.$http.delete(this.detachLink + this.files[i]._id);
                     this.files.splice(i, 1);
+                    --this.filesCount;
                     this.loading = false;
                 }
             },

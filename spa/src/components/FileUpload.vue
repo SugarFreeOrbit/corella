@@ -96,14 +96,15 @@
             },
             async handleFilesUpload(file) {
                 this.filesUploadLoading = true;
-
                 if(this.filesCount >= this.filesLimit) {
-                    this.$notify({
+                    setTimeout(() => {
+                      this.$notify({
                         title: 'Error',
                         message: 'Too many files',
                         duration: 3000,
                         type: 'error'
-                    });
+                      });
+                    }, 100 * Math.random());
                     this.filesUploadLoading = false;
                     return;
                 }

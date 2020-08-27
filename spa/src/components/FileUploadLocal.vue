@@ -69,12 +69,14 @@ export default {
       this.filesUploadLoading = true;
 
       if(this.files.length >= this.filesLimit) {
-        this.$notify({
-          title: 'Error',
-          message: 'Too many files',
-          duration: 3000,
-          type: 'error'
-        });
+        setTimeout(() => {
+          this.$notify({
+              title: 'Error',
+              message: 'Too many files',
+              duration: 3000,
+              type: 'error'
+            });
+        }, 100 * Math.random());
         this.filesUploadLoading = false;
         return;
       }

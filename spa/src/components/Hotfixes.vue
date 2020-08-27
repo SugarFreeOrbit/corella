@@ -73,7 +73,7 @@
         return this.$store.state.currentProject._id
       },
       canAddHotfix() {
-        return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.createHotfixes;
+        return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.createHotfixes;
       },
       isHotfixMoreModal: function() {
         if(this.$route.query.hotfix === undefined)

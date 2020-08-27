@@ -50,6 +50,11 @@ export default {
       }
     }
   },
+  computed: {
+    allowedFiles() {
+      return this.$store.state.allowedFiles;
+    }
+  },
   mounted() {
 
   },
@@ -70,6 +75,25 @@ export default {
           duration: 3000,
           type: 'error'
         });
+        this.filesUploadLoading = false;
+        return;
+      }
+
+      let err = true;
+      for(let j = 0; j < this.allowedFiles.length; ++j) {
+        if(file.name.slice(file.name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+          err = false;
+          break;
+        }
+      }
+      if(err) {
+        this.$notify({
+          title: 'Error',
+          message: 'Unsupported file type',
+          duration: 3000,
+          type: 'error'
+        });
+        this.$refs.dropzone.removeFile(file);
         this.filesUploadLoading = false;
         return;
       }

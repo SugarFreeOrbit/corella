@@ -88,19 +88,6 @@
           }
         },
         methods: {
-            dzRemove: function (param) {
-              let i = 0;
-              for(let file of this.newHotfix.files) {
-                if(file === param) {
-                  this.newHotfix.files.splice(i, 1);
-                  break;
-                }
-                ++i;
-              }
-            },
-            drag: function (param) {
-              this.handleFilesUpload(param);
-            },
             createIssue: async function () {
                 let formData = new FormData();
                 this.loading = true;
@@ -144,53 +131,6 @@
                     }
                     console.log(e);
                     this.loading = false;
-                }
-            },
-            chooseFiles: function () {
-                document.getElementById("uploadFiles").click()
-            },
-            handleFilesUpload(file) {
-              if(this.newHotfix.files.length >= this.newHotfix.limitOfFiles) {
-                this.$notify({
-                  title: 'Error',
-                  message: `You can\'t upload more than ${this.newHotfix.limitOfFiles} files`,
-                  duration: 3000,
-                  type: 'error'
-                });
-                this.$refs.dropzone.removeFile(file);
-                return;
-              }
-              let err = true;
-              for(let j = 0; j < this.allowedFiles.length; ++j) {
-                if(file.name.slice(file.name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
-                  err = false;
-                  break;
-                }
-              }
-              if(err) {
-                this.$notify({
-                  title: 'Error',
-                  message: 'Unsupported file type',
-                  duration: 3000,
-                  type: 'error'
-                });
-                this.$refs.dropzone.removeFile(file);
-                return;
-              }
-              if (this.newHotfix.files.length !== this.newHotfix.limitOfFiles) {
-                this.newHotfix.files.push(file);
-              } else {
-                this.$notify({
-                  title: 'Error',
-                  message: 'Too many files',
-                  duration: 3000,
-                  type: 'error'
-                });
-              }
-            },
-            removeFile: function (file, i) {
-                if (i > -1) {
-                    this.newHotfix.files.splice(i, 1);
                 }
             },
             close: function () {

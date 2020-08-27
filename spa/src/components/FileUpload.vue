@@ -52,6 +52,7 @@
         data() {
             return {
                 filesLimit: 5,
+                filesCount: 0,
                 filesUploadLoading: false,
                 loading: false,
                 dropzoneOptions: {
@@ -64,7 +65,7 @@
             }
         },
         mounted() {
-
+            this.filesCount = this.files.length;
         },
         methods: {
             drag: function (param) {
@@ -76,7 +77,7 @@
             async handleFilesUpload(file) {
                 this.filesUploadLoading = true;
 
-                if(this.files.length >= this.filesLimit) {
+                if(this.filesCount >= this.filesLimit) {
                     this.$notify({
                         title: 'Error',
                         message: 'Too many files',
@@ -86,6 +87,8 @@
                     this.filesUploadLoading = false;
                     return;
                 }
+
+                ++this.filesCount;
 
                 await this.uploadFile(file);
                 this.filesUploadLoading = false;
@@ -101,6 +104,7 @@
                   filename: file.filename
                 });
               } catch (error) {
+                --this.filesCount;
                 if(error.response.status === 400) {
                   this.$notify.error({
                     title: 'Error',

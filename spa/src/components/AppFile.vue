@@ -2,8 +2,10 @@
     <div class="app-file__wrapper" v-loading="loading">
         <el-image
                 v-if="type === 'img'"
+                @click="hide"
                 :style="`width: ${width}px;height: ${height}px;`"
                 fit="contain"
+                ref="previewImage"
                 :src="src"
                 :preview-src-list="[src]">
         </el-image>
@@ -63,6 +65,14 @@
             }
         },
         methods: {
+            hide: function () {
+                setTimeout(() => {
+                  document.getElementsByClassName('el-image-viewer__close')[0].addEventListener('click', () => {
+                    this.$emit('show');
+                  });
+                }, 100);
+                this.$emit('hide');
+            },
             loadImage: async function () {
                 this.loading = true;
                 try {

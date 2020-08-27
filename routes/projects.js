@@ -733,9 +733,11 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 
 router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit'), validator.checkParamsForObjectIds(`columnId`)], async function(req, res, next) {
 	try {
-		let permissions = await Promise.all([Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin),
+		let permissions = await Promise.all([
+			Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin),
+			Project.checkManagerPermission(req.params.projectId, req.user._id, req.user.isAdmin),
 			Project.validateProjectToColumnRelation(req.params.projectId, req.params.columnId)]);
-		if (permissions[0] && permissions[1]) {
+		if (permissions[0] && permissions[1] && permissions[2]) {
 
 			let matchedCount = (await Project.updateOne({
 					_id:req.params.projectId, 'columns.id': req.params.columnId

@@ -141,10 +141,10 @@
         },
         computed: {
             canEditHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.editHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editHotfixes;
             },
             canDeleteHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.deleteHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.deleteHotfixes;
             },
         },
         methods: {

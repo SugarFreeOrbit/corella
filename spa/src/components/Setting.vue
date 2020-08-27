@@ -39,7 +39,7 @@ export default {
       return this.$store.state.currentProject.columns;
     },
     canEditIssues: function () {
-      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isEditor;
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager;
     },
   },
   data() {

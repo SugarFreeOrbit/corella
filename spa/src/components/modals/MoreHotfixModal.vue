@@ -217,4 +217,9 @@
       height: 150px;
       margin-top: 10px;
     }
+
+    .issue__content_images {
+      display: flex;
+      flex-wrap: wrap;
+    }
 </style>

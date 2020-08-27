@@ -39,14 +39,6 @@
         components: {
             MoreIssueModal
         },
-        computed: {
-          /*
-            loading() {
-                return this.src === undefined;
-            }
-
-           */
-        },
         data() {
             return {
                 loading: true,
@@ -64,13 +56,10 @@
             if(this.url !== null)
               this.loadImage();
             else {
-              console.log('########################');
-              console.log(this.file);
               setTimeout(() => {
                 this.src = this.file.dataURL;
                 this.loading = false;
-              }, 300);
-              //this.file.onload = () => this.$set(this, 'src', this.file.dataURL);
+              }, 500);
             }
         },
         methods: {

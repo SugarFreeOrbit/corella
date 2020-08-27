@@ -151,9 +151,9 @@
     border-radius: 5px!important;
   }
 .hotfixes {
-  display: flex;
+  //display: flex;
   padding: 20px;
-  flex-wrap: wrap;
+  //flex-wrap: wrap;
   height: calc(100vh - 52px);
   overflow-y: scroll;
 

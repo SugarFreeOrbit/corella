@@ -133,7 +133,7 @@
                   <el-switch v-model="editRoleModal.createHotfixes"></el-switch>
                 </div>
                 <div class="switch-group__item">
-                  <label>Edit Hotfixes</label>
+                  <label>Edit</label>
                   <el-switch v-model="editRoleModal.editHotfixes"></el-switch>
                 </div>
                 <div class="switch-group__item">

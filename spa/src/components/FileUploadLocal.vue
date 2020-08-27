@@ -126,6 +126,7 @@ export default {
   position: relative;
   padding-top: 10px;
   padding-bottom: 10px;
+  height: 140px;
 
   #dropzone {
     position: absolute;

@@ -58,10 +58,12 @@
             if(this.url !== null)
               this.loadImage();
             else {
-              setTimeout(() => {
-                this.src = this.file.dataURL;
+              let reader = new FileReader();
+              reader.readAsDataURL(this.file);
+              reader.onload = () => {
+                this.src = reader.result;
                 this.loading = false;
-              }, 1000);
+              }
             }
         },
         methods: {

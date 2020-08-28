@@ -1,7 +1,7 @@
 <template>
     <div class="app-file__wrapper" v-loading="loading">
         <el-image
-                v-if="type === 'img'"
+                v-if="type === 'img' && !loading"
                 @click="hide"
                 :style="`width: ${width}px;height: ${height}px;`"
                 fit="contain"
@@ -9,13 +9,14 @@
                 :src="src"
                 :preview-src-list="[src]">
         </el-image>
-        <a v-else-if="type === 'unknown'"
+        <a v-else-if="type === 'unknown' && !loading"
            class="app-file__download"
            :href="src"
            target="_blank"
            :download="file.name">
             <span>{{ file.name }}</span>
         </a>
+        <div v-else :style="`width: ${width}px;height: ${height}px;`" v-loading="true"></div>
     </div>
 </template>
 
@@ -55,13 +56,14 @@
             else
                 this.type = 'unknown'
 
-            if(this.url !== null)
+            if(this.url !== null) {
               this.loadImage();
+            }
             else {
               let reader = new FileReader();
               reader.readAsDataURL(this.file);
-              reader.onload = () => {
-                this.src = reader.result;
+              reader.onload = (event) => {
+                this.src = event.target.result;
                 this.loading = false;
               }
             }

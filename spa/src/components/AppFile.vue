@@ -61,7 +61,7 @@
               setTimeout(() => {
                 this.src = this.file.dataURL;
                 this.loading = false;
-              }, 500);
+              }, 1000);
             }
         },
         methods: {

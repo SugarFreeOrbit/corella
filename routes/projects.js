@@ -524,6 +524,7 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 				author: ObjectId(req.user._id)
 			});
 			await newHotfix.save();
+			websocketService.emitNewHotfix(newHotfix._id, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {
@@ -550,6 +551,7 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 				state: req.body.state,
 				author: req.user._id
 			});
+			websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 			res.status(200);
 			res.end();
 		} else {
@@ -575,7 +577,7 @@ router.post('/:projectId/hotfixes/:hotfixId/attach', [validator.checkParamsForOb
 				await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 					$push: {files}
 				});
-				websocketService.emitUpdatedIssue(req.params.hotfixId, req.params.projectId);
+				websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 			}
 			res.json(files);
 		}
@@ -606,12 +608,11 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			}
 			else {
 				await File.deleteById(ObjectId(req.params.fileId));
+				websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 				res.status(200);
-				res.json("You don't have permission");
 			}
 		}
-	}catch (e) {
-		File.deleteById(ObjectId(req.params.fileId));
+	} catch (e) {
 		next(e);
 	}
 });
@@ -625,7 +626,7 @@ router.delete('/:projectId/hotfixes/:hotfixId', [validator.checkParamsForObjectI
 		if ((projectPermissionQueries[1] && projectPermissionQueries[0])){
 			let deleteHotfix = await Hotfix.findByIdAndRemove(req.params.hotfixId);
 			await Promise.all(deleteHotfix.files.map(File.deleteById));
-			//websocketService.emitDeletedIssue(req.params.issueId, req.params.projectId);
+			websocketService.emitDeletedHotfix(req.params.issueId, req.params.projectId);
 			res.status(200);
 			res.end();
 		}else{

@@ -94,14 +94,38 @@
         loading: false,
         searchByTitle: '',
         isHotfixAddModal: false,
-        currentHotfix: {}
+        currentHotfix: {},
+        socketHotfix: {}
+      }
+    },
+    async created() {
+      this.socketHotfix = this.$store.state.socketHotfix;
+      this.socketHotfix.on('newHotfix', (message) => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      this.socketHotfix.on('deletedHotfix', (message) => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      this.socketHotfix.on('updatedHotfix', message => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      try {
+        await this.handleQueryChange();
+        if(this.$route.query.hotfix !== undefined) {
+          this.currentHotfix = this.hotfixes.find(hotfix => hotfix.hotfixCode.toString() === this.$route.query.hotfix);
+        }
+      } catch (e) {
+        console.log(e);
       }
     },
     async mounted() {
-      await this.handleQueryChange();
-      if(this.$route.query.hotfix !== undefined) {
-        this.currentHotfix = this.hotfixes.find(hotfix => hotfix.hotfixCode.toString() === this.$route.query.hotfix);
-      }
+
     },
     methods: {
       handleQueryChange: async function (queryInfo) {

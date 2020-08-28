@@ -6,7 +6,7 @@
                 <el-input required v-model="issueCreationModal.form.title"></el-input>
             </el-form-item>
             <el-form-item label="Description">
-                <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
+                <el-input required type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
             </el-form-item>
             <el-form-item>
               <file-upload-local v-model="issueCreationModal.form.files"></file-upload-local>

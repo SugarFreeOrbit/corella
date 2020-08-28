@@ -104,7 +104,7 @@
                         duration: 3000,
                         type: 'error'
                       });
-                    }, 200 * Math.random());
+                    }, 100 * Math.random());
                     this.filesUploadLoading = false;
                     return;
                 }

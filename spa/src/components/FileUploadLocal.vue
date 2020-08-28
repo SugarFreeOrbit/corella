@@ -76,7 +76,7 @@ export default {
               duration: 3000,
               type: 'error'
             });
-        }, 200 * Math.random());
+        }, 100 * Math.random());
         this.filesUploadLoading = false;
         return;
       }
@@ -89,12 +89,14 @@ export default {
         }
       }
       if(err) {
-        this.$notify({
-          title: 'Error',
-          message: 'Unsupported file type',
-          duration: 3000,
-          type: 'error'
-        });
+        setTimeout(() => {
+          this.$notify({
+            title: 'Error',
+            message: 'Unsupported file type',
+            duration: 3000,
+            type: 'error'
+          });
+        }, 100 * Math.random());
         this.$refs.dropzone.removeFile(file);
         this.filesUploadLoading = false;
         return;

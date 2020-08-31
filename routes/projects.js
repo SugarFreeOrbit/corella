@@ -611,6 +611,9 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 				res.status(200);
 			}
 			res.end();
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);

@@ -604,13 +604,13 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			}));
 			if(modified.nModified === 0) {
 				res.status(404);
-				res.end();
 			}
 			else {
 				await File.deleteById(ObjectId(req.params.fileId));
 				websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 				res.status(200);
 			}
+			res.end();
 		}
 	} catch (e) {
 		next(e);

@@ -89,7 +89,8 @@
                 modalLoading: false,
                 targetColumn: '',
                 currentIssue: {},
-                files: []
+                files: [],
+                boardSocket: {}
             }
         },
         created() {
@@ -98,6 +99,27 @@
             this.files.forEach(file => {
                 if(file.name === undefined)
                     file.name = file.filename;
+            });
+            this.boardSocket = this.$store.state.socket;
+            this.boardSocket.on('updatedIssue', (message) => {
+              console.log('UPDATE');
+              if (message.projectId === this.projectId) {
+                if(message.issueId === this.issueId) {
+                  this.reloadIssue();
+                }
+              }
+            });
+            this.boardSocket.on('deletedIssue', (message) => {
+              if (message.projectId === this.projectId) {
+                if(message.issueId === this.issueId) {
+                  this.close();
+                }
+              }
+            });
+            this.boardSocket.on('movedIssue', message => {
+              if(message.issueId === this.issueId) {
+                this.reloadIssue();
+              }
             });
         },
         mounted() {
@@ -119,6 +141,29 @@
             }
         },
         methods: {
+            reloadIssue: async function () {
+              this.modalLoading = true;
+              try {
+                this.previewReady = false;
+                let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
+                this.currentIssue.title = issue.data.title;
+                this.currentIssue.description = issue.data.description;
+                this.currentIssue.files = issue.data.files;
+                this.files = issue.data.files;
+                //this.currentIssue.color = issue.data.color;
+                this.previewReady = true;
+                if (issue.data.assignee) {
+                  this.currentIssue.assignee_id = issue.data.assignee;
+                  let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
+                  this.currentIssue.assignee.username = assignee.data.username;
+                  this.assigneeReady = true;
+                }
+                this.modalLoading = false;
+              } catch (e) {
+                console.log(e);
+                this.modalLoading = false;
+              }
+            },
             deleteIssue: async function() {
                 await this.$confirm('This will permanently delete this issue. Continue?', 'Warning', {
                     confirmButtonText: 'Confirm',

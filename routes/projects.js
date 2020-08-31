@@ -604,13 +604,16 @@ router.delete('/:projectId/hotfixes/:hotfixId/detach/:fileId', async function (r
 			}));
 			if(modified.nModified === 0) {
 				res.status(404);
-				res.end();
 			}
 			else {
 				await File.deleteById(ObjectId(req.params.fileId));
 				websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 				res.status(200);
 			}
+			res.end();
+		} else {
+			res.status(403);
+			res.json("You don't have permission");
 		}
 	} catch (e) {
 		next(e);
@@ -692,35 +695,40 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					let query;
 					if (req.query.showCompleted === "true") {
 						if (req.query.findByTitle !== undefined) {
-							query = await Hotfix.find({
-								$and: [{"project": req.params.projectId},
-									{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							query = {
+								$and: [{project: req.params.projectId},
+									{title: {$regex: req.query.findByTitle, $options: "i"}}
 								]
-							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							};
 						} else {
-							query = await Hotfix.find({
-								project: req.params.projectId}).sort(sortingParams)
-								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							query = {project: req.params.projectId};
 						}
 					} else {
 						if (req.query.findByTitle !== undefined) {
-							query = await Hotfix.find({
-								$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
-									{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							query = {
+								$and: [{project: req.params.projectId}, {state: {$lt: 3}},
+									{title: {$regex: req.query.findByTitle, $options: "i"}}
 								]
-							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							};
 						} else {
-							query = await Hotfix.find({
+							query = {
 								project: req.params.projectId,
-								"state": {$lt: 3}
-							}).sort(sortingParams)
-								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+								state: {$lt: 3}
+							};
 						}
 					}
+					let results = await Promise.all([
+						Hotfix.find(query)
+							.sort(sortingParams)
+							.skip((page - 1) * limit)
+							.limit(limit)
+							.populate('files', 'filename length'),
+						Hotfix.countDocuments(query)]);
+					let totalCount = results[1];
 					res.json({
-						total: query.length,
-						pageCount: Math.ceil(query.length / limit),
-						data: query
+						total: totalCount,
+						pageCount: Math.ceil(totalCount / limit),
+						data: results[0]
 					});
 				}
 			}else{

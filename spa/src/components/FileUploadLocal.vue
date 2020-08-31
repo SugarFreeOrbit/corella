@@ -112,7 +112,7 @@ export default {
       if (i > -1) {
         this.loading = true;
         this.files.splice(i, 1);
-        this.loading = false;
+        this.$nextTick(() => this.loading = false);
       }
     },
     chooseFiles: function () {

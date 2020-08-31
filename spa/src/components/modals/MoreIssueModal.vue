@@ -102,6 +102,7 @@
             });
             this.boardSocket = this.$store.state.socket;
             this.boardSocket.on('updatedIssue', (message) => {
+              console.log('UPDATE');
               if (message.projectId === this.projectId) {
                 if(message.issueId === this.issueId) {
                   this.reloadIssue();
@@ -148,6 +149,7 @@
                 this.currentIssue.title = issue.data.title;
                 this.currentIssue.description = issue.data.description;
                 this.currentIssue.files = issue.data.files;
+                this.files = issue.data.files;
                 //this.currentIssue.color = issue.data.color;
                 this.previewReady = true;
                 if (issue.data.assignee) {

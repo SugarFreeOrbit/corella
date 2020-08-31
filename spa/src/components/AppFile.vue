@@ -1,19 +1,22 @@
 <template>
     <div class="app-file__wrapper" v-loading="loading">
         <el-image
-                v-if="type === 'img'"
+                v-if="type === 'img' && !loading"
+                @click="hide"
                 :style="`width: ${width}px;height: ${height}px;`"
                 fit="contain"
+                ref="previewImage"
                 :src="src"
                 :preview-src-list="[src]">
         </el-image>
-        <a v-else-if="type === 'unknown'"
+        <a v-else-if="type === 'unknown' && !loading"
            class="app-file__download"
            :href="src"
            target="_blank"
            :download="file.name">
             <span>{{ file.name }}</span>
         </a>
+        <div v-else :style="`width: ${width}px;height: ${height}px;`" v-loading="true"></div>
     </div>
 </template>
 
@@ -27,7 +30,7 @@
                 type: String
             },
             file: {
-                type: Object
+
             },
             width: {
                 type: Number
@@ -39,13 +42,9 @@
         components: {
             MoreIssueModal
         },
-        computed: {
-            loading() {
-                return this.src === undefined;
-            }
-        },
         data() {
             return {
+                loading: true,
                 src: undefined,
                 type: ''
             }
@@ -55,14 +54,34 @@
             if(fileType.indexOf('png') !== -1 || fileType.indexOf('jpg') !== -1 || fileType.indexOf('jpeg') !== -1)
                 this.type = 'img';
             else
-                this.type = 'unknown'
-            this.loadImage();
+                this.type = 'unknown';
+
+            if(this.url !== null) {
+              this.loadImage();
+            } else {
+              let reader = new FileReader();
+              reader.readAsDataURL(this.file);
+              reader.onload = (event) => {
+                this.src = event.target.result;
+                this.loading = false;
+              }
+            }
         },
         methods: {
+            hide: function () {
+                setTimeout(() => {
+                  document.getElementsByClassName('el-image-viewer__close')[0].addEventListener('click', () => {
+                    this.$emit('show');
+                  });
+                }, 100);
+                this.$emit('hide');
+            },
             loadImage: async function () {
+                this.loading = true;
                 try {
                     let response = await this.$http.get(this.url, { responseType: 'blob' });
                     this.src = window.URL.createObjectURL(response.data);
+                    this.loading = false;
                 } catch (error) {
                     console.log(error);
                 }

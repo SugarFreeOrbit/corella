@@ -6,7 +6,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 Vue.use(Vuex);
 
-let loggedIn, socket;
+let loggedIn, socket, socketHotfix;
 let jwt = localStorage.getItem('jwt');
 let isAdmin = (localStorage.getItem('isAdmin') === "true");
 let username = localStorage.getItem('username');
@@ -21,12 +21,22 @@ if (username && isAdmin !== undefined && jwt) {
 			}
 		}
 	});
+	socketHotfix = io(`${process.env.VUE_APP_BACKEND_HOST}/hotfixEvents`, {
+		transportOptions: {
+			polling: {
+				extraHeaders: {
+					'X-Client': `Bearer ${jwt}`
+				}
+			}
+		}
+	});
 } else {
 	loggedIn = false;
 	isAdmin = false;
 	username = '';
 	jwt = '';
 	socket = {};
+	socketHotfix = {};
 }
 const store = new Vuex.Store({
 	state: {
@@ -38,6 +48,7 @@ const store = new Vuex.Store({
 		},
 		currentProject: {},
 		socket,
+		socketHotfix,
 		allowedFiles: []
 	}, mutations: {
 		logIn(state, {jwt, username, isAdmin}) {
@@ -57,6 +68,15 @@ const store = new Vuex.Store({
 					}
 				}
 			});
+			state.socketHotfix = io(`${process.env.VUE_APP_BACKEND_HOST}/hotfixEvents`, {
+				transportOptions: {
+					polling: {
+						extraHeaders: {
+							'X-Client': `Bearer ${jwt}`
+						}
+					}
+				}
+			});
 		},
 		logOut(state) {
 			localStorage.removeItem('jwt');
@@ -68,6 +88,8 @@ const store = new Vuex.Store({
 			try {
 				state.socket.disconnect();
 				state.socket = {};
+				state.socketHotfix.disconnect();
+				state.socketHotfix = {};
 			} catch (e) {
 				console.log('No socket to close')
 			}

@@ -56,7 +56,7 @@
                       </div>
                     </div>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item class="file-upload-wrapper">
                     <file-upload :link="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/`"
                                  :files="files"
                                  :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"
@@ -141,10 +141,10 @@
         },
         computed: {
             canEditHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.editHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editHotfixes;
             },
             canDeleteHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.deleteHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.deleteHotfixes;
             },
         },
         methods: {
@@ -211,5 +211,15 @@
         }
       }
 
+    }
+
+    .file-upload-wrapper {
+      height: 150px;
+      margin-top: 10px;
+    }
+
+    .issue__content_images {
+      display: flex;
+      flex-wrap: wrap;
     }
 </style>

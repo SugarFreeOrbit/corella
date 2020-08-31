@@ -118,7 +118,8 @@
       try {
         await this.handleQueryChange();
         if(this.$route.query.hotfix !== undefined) {
-          this.currentHotfix = this.hotfixes.find(hotfix => hotfix.hotfixCode.toString() === this.$route.query.hotfix);
+          let response = await this.$http(`/projects/${this.projectId}/hotfixes?hotfixCode=${this.$route.query.hotfix}`);
+          this.currentHotfix = response.data;
         }
       } catch (e) {
         console.log(e);

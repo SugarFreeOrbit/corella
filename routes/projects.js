@@ -695,32 +695,35 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					let query;
 					if (req.query.showCompleted === "true") {
 						if (req.query.findByTitle !== undefined) {
-							query = Hotfix.find({
-								$and: [{"project": req.params.projectId},
-									{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							query = {
+								$and: [{project: req.params.projectId},
+									{title: {$regex: req.query.findByTitle, $options: "i"}}
 								]
-							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							};
 						} else {
-							query = Hotfix.find({
-								project: req.params.projectId}).sort(sortingParams)
-								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							query = {project: req.params.projectId};
 						}
 					} else {
 						if (req.query.findByTitle !== undefined) {
-							query = Hotfix.find({
-								$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
-									{"title": {$regex: req.query.findByTitle, $options: "i"}}
+							query = {
+								$and: [{project: req.params.projectId}, {state: {$lt: 3}},
+									{title: {$regex: req.query.findByTitle, $options: "i"}}
 								]
-							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+							};
 						} else {
-							query = Hotfix.find({
+							query = {
 								project: req.params.projectId,
-								"state": {$lt: 3}
-							}).sort(sortingParams)
-								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
+								state: {$lt: 3}
+							};
 						}
 					}
-					let results = await Promise.all([query, Hotfix.countDocuments({project: req.params.projectId})]);
+					let results = await Promise.all([
+						Hotfix.find(query)
+							.sort(sortingParams)
+							.skip((page - 1) * limit)
+							.limit(limit)
+							.populate('files', 'filename length'),
+						Hotfix.countDocuments(query)]);
 					let totalCount = results[1];
 					res.json({
 						total: totalCount,

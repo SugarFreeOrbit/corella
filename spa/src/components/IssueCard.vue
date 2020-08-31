@@ -80,12 +80,12 @@
 				this.currentIssue.description = issue.data.description;
 				//this.currentIssue.color = issue.data.color;
 				this.previewReady = true;
-				if (issue.data.assignee) {
-					this.assignee._id = issue.data.assignee;
-					let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
-					this.assignee.username = assignee.data.username;
-					this.assigneeReady = true;
-				}
+        if (issue.data.assignee) {
+          this.currentIssue.assignee_id = issue.data.assignee;
+          let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
+          this.currentIssue.assignee.username = assignee.data.username;
+          this.assigneeReady = true;
+        }
 			},
 			showMoreModal: function () {
 				this.$router.push({query: { issue: this.currentIssue.issueCode.toString() }});

@@ -54,12 +54,11 @@
             if(fileType.indexOf('png') !== -1 || fileType.indexOf('jpg') !== -1 || fileType.indexOf('jpeg') !== -1)
                 this.type = 'img';
             else
-                this.type = 'unknown'
+                this.type = 'unknown';
 
             if(this.url !== null) {
               this.loadImage();
-            }
-            else {
+            } else {
               let reader = new FileReader();
               reader.readAsDataURL(this.file);
               reader.onload = (event) => {

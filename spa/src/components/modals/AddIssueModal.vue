@@ -1,12 +1,12 @@
 <template>
     <el-dialog class="add-issue-modal" :visible="true" title="New issue" @close="close">
-        <el-form v-model="issueCreationModal.form"
+        <el-form v-on:submit.native.prevent="createIssue" v-model="issueCreationModal.form"
                  v-loading="issueCreationModal.inProgress">
             <el-form-item label="Title">
                 <el-input required v-model="issueCreationModal.form.title"></el-input>
             </el-form-item>
             <el-form-item label="Description">
-                <el-input required type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
+                <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
             </el-form-item>
             <el-form-item>
               <file-upload-local v-model="issueCreationModal.form.files"></file-upload-local>

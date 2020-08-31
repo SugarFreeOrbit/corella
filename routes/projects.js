@@ -691,35 +691,37 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 					let query;
 					if (req.query.showCompleted === "true") {
 						if (req.query.findByTitle !== undefined) {
-							query = await Hotfix.find({
+							query = Hotfix.find({
 								$and: [{"project": req.params.projectId},
 									{"title": {$regex: req.query.findByTitle, $options: "i"}}
 								]
 							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 						} else {
-							query = await Hotfix.find({
+							query = Hotfix.find({
 								project: req.params.projectId}).sort(sortingParams)
 								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 						}
 					} else {
 						if (req.query.findByTitle !== undefined) {
-							query = await Hotfix.find({
+							query = Hotfix.find({
 								$and: [{"project": req.params.projectId}, {"state": {$lt: 3}},
 									{"title": {$regex: req.query.findByTitle, $options: "i"}}
 								]
 							}).sort(sortingParams).skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 						} else {
-							query = await Hotfix.find({
+							query = Hotfix.find({
 								project: req.params.projectId,
 								"state": {$lt: 3}
 							}).sort(sortingParams)
 								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 						}
 					}
+					let results = await Promise.all([query, Hotfix.estimatedDocumentCount()]);
+					let totalCount = results[1];
 					res.json({
-						total: query.length,
-						pageCount: Math.ceil(query.length / limit),
-						data: query
+						total: totalCount,
+						pageCount: Math.ceil(totalCount / limit),
+						data: results[0]
 					});
 				}
 			}else{

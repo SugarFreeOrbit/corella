@@ -147,6 +147,7 @@
                 let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
                 this.currentIssue.title = issue.data.title;
                 this.currentIssue.description = issue.data.description;
+                this.currentIssue.files = issue.data.files;
                 //this.currentIssue.color = issue.data.color;
                 this.previewReady = true;
                 if (issue.data.assignee) {

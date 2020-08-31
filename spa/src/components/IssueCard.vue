@@ -76,9 +76,9 @@
 			reloadIssue: async function() {
 				this.previewReady = false;
 				let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
-				this.title = issue.data.title;
-				this.description = issue.data.description;
-				this.color = issue.data.color;
+				this.currentIssue.title = issue.data.title;
+				this.currentIssue.description = issue.data.description;
+				//this.currentIssue.color = issue.data.color;
 				this.previewReady = true;
 				if (issue.data.assignee) {
 					this.assignee._id = issue.data.assignee;

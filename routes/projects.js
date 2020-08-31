@@ -720,7 +720,7 @@ router.get('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), validat
 								.skip((page - 1) * limit).limit(limit).populate('files', 'filename length');
 						}
 					}
-					let results = await Promise.all([query, Hotfix.estimatedDocumentCount()]);
+					let results = await Promise.all([query, Hotfix.countDocuments({project: req.params.projectId})]);
 					let totalCount = results[1];
 					res.json({
 						total: totalCount,

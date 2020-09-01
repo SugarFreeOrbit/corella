@@ -334,7 +334,8 @@
 				this.viewMembersModal.loading = true;
 				let revert = this.roles;
 				let roleIndex = this.roles.findIndex(role => role.name === roleName);
-				this.roles[roleIndex].members.splice(roleIndex, 1);
+				let memberIndex = this.roles[roleIndex].members.findIndex(member => member === userId);
+				this.roles[roleIndex].members.splice(memberIndex, 1);
 				try {
 					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
 					this.viewMembersModal.newMembers = [];

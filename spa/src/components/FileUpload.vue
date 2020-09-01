@@ -78,12 +78,20 @@
                 for(let item of arr) {
                   item.style.display = 'none';
                 }
+                arr = document.getElementsByClassName('app-file__download');
+                for(let item of arr) {
+                  item.style.display = 'none';
+                }
             },
             showFilesPreview: function () {
               this.$refs.previewBtnDelete.forEach(item => {
                 item.style.display = 'block';
               });
               let arr = document.getElementsByClassName('el-image__preview');
+              for(let item of arr) {
+                item.style.display = 'block';
+              }
+              arr = document.getElementsByClassName('app-file__download');
               for(let item of arr) {
                 item.style.display = 'block';
               }

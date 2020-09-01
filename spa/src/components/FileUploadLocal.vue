@@ -62,7 +62,6 @@ export default {
   },
   methods: {
     hideFilesPreview: function () {
-      console.log('hide');
       this.$refs.previewBtnDelete.forEach(item => {
         item.style.display = 'none';
       });

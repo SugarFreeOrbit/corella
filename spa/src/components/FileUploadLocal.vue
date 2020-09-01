@@ -8,10 +8,12 @@
     <div class="modal__upload-wrapper">
       <div class="modal__upload-list" style="display: flex">
         <div v-if="!loading" class="modal__upload-list--item file-upload__view-file" v-for="(file, i) in files" v-loading="loading">
-                    <span class="remove" @click='removeFile(file, i)'>
-                        <i class="el-icon-circle-close"></i>
-                    </span>
+          <span class="remove" @click='removeFile(file, i)' ref="previewBtnDelete">
+            <i class="el-icon-circle-close"></i>
+          </span>
           <app-file :url="null"
+                    @hide="hideFilesPreview"
+                    @show="showFilesPreview"
                     :file="file"
                     :width="100"
                     :height="100">
@@ -59,6 +61,33 @@ export default {
 
   },
   methods: {
+    hideFilesPreview: function () {
+      console.log('hide');
+      this.$refs.previewBtnDelete.forEach(item => {
+        item.style.display = 'none';
+      });
+      let arr = document.getElementsByClassName('el-image__preview');
+      for(let item of arr) {
+        item.style.display = 'none';
+      }
+      arr = document.getElementsByClassName('app-file__download');
+      for(let item of arr) {
+        item.style.display = 'none';
+      }
+    },
+    showFilesPreview: function () {
+      this.$refs.previewBtnDelete.forEach(item => {
+        item.style.display = 'block';
+      });
+      let arr = document.getElementsByClassName('el-image__preview');
+      for(let item of arr) {
+        item.style.display = 'block';
+      }
+      arr = document.getElementsByClassName('app-file__download');
+      for(let item of arr) {
+        item.style.display = 'block';
+      }
+    },
     drag: function (param) {
       this.handleFilesUpload(param);
     },

@@ -102,7 +102,6 @@
             });
             this.boardSocket = this.$store.state.socket;
             this.boardSocket.on('updatedIssue', (message) => {
-              console.log('UPDATE');
               if (message.projectId === this.projectId) {
                 if(message.issueId === this.issueId) {
                   this.reloadIssue();

@@ -224,6 +224,8 @@
 							limit: this.projectBuilder.newColumn.limit
 						})
 					}
+					this.projectBuilder.newColumn.name = '';
+					this.projectBuilder.newColumn.limit = 0;
 				}
 			},
 			removeColumn: function (name) {

@@ -13,8 +13,7 @@ const WebsocketService = function () {
 			res.end();
 		}
 	});
-	this.boardEventSocket = this.server.of('/boardEvents');
-	this.boardEventSocket.use( async (socket, next) => {
+	this.authenticate = async (socket, next) => {
 		try {
 			let rawJwt = socket.request.headers['x-client'].split(' ')[1];
 			await jwt.verify(rawJwt, CONFIG.secret);
@@ -29,19 +28,39 @@ const WebsocketService = function () {
 		} catch (e) {
 			next(new Error('Unauthenticated'));
 		}
-	});
+	}
+	this.boardEventSocket = this.server.of('/boardEvents');
+	this.boardEventSocket.use(this.authenticate);
+	this.hotfixEventSocket = this.server.of('/hotfixEvents');
+	this.hotfixEventSocket.use(this.authenticate);
+
 	this.emitNewIssue = function (issueId, projectId) {
 		this.boardEventSocket.emit('newIssue', {issueId, projectId});
 	};
+
 	this.emitDeletedIssue = function (issueId, projectId) {
 		this.boardEventSocket.emit('deletedIssue', {issueId, projectId});
 	};
+
 	this.emitUpdatedIssue = function (issueId, projectId) {
 		this.boardEventSocket.emit('updatedIssue', {issueId, projectId});
 	};
+
 	this.emitMovedIssue = function (moveOperation, projectId) {
-		this.boardEventSocket.emit('movedIssue', {moveOperation, projectId})
+		this.boardEventSocket.emit('movedIssue', {moveOperation, projectId});
 	};
+
+	this.emitNewHotfix = function(hotfixId, projectId) {
+		this.hotfixEventSocket.emit('newHotfix', {hotfixId, projectId});
+	}
+
+	this.emitDeletedHotfix = function(hotfixId, projectId) {
+		this.hotfixEventSocket.emit('deletedHotfix', {hotfixId, projectId});
+	}
+
+	this.emitUpdatedHotfix = function(hotfixId, projectId) {
+		this.hotfixEventSocket.emit('updatedHotfix', {hotfixId, projectId});
+	}
 };
 
 module.exports =  new WebsocketService();

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const Project = require('../models/project');
 const validator = require('../utils/validation/validator');
 const emailValidator = require("email-validator");
 
@@ -43,19 +44,28 @@ router.put('/', [validator.checkBody('newUser')], function (req, res) {
 });
 
 router.get('/',[validator.checkQuery('paginationQuery')], async function (req, res, next) {
-	if (req.user.isAdmin) {
+	if (await Project.checkAnyManagerPermission(req.user._id, req.user.isAdmin)) {
 		try {
-			let limit = parseInt(req.query.limit) || 10;
-			let page = parseInt(req.query.page) || 1;
-			let query = await Promise.all([
-				User.find({}, {username: 1, email: 1, isAdmin: 1}).skip((page - 1) * limit).limit(limit),
-				User.estimatedDocumentCount()
-			]);
-			res.json({
-				total: query[1],
-				pageCount: Math.ceil(query[1] / limit),
-				data: query[0]
-			});
+			if (req.query.limit && req.query.page) {
+				let limit = parseInt(req.query.limit) || 10;
+				let page = parseInt(req.query.page) || 1;
+				let query = await Promise.all([
+					User.find({}, {username: 1, email: 1, isAdmin: 1}).skip((page - 1) * limit).limit(limit),
+					User.estimatedDocumentCount()
+				]);
+				res.json({
+					total: query[1],
+					pageCount: Math.ceil(query[1] / limit),
+					data: query[0]
+				});
+			} else {
+				let query = await User.find({}, {username: 1, email: 1, isAdmin: 1});
+				res.json({
+					total: query.length,
+					pageCount: 1,
+					data: query
+				});
+			}
 		} catch (e) {
 			next(e);
 		}

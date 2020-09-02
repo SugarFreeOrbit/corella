@@ -105,7 +105,7 @@
 		</div>
 		<div class="projects" v-loading="loading" v-else>
 			<div class="projects__tools" v-if="isAdmin">
-				<el-button round icon="el-icon-plus" type="primary" @click="projectBuilder.visible = true">Create new project</el-button>
+				<el-button icon="el-icon-plus" type="primary" @click="projectBuilder.visible = true">Create new project</el-button>
 			</div>
       <div class="projects__list">
         <el-card v-for="project in projects" class="project" v-bind:key="project._id">
@@ -224,6 +224,8 @@
 							limit: this.projectBuilder.newColumn.limit
 						})
 					}
+					this.projectBuilder.newColumn.name = '';
+					this.projectBuilder.newColumn.limit = 0;
 				}
 			},
 			removeColumn: function (name) {

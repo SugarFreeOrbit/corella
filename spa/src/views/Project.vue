@@ -15,6 +15,10 @@
                         <i class="el-icon-user"></i>
                     </el-tooltip>
                 </div>
+                <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('setting') !== -1}"
+                     v-if="isManager" @click="goTo('setting')">
+                  <i class="el-icon-setting"></i>
+                </div>
                 <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('hotfixes') !== -1}"
                      @click="goTo('hotfixes')">
                     <el-tooltip content="Hotfixes" placement="right-start">
@@ -91,6 +95,12 @@
             },
             canCreateIssues: function () {
                 return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isCreator;
+            },
+            canEditIssues: function () {
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isEditor;
+            },
+            isManager: function () {
+              return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager;
             }
         },
         beforeRouteLeave(to, from, next) {

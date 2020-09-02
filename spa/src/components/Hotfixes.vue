@@ -73,7 +73,7 @@
         return this.$store.state.currentProject._id
       },
       canAddHotfix() {
-        return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.createHotfixes;
+        return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.createHotfixes;
       },
       isHotfixMoreModal: function() {
         if(this.$route.query.hotfix === undefined)
@@ -94,14 +94,39 @@
         loading: false,
         searchByTitle: '',
         isHotfixAddModal: false,
-        currentHotfix: {}
+        currentHotfix: {},
+        socketHotfix: {}
+      }
+    },
+    async created() {
+      this.socketHotfix = this.$store.state.socketHotfix;
+      this.socketHotfix.on('newHotfix', (message) => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      this.socketHotfix.on('deletedHotfix', (message) => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      this.socketHotfix.on('updatedHotfix', message => {
+        if (message.projectId === this.projectId) {
+          this.handleQueryChange();
+        }
+      });
+      try {
+        await this.handleQueryChange();
+        if(this.$route.query.hotfix !== undefined) {
+          let response = await this.$http(`/projects/${this.projectId}/hotfixes?hotfixCode=${this.$route.query.hotfix}`);
+          this.currentHotfix = response.data;
+        }
+      } catch (e) {
+        console.log(e);
       }
     },
     async mounted() {
-      await this.handleQueryChange();
-      if(this.$route.query.hotfix !== undefined) {
-        this.currentHotfix = this.hotfixes.find(hotfix => hotfix.hotfixCode.toString() === this.$route.query.hotfix);
-      }
+
     },
     methods: {
       handleQueryChange: async function (queryInfo) {
@@ -112,6 +137,10 @@
         this.loading = true;
         let fetchHotfixes = await this.$http.get(`/projects/${this.projectId}/hotfixes?limit=${this.limit}&page=${this.page}${this.showCompleted ? '&showCompleted=true' : ''}${this.searchByTitle !== '' ? `&findByTitle=${this.searchByTitle}` : ''}`);
         this.total = fetchHotfixes.data.total;
+        if(this.total === 0)
+          document.getElementsByClassName('el-pagination')[0].style.display = 'none';
+        else
+          document.getElementsByClassName('el-pagination')[0].style.display = 'block';
         this.hotfixes = fetchHotfixes.data.data;
         this.loading = false;
       },
@@ -147,9 +176,11 @@
     border-radius: 5px!important;
   }
 .hotfixes {
-  display: flex;
+  //display: flex;
   padding: 20px;
-  flex-wrap: wrap;
+  //flex-wrap: wrap;
+  height: calc(100vh - 52px);
+  overflow-y: scroll;
 
   &__title {
     &:hover {

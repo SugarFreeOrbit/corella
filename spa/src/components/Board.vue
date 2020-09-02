@@ -1,15 +1,18 @@
 <template>
 	<div class="board" v-loading="loading">
-		<el-card class="board__column" v-for="column in columns" v-bind:key="column.id">
+		<el-card class="board__column" v-for="(column, i) in columns" v-bind:key="column.id">
 			<div class="board__column__header" slot="header">
 				<p>{{column.name}}</p>
 			</div>
-			<div class="board__column__content">
-				<issue-card v-for="issueId in column.issues" v-bind:key="issueId"
-							v-bind:issueId="issueId"
-							v-bind:projectId="projectId"
-							v-bind:columnList="columnList"
-							v-bind:currentColumnId="column.id"></issue-card>
+			<div class="board__column__content" :class="{ crowded: column.issues.length > column.limit }">
+        <draggable :class="column.id" :list="column.issues === undefined ? [] : column.issues" group="people" style="height: calc(100vh - 212px)" @add="moveIssue" @update="moveIssue">
+          <issue-card v-for="issueId in column.issues" v-bind:key="issueId"
+                      :id="issueId"
+                      v-bind:issueId="issueId"
+                      v-bind:projectId="projectId"
+                      v-bind:columnList="columnList"
+                      v-bind:currentColumnId="column.id"></issue-card>
+        </draggable>
 			</div>
 		</el-card>
 	</div>
@@ -17,10 +20,15 @@
 
 <script>
 	import IssueCard from "./IssueCard";
+  import draggable from 'vuedraggable';
+
 	export default {
 		name: "Board",
-		components: {IssueCard},
-		computed: {
+		components: {
+		  IssueCard,
+      draggable
+    },
+    computed: {
 			projectId: function () {
 				return this.$store.state.currentProject._id
 			},
@@ -78,7 +86,27 @@
 				this.loading = false;
 				console.log(e);
 			}
-		}
+		},
+    methods: {
+      moveIssue: async function (param) {
+        let fromId = param.from.classList[0];
+        let toId = param.to.classList[0];
+        let issueId = param.item.id;
+        let payload = {
+          issueId: issueId,
+          targetColumn: toId,
+          targetPosition: param.newIndex,
+          originalColumn: fromId
+        };
+        try {
+          let backendMove = await this.$http.post(`/projects/${this.projectId}/issues/move`, payload);
+        } catch (e) {
+          this.loading = true;
+          await this.$store.dispatch('syncCurrentProjectBoard');
+          this.loading = false;
+        }
+      },
+    }
 	}
 </script>
 
@@ -102,9 +130,22 @@
 				vertical-align: middle;
 			}
 			&__content {
-				height: calc(100vh - 172px);
+				height: calc(100vh - 144px);
 				overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
 			}
 		}
+
+    .crowded {
+      background-color: rgba(255, 204, 204, 0.5);
+    }
+
 	}
+</style>
+
+<style>
+  .board__column > .el-card__body {
+    padding: 0!important;
+  }
 </style>

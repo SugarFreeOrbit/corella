@@ -24,37 +24,44 @@
                 <el-form-item label="Title">
                     <el-input v-model="currentHotfix.title"></el-input>
                 </el-form-item>
-                <hr>
+                <!--<hr>-->
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentHotfix.description"></el-input>
                 </el-form-item>
-                <el-form-item label="Priority">
-                    <el-select v-model="priority" placeholder="Move this issue to..." class="issue__content__control__move">
-                        <el-option v-for="item in priorities"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="State">
-                    <el-select v-model="state" placeholder="Move this issue to..." class="issue__content__control__move">
-                        <el-option v-for="item in states"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
                 <el-form-item>
+                    <div class="form-group">
+                      <div class="form-group__item">
+                        <label>Priority</label>
+                        <el-select v-model="priority" placeholder="Move this issue to..." class="issue__content__control__move">
+                          <el-option v-for="item in priorities"
+                                     :key="item.value"
+                                     :label="item.label"
+                                     :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
+                      <div class="form-group__item">
+                        <label>State</label>
+                        <el-select v-model="state" placeholder="Move this issue to..." class="issue__content__control__move">
+                          <el-option v-for="item in states"
+                                     :key="item.value"
+                                     :label="item.label"
+                                     :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
+                      <div class="form-group__item">
+                        <label>Branch</label>
+                        <el-input v-model="currentHotfix.branch"></el-input>
+                      </div>
+                    </div>
+                </el-form-item>
+                <el-form-item class="file-upload-wrapper">
                     <file-upload :link="`/projects/${projectId}/hotfixes/${currentHotfix._id}/attached/`"
                                  :files="files"
                                  :attachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/attach`"
                                  :detachLink="`/projects/${this.projectId}/hotfixes/${this.currentHotfix._id}/detach/`">
                     </file-upload>
-                </el-form-item>
-                <el-form-item label="Branch">
-                  <el-input v-model="currentHotfix.branch"></el-input>
                 </el-form-item>
                 <el-form-item class="issue__content__control">
                     <el-button @click="close">Cancel</el-button>
@@ -134,10 +141,10 @@
         },
         computed: {
             canEditHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.editHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editHotfixes;
             },
             canDeleteHotfixes: function () {
-                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.deleteHotfixes;
+                return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.deleteHotfixes;
             },
         },
         methods: {
@@ -189,5 +196,30 @@
 </script>
 
 <style scoped lang="scss">
+    .form-group {
+      display: flex;
 
+      &__item {
+        margin-right: 10px;
+        &:last-child { margin-right: 0 }
+
+        > label {
+          display: block;
+          margin: 0;
+          line-height: 30px;
+          font-weight: 600;
+        }
+      }
+
+    }
+
+    .file-upload-wrapper {
+      height: 150px;
+      margin-top: 10px;
+    }
+
+    .issue__content_images {
+      display: flex;
+      flex-wrap: wrap;
+    }
 </style>

@@ -28,11 +28,11 @@
                 <el-form-item label="Title">
                     <el-input v-model="currentIssue.title"></el-input>
                 </el-form-item>
-                <hr>
+                <!--<hr>-->
                 <el-form-item label="Description">
                     <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item class="file-upload-wrapper">
                   <file-upload :link="`/projects/${projectId}/issues/${issueId}/attachment/`"
                                :files="files"
                                :attachLink="`/projects/${this.projectId}/issues/${issueId}/attach`"
@@ -89,7 +89,8 @@
                 modalLoading: false,
                 targetColumn: '',
                 currentIssue: {},
-                files: []
+                files: [],
+                boardSocket: {}
             }
         },
         created() {
@@ -98,6 +99,26 @@
             this.files.forEach(file => {
                 if(file.name === undefined)
                     file.name = file.filename;
+            });
+            this.boardSocket = this.$store.state.socket;
+            this.boardSocket.on('updatedIssue', (message) => {
+              if (message.projectId === this.projectId) {
+                if(message.issueId === this.issueId) {
+                  this.reloadIssue();
+                }
+              }
+            });
+            this.boardSocket.on('deletedIssue', (message) => {
+              if (message.projectId === this.projectId) {
+                if(message.issueId === this.issueId) {
+                  this.close();
+                }
+              }
+            });
+            this.boardSocket.on('movedIssue', message => {
+              if(message.issueId === this.issueId) {
+                this.reloadIssue();
+              }
             });
         },
         mounted() {
@@ -119,6 +140,29 @@
             }
         },
         methods: {
+            reloadIssue: async function () {
+              this.modalLoading = true;
+              try {
+                this.previewReady = false;
+                let issue = await this.$http.get(`/projects/${this.projectId}/issues/${this.issueId}`);
+                this.currentIssue.title = issue.data.title;
+                this.currentIssue.description = issue.data.description;
+                this.currentIssue.files = issue.data.files;
+                this.files = issue.data.files;
+                //this.currentIssue.color = issue.data.color;
+                this.previewReady = true;
+                if (issue.data.assignee) {
+                  this.currentIssue.assignee_id = issue.data.assignee;
+                  let assignee = await this.$http.get(`/users/${issue.data.assignee}`);
+                  this.currentIssue.assignee.username = assignee.data.username;
+                  this.assigneeReady = true;
+                }
+                this.modalLoading = false;
+              } catch (e) {
+                console.log(e);
+                this.modalLoading = false;
+              }
+            },
             deleteIssue: async function() {
                 await this.$confirm('This will permanently delete this issue. Continue?', 'Warning', {
                     confirmButtonText: 'Confirm',
@@ -208,5 +252,10 @@
     .issue__content__control__move {
       margin-left: 10px;
       margin-right: 10px;
+    }
+
+    .file-upload-wrapper {
+      height: 150px;
+      margin-top: 10px;
     }
 </style>

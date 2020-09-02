@@ -180,6 +180,20 @@ projectSchema.statics.checkPermission = async function (projectId, userId, permi
 	}, {projectName: 1});
 	return !!permissionTest || isAdmin;
 };
+
+projectSchema.statics.checkAnyManagerPermission = async function (userId, isAdmin) {
+	if (isAdmin) return true;
+	let permissionTest = await this.findOne({
+		roles: {
+			$elemMatch: {
+				members: userId,
+				isManager: true
+			}
+		}
+	}, {projectName: 1});
+	return !!permissionTest;
+};
+
 projectSchema.statics.checkCreatorPermission = async function (projectId, userId, isAdmin) {
 	return await this.checkPermission(projectId, userId, 'isCreator', isAdmin);
 };
@@ -215,6 +229,14 @@ projectSchema.statics.validateProjectToIssueRelation = async function(projectId,
 	}, {projectName: 1});
 	return !!relationTest;
 };
+
+projectSchema.statics.validateProjectToColumnRelation = async function (projectId, columnId) {
+	let relationTest = await this.findOne({
+		_id: projectId,
+		'columns.id': columnId
+	}, {projectName: 1});
+	return !!relationTest;
+}
 // projectSchema.statics.checkMovePermission = async function (projectId, userId, moveOperation) {
 // 	if(moveOperation.targetColumn !== moveOperation.originalColumn) {
 // 		let project = await this.findOne({

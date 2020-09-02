@@ -1,3 +1,27 @@
 * {
   outline: none!important;
 }
+
+.el-form-item__label {
+  margin-bottom: 0;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+.el-form-item {
+  margin-bottom: 5px!important;
+}
+
+.el-dialog__body {
+  padding-top: 0!important;
+}
+
+.el-dialog__title {
+  font-weight: 700!important;
+}
+
+.default {
+  &__control-btn {
+    border-radius: 5px!important;
+  }
+}

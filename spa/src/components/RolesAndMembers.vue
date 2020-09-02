@@ -1,7 +1,7 @@
 <template>
 	<div class="roles" v-loading="loading">
 		<div class="roles__control">
-			<el-button round icon="el-icon-plus" type="primary" @click="addRoleModal.visible = true">Add new role</el-button>
+			<el-button icon="el-icon-plus" type="primary" @click="addRoleModal.visible = true">Add new role</el-button>
 		</div>
 		<el-card class="roles__role" v-for="role in roles" v-bind:key="role.name">
 			<div class="roles__role__name" slot="header">
@@ -9,13 +9,13 @@
 			</div>
 			<div class="roles__role__controls">
 				<el-tooltip placement="bottom" content="View members">
-					<el-button circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="primary" icon="el-icon-user" @click="viewMembers(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Edit role">
-					<el-button circle type="primary" icon="el-icon-edit" @click="showEditModal(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="primary" icon="el-icon-edit" @click="showEditModal(role.name)"></el-button>
 				</el-tooltip>
 				<el-tooltip placement="bottom" content="Delete role and it's members">
-					<el-button circle type="danger" icon="el-icon-delete" @click="deleteRole(role.name)"></el-button>
+					<el-button class="default__control-btn" circle type="danger" icon="el-icon-delete" @click="deleteRole(role.name)"></el-button>
 				</el-tooltip>
 			</div>
 		</el-card>
@@ -25,27 +25,47 @@
 					<el-form-item label="Role name">
 						<el-input autocomplete="off" v-model="addRoleModal.name"></el-input>
 					</el-form-item>
-					<el-form-item label="Manage">
-						<el-switch v-model="addRoleModal.isManager"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create">
-						<el-switch v-model="addRoleModal.isCreator"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete">
-						<el-switch v-model="addRoleModal.isDestroyer"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit">
-						<el-switch v-model="addRoleModal.isEditor"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create Hotfixes">
-						<el-switch v-model="addRoleModal.createHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit Hotfixes">
-						<el-switch v-model="addRoleModal.editHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete Hotfixes">
-						<el-switch v-model="addRoleModal.deleteHotfixes"></el-switch>
-					</el-form-item>
+          <el-form-item>
+            <div class="switch-group">
+              <div class="switch-group__group">
+                <label>General</label>
+                <div class="switch-group__item">
+                  <label>Manage</label>
+                  <el-switch v-model="addRoleModal.isManager"></el-switch>
+                </div>
+              </div>
+              <div class="switch-group__group">
+                <label>Issue</label>
+                <div class="switch-group__item">
+                  <label>Create</label>
+                  <el-switch v-model="addRoleModal.isCreator"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Edit</label>
+                  <el-switch v-model="addRoleModal.isEditor"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Delete</label>
+                  <el-switch v-model="addRoleModal.isDestroyer"></el-switch>
+                </div>
+              </div>
+              <div class="switch-group__group">
+                <label>Hotfix</label>
+                <div class="switch-group__item">
+                  <label>Create</label>
+                  <el-switch v-model="addRoleModal.createHotfixes"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Edit</label>
+                  <el-switch v-model="addRoleModal.editHotfixes"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Delete</label>
+                  <el-switch v-model="addRoleModal.deleteHotfixes"></el-switch>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
 						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}<el-select v-model="addRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
 						<el-option v-for="targetColumn in columns" :label="targetColumn.name" :key="targetColumn.id" :value="targetColumn.id" v-if="startingColumn.id !== targetColumn.id"></el-option>
@@ -82,27 +102,47 @@
 					<el-form-item label="Role name">
 						<el-input autocomplete="off" v-model="editRoleModal.name"></el-input>
 					</el-form-item>
-					<el-form-item label="Manage">
-						<el-switch v-model="editRoleModal.isManager"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create">
-						<el-switch v-model="editRoleModal.isCreator"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete">
-						<el-switch v-model="editRoleModal.isDestroyer"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit">
-						<el-switch v-model="editRoleModal.isEditor"></el-switch>
-					</el-form-item>
-					<el-form-item label="Create Hotfixes">
-						<el-switch v-model="editRoleModal.createHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Edit Hotfixes">
-						<el-switch v-model="editRoleModal.editHotfixes"></el-switch>
-					</el-form-item>
-					<el-form-item label="Delete Hotfixes">
-						<el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
-					</el-form-item>
+          <el-form-item>
+            <div class="switch-group">
+              <div class="switch-group__group">
+                <label>General</label>
+                <div class="switch-group__item">
+                  <label>Manage</label>
+                  <el-switch v-model="editRoleModal.isManager"></el-switch>
+                </div>
+              </div>
+              <div class="switch-group__group">
+                <label>Issue</label>
+                <div class="switch-group__item">
+                  <label>Create</label>
+                  <el-switch v-model="editRoleModal.isCreator"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Edit</label>
+                  <el-switch v-model="editRoleModal.isEditor"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Delete</label>
+                  <el-switch v-model="editRoleModal.isDestroyer"></el-switch>
+                </div>
+              </div>
+              <div class="switch-group__group">
+                <label>Hotfix</label>
+                <div class="switch-group__item">
+                  <label>Create</label>
+                  <el-switch v-model="editRoleModal.createHotfixes"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Edit</label>
+                  <el-switch v-model="editRoleModal.editHotfixes"></el-switch>
+                </div>
+                <div class="switch-group__item">
+                  <label>Delete</label>
+                  <el-switch v-model="editRoleModal.deleteHotfixes"></el-switch>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
 					<el-form-item v-for="startingColumn in columns" v-bind:key="startingColumn.id">
 						{{startingColumn.name}} <i class="el-icon-right"></i> {{" "}}
             <el-select v-model="editRoleModal.issueTransitionMatrix[startingColumn.id]" multiple placeholder="Select transitions">
@@ -294,7 +334,8 @@
 				this.viewMembersModal.loading = true;
 				let revert = this.roles;
 				let roleIndex = this.roles.findIndex(role => role.name === roleName);
-				this.roles[roleIndex].members.splice(roleIndex, 1);
+				let memberIndex = this.roles[roleIndex].members.findIndex(member => member === userId);
+				this.roles[roleIndex].members.splice(memberIndex, 1);
 				try {
 					await this.$http.patch(`/projects/${this.projectId}/roles`, this.roles);
 					this.viewMembersModal.newMembers = [];
@@ -353,9 +394,11 @@
 
 <style scoped lang="scss">
 	.roles {
-		height: 100%;
-		padding-left: 80px;
+    width: calc(100vw - 80px);
+    height: calc(100vh - 52px);
 		padding-right: 55px;
+    margin-left: auto;
+    overflow-y: scroll;
 		&__modal {
 			&_viewMembers {
 				&__search {
@@ -382,4 +425,36 @@
 			}
 		}
 	}
+
+  .switch-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    justify-content: center;
+
+    &__group {
+      width: 33%;
+
+      > label {
+        display: block;
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+    }
+
+    &__item {
+      width: 100%;
+
+      > label {
+        display: block;
+        margin: 0;
+        //margin-right: 20px;
+        font-weight: 600;
+        line-height: 30px;
+      }
+
+    }
+
+  }
 </style>

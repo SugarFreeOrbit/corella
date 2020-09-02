@@ -327,6 +327,17 @@ const getHotfixesQuery = {
 	}
 };
 
+const updateWIPLimit = {
+	type:'object',
+	properties: {
+		limit: {
+			type:"number",
+			minimum: 1,
+			maximum: 20
+		}
+	}
+};
+
 const globalConfig = {
 	type: 'object',
 	properties: {
@@ -342,4 +353,4 @@ const globalConfig = {
 
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig, updateWIPLimit};

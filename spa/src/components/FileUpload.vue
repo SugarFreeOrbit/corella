@@ -1,22 +1,26 @@
 <template>
     <div class="file-upload">
+      <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" :includeStyling="true" :createImageThumbnails="false"  @vdropzone-removed-file="dzRemove" @vdropzone-file-added="drag">
+      </vue-dropzone>
         <input style="display: none" placeholder="upload files"
                type="file" id="uploadFiles" ref="files"
-               multiple v-on:change="handleFilesUpload()" hidden/>
+               multiple hidden/>
         <div class="modal__upload-wrapper">
             <div class="modal__upload-list" style="display: flex">
-                <div v-if="!loading" class="modal__upload-list--item" v-for="(file, i) in files" v-loading="loading">
-                    <span class="remove" @click='removeFile(file, i)'>
+                <div v-if="!loading" class="modal__upload-list--item file-upload__view-file" v-for="(file, i) in files" v-loading="loading">
+                    <span class="remove" @click='removeFile(file, i)' ref="previewBtnDelete">
                         <i class="el-icon-circle-close"></i>
                     </span>
                     <app-file :url="link + file._id"
+                              @hide="hideFilesPreview"
+                              @show="showFilesPreview"
                               :file="file"
                               :width="100"
                               :height="100">
                     </app-file>
                 </div>
                 <div v-else style="width: 100px;height: 100px" v-loading="loading"></div>
-                <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">+</div>
+              <div v-if="files.length < filesLimit" v-loading="filesUploadLoading" class="modal__upload-list--btn-add" @click="chooseFiles()">+</div>
             </div>
         </div>
     </div>
@@ -24,6 +28,8 @@
 
 <script>
     import AppFile from "./AppFile";
+    import vue2Dropzone from 'vue2-dropzone'
+    import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
     export default {
         name: "file-upload",
@@ -42,38 +48,79 @@
             }
         },
         components: {
-            AppFile
+            AppFile,
+            vueDropzone: vue2Dropzone
         },
         data() {
             return {
                 filesLimit: 5,
+                filesCount: 0,
                 filesUploadLoading: false,
-                loading: false
+                loading: false,
+                dropzoneOptions: {
+                  url: 'https://kostil.com',
+                  thumbnailWidth: 150,
+                  maxFilesize: 10,
+                  autoProcessQueue: false,
+                  addRemoveLinks: true,
+                }
             }
         },
         mounted() {
-
+            this.filesCount = this.files.length;
         },
         methods: {
-            async handleFilesUpload() {
+            hideFilesPreview: function () {
+                this.$refs.previewBtnDelete.forEach(item => {
+                    item.style.display = 'none';
+                });
+                let arr = document.getElementsByClassName('el-image__preview');
+                for(let item of arr) {
+                  item.style.display = 'none';
+                }
+                arr = document.getElementsByClassName('app-file__download');
+                for(let item of arr) {
+                  item.style.display = 'none';
+                }
+            },
+            showFilesPreview: function () {
+              this.$refs.previewBtnDelete.forEach(item => {
+                item.style.display = 'block';
+              });
+              let arr = document.getElementsByClassName('el-image__preview');
+              for(let item of arr) {
+                item.style.display = 'block';
+              }
+              arr = document.getElementsByClassName('app-file__download');
+              for(let item of arr) {
+                item.style.display = 'block';
+              }
+            },
+            drag: function (param) {
+              this.handleFilesUpload(param);
+            },
+            dzRemove: function () {
+
+            },
+            async handleFilesUpload(file) {
                 this.filesUploadLoading = true;
-                let files = this.$refs.files.files;
-                if(this.files.length + files.length >= this.filesLimit + 1) {
-                    this.$notify({
+                if(this.filesCount >= this.filesLimit) {
+                    setTimeout(() => {
+                      this.$notify({
                         title: 'Error',
                         message: 'Too many files',
                         duration: 3000,
                         type: 'error'
-                    });
-                    this.$refs.files.value = '';
+                      });
+                    }, 100 * Math.random());
                     this.filesUploadLoading = false;
                     return;
                 }
-                for(let i = 0; i < files.length; ++i) {
-                    await this.uploadFile(files[i]);
-                }
+
+                ++this.filesCount;
+
+                await this.uploadFile(file);
                 this.filesUploadLoading = false;
-                this.$refs.files.value = '';
             },
             uploadFile: async function (file) {
               try {
@@ -86,6 +133,7 @@
                   filename: file.filename
                 });
               } catch (error) {
+                --this.filesCount;
                 if(error.response.status === 400) {
                   this.$notify.error({
                     title: 'Error',
@@ -100,11 +148,12 @@
                     this.loading = true;
                     await this.$http.delete(this.detachLink + this.files[i]._id);
                     this.files.splice(i, 1);
+                    --this.filesCount;
                     this.loading = false;
                 }
             },
             chooseFiles: function () {
-                document.getElementById("uploadFiles").click()
+                document.getElementById('dropzone').click();
             },
         }
     }
@@ -113,5 +162,51 @@
 <style scoped lang="scss">
     .file-upload {
         width: 100%;
+        position: relative;
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        #dropzone {
+          position: absolute;
+          top: 0;
+          z-index: 10;
+          width: 100%;
+          height: 140px;
+          min-height: 140px;
+          max-height: 140px;
+        }
+
+        &__view-file {
+          z-index: 11;
+        }
+
     }
+</style>
+
+<style lang="scss">
+  .file-upload .vue-dropzone {
+    background-color: transparent;
+
+    border: none;
+
+    &.dz-drag-hover {
+      border: 1px solid #87a330;
+      border-radius: 5px;
+      z-index: 10;
+      > .dz-message > span {
+        color: #87a330;
+        float: right;
+        font-weight: 600;
+      }
+    }
+
+    > .dz-message > span {
+      color: transparent;
+    }
+
+    .dz-preview {
+      display: none;
+    }
+
+  }
 </style>

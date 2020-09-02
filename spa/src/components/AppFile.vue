@@ -50,8 +50,16 @@
             }
         },
         mounted() {
-            console.log(this.file);
-            let fileType = this.file.filename.slice(this.file.filename.length - 4);
+            let fileType;
+            if (this.file.name !== undefined && this.file.name !== null ) {
+                fileType = this.file.name.slice(this.file.name.length - 4);
+            } else if (this.file.filename !== undefined && this.file.filename !== null) {
+                fileType = this.file.filename.slice(this.file.filename.length - 4);
+            } else {
+                console.log('alert');
+                return;
+            }
+
             if(fileType.indexOf('png') !== -1 || fileType.indexOf('jpg') !== -1 || fileType.indexOf('jpeg') !== -1)
                 this.type = 'img';
             else

@@ -30,7 +30,7 @@
                 type: String
             },
             file: {
-
+                type: Object
             },
             width: {
                 type: Number
@@ -50,7 +50,8 @@
             }
         },
         mounted() {
-            let fileType = this.file.name.slice(this.file.name.length - 4);
+            console.log(this.file);
+            let fileType = this.file.filename.slice(this.file.filename.length - 4);
             if(fileType.indexOf('png') !== -1 || fileType.indexOf('jpg') !== -1 || fileType.indexOf('jpeg') !== -1)
                 this.type = 'img';
             else

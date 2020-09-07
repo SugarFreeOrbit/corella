@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './element-variable.scss';
 
-Vue.use(axios);
+//Vue.use(axios);
 Vue.use(ElementUI);
 Vue.use(LayoutPlugin);
 Vue.use(VueDataTables);

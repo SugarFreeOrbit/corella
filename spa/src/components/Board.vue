@@ -96,16 +96,22 @@
 		},
     methods: {
       unchoose: function () {
-        let tmp = { ...this.$store.state.currentProject.role.issueTransitionMatrix };
-        for(let key in tmp) {
-          let column = document.getElementsByClassName(key)[0];
-          column.classList.remove('no-drop');
+        if (!this.$store.state.user.isAdmin) {
+          let tmp = { ...this.$store.state.currentProject.role.issueTransitionMatrix };
+          if(tmp === undefined || tmp === null)
+            return;
+          for(let key in tmp) {
+            let column = document.getElementsByClassName(key)[0];
+            column.classList.remove('no-drop');
+          }
         }
       },
 		  choose: function (par) {
 		    let id = par.target.className;
         if (!this.$store.state.user.isAdmin) {
           let tmp = { ...this.$store.state.currentProject.role.issueTransitionMatrix };
+          if(tmp === undefined || tmp === null)
+            return;
           delete tmp[id];
           let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[id];
           allowedCols.forEach(item => {
@@ -121,16 +127,18 @@
         let fromId = param.from.classList[0];
         let toId = param.to.classList[0];
 
-        let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[fromId];
-        let err = true;
-        allowedCols.forEach(item => {
-          if(item === toId) {
-            err = false;
+        if (!this.$store.state.user.isAdmin) {
+          let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[fromId];
+          let err = true;
+          allowedCols.forEach(item => {
+            if(item === toId) {
+              err = false;
+            }
+          });
+          if(err) {
+            await this.$store.dispatch('syncCurrentProjectBoard');
+            return;
           }
-        });
-        if(err) {
-          await this.$store.dispatch('syncCurrentProjectBoard');
-          return;
         }
 
         let issueId = param.item.id;

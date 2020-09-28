@@ -17,7 +17,9 @@
                 </div>
                 <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('setting') !== -1}"
                      v-if="isManager" @click="goTo('setting')">
-                  <i class="el-icon-setting"></i>
+                  <el-tooltip content="Project settings" placement="right-start">
+                    <i class="el-icon-setting"></i>
+                  </el-tooltip>
                 </div>
                 <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('hotfixes') !== -1}"
                      @click="goTo('hotfixes')">

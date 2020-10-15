@@ -71,8 +71,17 @@ export default {
   },
   methods: {
     deleteProject: async function () {
+      this.loading = true;
+      this.visible = false;
       try {
-        await this.$http.delete(``);
+        await this.$http.delete(`/projects/${this.projectId}`);
+        this.$router.push('/');
+        this.$notify({
+          title: 'Success',
+          message: 'The project was successfully deleted',
+          type: 'success'
+        });
+        this.loading = false;
       } catch (error) {
         console.log(error);
       }

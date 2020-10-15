@@ -8,6 +8,19 @@
       </div>
     </div>
     <el-button @click="patchLimit" type="primary">Update</el-button>
+    <el-popover
+        v-if="isAdmin"
+        style="margin-left: 10px"
+        placement="top"
+        width="260"
+        v-model="visible">
+      <p>Are you sure to delete this project?</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini" type="text" @click="visible = false">Cancel</el-button>
+        <el-button type="primary" size="mini" @click="deleteProject">Confirm</el-button>
+      </div>
+      <el-button slot="reference" icon="el-icon-delete" type="danger">Delete project</el-button>
+    </el-popover>
   </div>
 </template>
 
@@ -19,9 +32,12 @@ export default {
   name: "setting",
   components: {
     IssueCard,
-    draggable
+    draggable,
   },
   computed: {
+    isAdmin() {
+      return this.$store.state.user.isAdmin;
+    },
     projectId: function () {
       return this.$store.state.currentProject._id
     },
@@ -45,7 +61,8 @@ export default {
   data() {
     return {
       loading: true,
-      newColumn: []
+      newColumn: [],
+      visible: false
     }
   },
   async mounted() {
@@ -57,6 +74,22 @@ export default {
     this.loading = false;
   },
   methods: {
+    deleteProject: async function () {
+      this.loading = true;
+      this.visible = false;
+      try {
+        await this.$http.delete(`/projects/${this.projectId}`);
+        this.$router.push('/');
+        this.$notify({
+          title: 'Success',
+          message: 'The project was successfully deleted',
+          type: 'success'
+        });
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     patchLimit: async function () {
       try {
         let reqCount = 0;

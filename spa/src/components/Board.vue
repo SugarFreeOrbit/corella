@@ -69,7 +69,8 @@
 					description: '',
 					inProgress: false
 				},
-				boardSocket: {}
+				boardSocket: {},
+        saveColumns: null
 			}
 		},
 		async created() {
@@ -111,6 +112,7 @@
         }
       },
 		  choose: function (par) {
+        this.saveColumns = JSON.stringify(this.columns);
 		    let id = par.target.className;
         if (!this.$store.state.user.isAdmin) {
           let tmp = { ...this.$store.state.currentProject.role.issueTransitionMatrix };
@@ -140,7 +142,7 @@
             }
           });
           if(err) {
-            await this.$store.dispatch('syncCurrentProjectBoard');
+            this.$store.commit('syncCurrentProjectBoard', JSON.parse(this.saveColumns));
             return;
           }
         }

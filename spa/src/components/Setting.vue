@@ -8,6 +8,18 @@
       </div>
     </div>
     <el-button @click="patchLimit" type="primary">Update</el-button>
+    <el-popover
+        style="margin-left: 10px"
+        placement="top"
+        width="260"
+        v-model="visible">
+      <p>Are you sure to delete this project?</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini" type="text" @click="visible = false">cancel</el-button>
+        <el-button type="primary" size="mini" @click="deleteProject">confirm</el-button>
+      </div>
+      <el-button slot="reference" icon="el-icon-delete" type="danger">Delete project</el-button>
+    </el-popover>
   </div>
 </template>
 
@@ -19,7 +31,7 @@ export default {
   name: "setting",
   components: {
     IssueCard,
-    draggable
+    draggable,
   },
   computed: {
     projectId: function () {
@@ -45,7 +57,8 @@ export default {
   data() {
     return {
       loading: true,
-      newColumn: []
+      newColumn: [],
+      visible: false
     }
   },
   async mounted() {
@@ -57,6 +70,13 @@ export default {
     this.loading = false;
   },
   methods: {
+    deleteProject: async function () {
+      try {
+        await this.$http.delete(``);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     patchLimit: async function () {
       try {
         let reqCount = 0;

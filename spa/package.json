@@ -7,8 +7,8 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "vue": "^2.6.10",
-    "vue-router": "^3.0.3",
+    "vue": "^2.6.12",
+    "vue-router": "^3.4.6",
     "vue2-dropzone": "^3.6.0",
     "vuex": "~3.1.1"
   },
@@ -23,10 +23,10 @@
     "md5": "~2.2.1",
     "node-sass": "^4.14.1",
     "sass-loader": "^7.1.0",
-    "socket.io-client": "~2.3.0",
+    "socket.io-client": "^2.3.1",
     "vue-data-tables": "~3.4.4",
-    "vue-template-compiler": "^2.6.10",
-    "vuedraggable": "^2.24.0",
+    "vue-template-compiler": "^2.6.12",
+    "vuedraggable": "^2.24.2",
     "webpack": "4.39.3"
   },
   "postcss": {

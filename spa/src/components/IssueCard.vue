@@ -100,7 +100,8 @@
 
 <style scoped lang="scss">
 	.issue {
-		margin-bottom: 10px;
+    margin: 10px;
+
 		&__title {
 			font-weight: bold;
       transition: 0.3s;

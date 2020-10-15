@@ -186,7 +186,8 @@
 			&__content {
 				height: calc(100vh - 144px);
 				overflow-y: auto;
-        padding: 20px;
+        //padding: 20px;
+        padding: 0;
         box-sizing: border-box;
 			}
 		}
@@ -198,14 +199,17 @@
     .no-drop {
       position: relative;
       background-color: #e2e2e2;
-      border-radius: 4px;
       height: 100% !important;
+      overflow: hidden;
 
       &:before {
-        content: 'No drop';
+        content: '';
         position: absolute;
-        font-weight: 700;
-        left: calc(50% - 30px);
+        background: url(/images/icon-lock.png);
+        background-size: 100% 100%;
+        width: 30px;
+        height: 34px;
+        left: calc(50% - 15px);
         bottom: 15px;
       }
 

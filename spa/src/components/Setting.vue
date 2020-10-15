@@ -9,6 +9,7 @@
     </div>
     <el-button @click="patchLimit" type="primary">Update</el-button>
     <el-popover
+        v-if="isAdmin"
         style="margin-left: 10px"
         placement="top"
         width="260"
@@ -34,6 +35,9 @@ export default {
     draggable,
   },
   computed: {
+    isAdmin() {
+      return this.$store.state.user.isAdmin;
+    },
     projectId: function () {
       return this.$store.state.currentProject._id
     },

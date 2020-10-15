@@ -31,21 +31,11 @@
                         </svg>
                     </el-tooltip>
                 </div>
-                <el-popover placement="right" trigger="click" width="100">
-                    <div class="project__menu__item" v-if="canCreateIssues" slot="reference">
-                        <i class="el-icon-plus"></i>
-                    </div>
-                    <div class="project__menu__item_create">
-                        <div class="project__menu__item_create__option" @click="isAddIssueModal = true">
-                            New Issue
-                        </div>
-                    </div>
-                    <div class="project__menu__item_create">
-                        <div class="project__menu__item_create__option">
-                            New Epic
-                        </div>
-                    </div>
-                </el-popover>
+                <div class="project__menu__item" @click="isAddIssueModal = true">
+                  <el-tooltip content="Add Issue" placement="right-start">
+                    <i class="el-icon-plus"></i>
+                  </el-tooltip>
+                </div>
             </div>
             <router-view />
 

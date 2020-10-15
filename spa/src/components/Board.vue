@@ -7,6 +7,7 @@
 			<div class="board__column__content" :class="{ crowded: column.issues.length > column.limit }">
         <draggable :class="column.id"
                    :list="column.issues === undefined ? [] : column.issues"
+                   :disabled="draggableStatus"
                    group="people"
                    style="height: calc(100vh - 212px)"
                    @add="moveIssue"
@@ -36,6 +37,9 @@
       draggable
     },
     computed: {
+      draggableStatus() {
+        return this.$route.query.issue !== undefined;
+      },
 			projectId: function () {
 				return this.$store.state.currentProject._id
 			},

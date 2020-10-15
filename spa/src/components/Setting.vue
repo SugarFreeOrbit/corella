@@ -16,8 +16,8 @@
         v-model="visible">
       <p>Are you sure to delete this project?</p>
       <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="visible = false">cancel</el-button>
-        <el-button type="primary" size="mini" @click="deleteProject">confirm</el-button>
+        <el-button size="mini" type="text" @click="visible = false">Cancel</el-button>
+        <el-button type="primary" size="mini" @click="deleteProject">Confirm</el-button>
       </div>
       <el-button slot="reference" icon="el-icon-delete" type="danger">Delete project</el-button>
     </el-popover>

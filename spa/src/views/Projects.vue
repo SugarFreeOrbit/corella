@@ -44,7 +44,7 @@
 								<el-input v-model="projectBuilder.newColumn.name" maxlength="15"></el-input>
 							</el-form-item>
 							<el-form-item label="WIP limit:">
-								<el-input-number v-model="projectBuilder.newColumn.limit" size="mini"></el-input-number>
+								<el-input-number v-model="projectBuilder.newColumn.limit" :min="0" size="mini"></el-input-number>
 							</el-form-item>
 							<el-form-item style="text-align: center">
 								<el-button circle icon="el-icon-plus" type="primary" @click="addColumn"></el-button>

@@ -79,17 +79,17 @@ router.delete('/:projectId', [validator.checkParamsForObjectIds()], async functi
 			let project = await Project.findOneAndDelete({_id: req.params.projectId});
 			if (project) {
 				let issues = await Issue.find({projectId: req.params.projectId}, {files: 1});
-				if (issues.length) {
+				let files = [];
+				if (issues && issues.length) {
 					await Issue.deleteMany({projectId: req.params.projectId});
-					let files = issues.flatMap(issue => issue.files);
-					await Promise.all(files.map(File.deleteById));
+					issues.forEach(issue => files = files.concat(issue.files || []));
 				}
 				let hotfixes = await Hotfix.find({project: req.params.projectId}, {files: 1});
-				if (hotfixes.length) {
+				if (hotfixes && hotfixes.length) {
 					await Hotfix.deleteMany({project: req.params.projectId});
-					let files = hotfixes.flatMap(hotfix => hotfix.files);
-					await Promise.all(files.map(File.deleteById));
+					hotfixes.forEach(hotfix => files = files.concat(hotfix.files || []));
 				}
+				await Promise.all(files.map(File.deleteById));
 				res.status(200);
 			} else {
 				res.status(404);

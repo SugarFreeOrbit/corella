@@ -73,23 +73,34 @@ router.get('/', function (req, res, next) {
 	}
 });
 
-router.delete('/:projectId', [validator.checkParamsForObjectIds()], function (req, res ,next) {
-	if(req.user.isAdmin) {
-		Project.deleteOne({_id: req.params.projectId}).then(() => {
-			res.status(200);
-			res.end();
-		}).catch(err => {
-			logger.debug(err.toString());
-			if (err.name === 'ValidationError'){
-				res.status(400);
+router.delete('/:projectId', [validator.checkParamsForObjectIds()], async function (req, res ,next) {
+	try {
+		if (req.user.isAdmin) {
+			let project = await Project.findOneAndDelete({_id: req.params.projectId});
+			if (project) {
+				let issues = await Issue.find({projectId: req.params.projectId}, {files: 1});
+				if (issues.length) {
+					await Issue.deleteMany({projectId: req.params.projectId});
+					let files = issues.flatMap(issue => issue.files);
+					await Promise.all(files.map(File.deleteById));
+				}
+				let hotfixes = await Hotfix.find({project: req.params.projectId}, {files: 1});
+				if (hotfixes.length) {
+					await Hotfix.deleteMany({project: req.params.projectId});
+					let files = hotfixes.flatMap(hotfix => hotfix.files);
+					await Promise.all(files.map(File.deleteById));
+				}
+				res.status(200);
 			} else {
-				res.status(500);
+				res.status(404);
 			}
-			res.json(err.message);
-		});
-	} else {
-		res.status(403);
-		res.end();
+			res.end();
+		} else {
+			res.status(403);
+			res.end();
+		}
+	} catch (e) {
+		next(e);
 	}
 });
 

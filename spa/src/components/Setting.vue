@@ -14,7 +14,7 @@
         placement="top"
         width="260"
         v-model="visible">
-      <p>Are you sure to delete this project?</p>
+      <p>Are you sure that you want to delete this project and all of its issues?</p>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="visible = false">Cancel</el-button>
         <el-button type="primary" size="mini" @click="deleteProject">Confirm</el-button>

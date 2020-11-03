@@ -64,6 +64,14 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
+					viewVersion:{
+						type: "boolean",
+						required: true
+					},
+					updateVersion:{
+						type: "boolean",
+						required: true
+					},
 					issueTransitionMatrix: {
 						type: "object"
 					}
@@ -146,6 +154,14 @@ const roles = {
 				required: true
 			},
 			editHotfixes: {
+				type: "boolean",
+				required: true
+			},
+			viewVersion:{
+				type: "boolean",
+				required: true
+			},
+			updateVersion:{
 				type: "boolean",
 				required: true
 			},

@@ -4,6 +4,7 @@ const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
+const Version = require('../models/projectVersion');
 const File = require('../models/file');
 const Counter = require('../models/counter');
 const md5 = require('md5');
@@ -779,5 +780,29 @@ router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit
 		next(e);
 	}
 });
+
+router.put('/:projectId/version', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+	try{
+		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			let newVersion = new Version({
+				projectId: req.params.projectId,
+				version: req.body.version,
+				description: req.body.description,
+				timestamp: Date.now()
+			});
+			await newVersion.save();
+			res.status(200);
+			res.end();
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+})
 
 module.exports = router;

@@ -201,6 +201,10 @@ const newIssue = {
 					isDone: {
 						type: "boolean",
 						required: true
+					},
+					version:{
+						type: "string",
+						required: false
 					}
 				}
 			}
@@ -277,6 +281,9 @@ const newHotfix = {
 			type: "string",
 			enum: ['1', '2', '3', '4'],
 			required: true
+		},
+		version:{
+			type: "string"
 		}
 	}
 };
@@ -303,6 +310,9 @@ const updateHotfix = {
 		state: {
 			type: "number",
 			required: true
+		},
+		version:{
+			type: "string"
 		}
 	}
 };

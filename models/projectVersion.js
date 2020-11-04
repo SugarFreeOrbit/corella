@@ -4,19 +4,20 @@ const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const Project = require('./project');
 
 versionSchema = new Schema({
-    project: {
+    projectId: {
         type: ObjectId,
         ref: Project,
         required: true
     },
     version:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description:{
         type: String
     },
-    timestamp:{
+    dateOfRelease:{
         type: Number
     }
 })

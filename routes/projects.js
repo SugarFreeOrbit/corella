@@ -781,7 +781,7 @@ router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit
 	}
 });
 
-router.put('/:projectId/version', [validator.checkParamsForObjectIds()],
+router.put('/:projectId/versions', [validator.checkParamsForObjectIds(), validator.checkBody("createVersion")],
 	async function (req, res, next){
 	try{
 		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
@@ -789,7 +789,7 @@ router.put('/:projectId/version', [validator.checkParamsForObjectIds()],
 				projectId: req.params.projectId,
 				version: req.body.version,
 				description: req.body.description,
-				timestamp: Date.now()
+				dateOfRelease: req.body.dateOfRelease
 			});
 			await newVersion.save();
 			res.status(200);
@@ -803,6 +803,92 @@ router.put('/:projectId/version', [validator.checkParamsForObjectIds()],
 	catch (e){
 		next(e);
 	}
-})
+});
+
+router.get('/:projectId/versions', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+	try{
+		if(await Project.checkViewVersion(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			Version.find({projectId: req.params.projectId}).then(versions => {
+				res.status(200);
+				res.json(versions);
+			}).catch((err) => {
+				logger.debug(err.toString());
+				res.status(500);
+				res.end();
+			});
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.get('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+	try{
+		if(await  Project.checkViewVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			Version.find({_id: req.params.versionId}).then(version =>{
+				res.status(200);
+				res.json(version);
+			}).catch((err) => {
+				logger.debug(err.toString());
+				res.status(500);
+				res.end();
+			});
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.patch('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds(), validator.checkBody('editVersion')],
+	async function (req, res, next){
+	try{
+		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			await Version.findOneAndUpdate({_id: req.params.versionId}, {
+				version: req.body.version,
+				description: req.body.description,
+				dateOfRelease: req.body.dateOfRelease
+			});
+			res.status(200);
+			res.end();
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+	});
+
+router.delete('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+		try{
+			if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+				Version.findByIdAndRemove(req.params.versionId);
+				res.status(200);
+				res.end();
+			}
+			else{
+				res.status(403);
+				res.json("You don't have permission");
+			}
+		}
+		catch (e) {
+			next(e)
+		}
+	});
 
 module.exports = router;

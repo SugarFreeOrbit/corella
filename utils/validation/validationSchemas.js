@@ -377,6 +377,39 @@ const globalConfig = {
 	}
 }
 
+const createVersion = {
+	type: 'object',
+	properties: {
+		version: {
+			type: 'string',
+			required: true,
+			unique: true
+		},
+		description: {
+			type: 'string'
+		},
+		dateOfRelease:{
+			type: 'number'
+		}
+	}
+}
+
+const editVersion = {
+	type: 'object',
+	properties: {
+		version: {
+			type: 'string',
+			required: true
+		},
+		description: {
+			type: 'string'
+		},
+		dateOfRelease:{
+			type: 'number'
+		}
+	}
+}
+
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig, updateWIPLimit};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig, updateWIPLimit, createVersion, editVersion};

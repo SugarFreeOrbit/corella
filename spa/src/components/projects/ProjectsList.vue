@@ -46,7 +46,7 @@
 
 <style scoped lang="scss">
     .projects {
-        height: 100%;
+        height: calc(100vh - 52px);
 
         &__tools {
             display: flex;

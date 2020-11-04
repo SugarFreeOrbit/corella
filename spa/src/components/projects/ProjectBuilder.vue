@@ -272,8 +272,12 @@
                 flex-direction: row;
                 align-items: stretch;
                 justify-content: center;
-                height: 50vh;
+                //height: 50vh;
                 margin-top: 30px;
+
+                &__add {
+                    min-height: 280px;
+                }
 
                 &__column {
                     color: black;

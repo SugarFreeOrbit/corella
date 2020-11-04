@@ -44,7 +44,10 @@
 						isAdmin: res.data.isAdmin,
 						jwt: res.data.jwt
 					});
-					this.$router.push('/');
+          if(this.$route.query.redirect !== undefined && this.$route.query.redirect !== null && this.$route.query.redirect !== '' && this.$route.query.redirect !== '/login')
+            this.$router.push(this.$route.query.redirect);
+          else
+            this.$router.push('/');
 				} catch (e) {
 					this.$notify({
 						title: 'Invalid username or password',

@@ -77,7 +77,8 @@
             try {
               await Promise.all([this.$store.dispatch('syncCurrentProjectRole'), this.$store.dispatch('syncCurrentProjectMeta')]);
             } catch (e) {
-              this.$router.push('/not-found');
+              if(e.response.status !== 401)
+                this.$router.push('/not-found');
             }
             this.projectReady = true;
         },

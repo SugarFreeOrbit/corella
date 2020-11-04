@@ -40,7 +40,10 @@ axios.interceptors.request.use( function (config) {
 });
 axios.interceptors.response.use(undefined, (error) => {
 	if (error.request.status ===  0 || error.response.status === 401) {
-		store.dispatch('logOut');
+		if(store.state.user.loggedIn)
+			store.dispatch('logOut');
+		else
+			return;
 	}
 	return Promise.reject(error);
 });

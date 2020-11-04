@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import router from "./router";
 import axios from 'axios';
 import io from 'socket.io-client';
+import ro from "element-ui/src/locale/lang/ro";
 Vue.use(Vuex);
 
 let loggedIn, socket, socketHotfix;
@@ -84,6 +85,7 @@ const store = new Vuex.Store({
 			localStorage.removeItem('isAdmin');
 			state.user.jwt = '';
 			state.user.isAdmin = false;
+			state.user.loggedIn = false;
 			state.user.username = '';
 			try {
 				state.socket.disconnect();
@@ -143,7 +145,10 @@ const store = new Vuex.Store({
 	}, actions: {
 		logOut({commit}) {
 			commit('logOut');
-			router.push('/login');
+			router.push({
+				path: '/login',
+				query: { redirect: location.pathname }
+			});
 		},
 		async syncCurrentProjectRole({commit, state}) {
 			if(!state.user.isAdmin) {

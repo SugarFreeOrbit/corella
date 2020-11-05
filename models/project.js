@@ -129,7 +129,7 @@ const projectRoleSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
-	updateVersion:{
+	editVersion:{
 		type: Boolean,
 		required: true
 	},

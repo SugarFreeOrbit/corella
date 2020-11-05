@@ -68,7 +68,7 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
-					updateVersion:{
+					editVersion:{
 						type: "boolean",
 						required: true
 					},
@@ -161,7 +161,7 @@ const roles = {
 				type: "boolean",
 				required: true
 			},
-			updateVersion:{
+			editVersion:{
 				type: "boolean",
 				required: true
 			},
@@ -189,6 +189,10 @@ const newIssue = {
 		description: {
 			type: "string"
 		},
+		versionId:{
+			type: "string",
+			required: false
+		},
 		checklist: {
 			type: "array",
 			items: {
@@ -201,10 +205,6 @@ const newIssue = {
 					isDone: {
 						type: "boolean",
 						required: true
-					},
-					version:{
-						type: "string",
-						required: false
 					}
 				}
 			}
@@ -282,7 +282,7 @@ const newHotfix = {
 			enum: ['1', '2', '3', '4'],
 			required: true
 		},
-		version:{
+		versionId:{
 			type: "string"
 		}
 	}
@@ -311,7 +311,7 @@ const updateHotfix = {
 			type: "number",
 			required: true
 		},
-		version:{
+		versionId:{
 			type: "string"
 		}
 	}

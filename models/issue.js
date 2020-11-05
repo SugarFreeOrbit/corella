@@ -44,7 +44,10 @@ const commentSchema = new Schema({
 
 const issueSchema = new Schema({
 	projectId: {
-		type: ObjectId,
+		type: ObjectId
+	},
+	versionId: {
+		type: String
 	},
 	title: {
 		type: String,

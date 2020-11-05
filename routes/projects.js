@@ -215,7 +215,8 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 				checklist: req.body.checklist,
 				files: files,
 				issueCode: issueCode,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			});
 			await newIssue.save();
 			await Project.findOneAndUpdate({
@@ -336,7 +337,8 @@ router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), va
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			})).n;
 			if(matchedIssuesCount === 0) {
 				res.status(404);
@@ -533,7 +535,8 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 				files: files,
 				project: ObjectId(req.params.projectId),
 				hotfixCode: hotfixCode,
-				author: ObjectId(req.user._id)
+				author: ObjectId(req.user._id),
+				versionId: req.body.versionId
 			});
 			await newHotfix.save();
 			websocketService.emitNewHotfix(newHotfix._id, req.params.projectId);
@@ -561,7 +564,8 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 				branch: (req.body.branch) ? req.body.branch : "",
 				priority: req.body.priority,
 				state: req.body.state,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			});
 			websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 			res.status(200);
@@ -877,7 +881,10 @@ router.delete('/:projectId/versions/:versionId', [validator.checkParamsForObject
 	async function (req, res, next){
 		try{
 			if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
-				Version.findByIdAndRemove(req.params.versionId);
+
+				await Hotfix.update({versionId: ObjectId(req.params.versionId)}, {versionId: null})
+				await Issue.update({versionId: ObjectId(req.params.versionId)}, {versionId: null})
+				await Version.findByIdAndRemove(req.params.versionId);
 				res.status(200);
 				res.end();
 			}

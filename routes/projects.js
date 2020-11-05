@@ -882,8 +882,8 @@ router.delete('/:projectId/versions/:versionId', [validator.checkParamsForObject
 		try{
 			if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
 
-				await Hotfix.update({versionId: ObjectId(req.params.versionId)}, {versionId: null})
-				await Issue.update({versionId: ObjectId(req.params.versionId)}, {versionId: null})
+				await Hotfix.update({versionId: ObjectId(req.params.versionId)}, {versionId: ""})
+				await Issue.update({versionId: ObjectId(req.params.versionId)}, {versionId: ""})
 				await Version.findByIdAndRemove(req.params.versionId);
 				res.status(200);
 				res.end();

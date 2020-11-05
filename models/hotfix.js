@@ -3,7 +3,7 @@ const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
 const Project = require('./project');
-const Version = require('./projectVersion')
+const Version = require('./version')
 const File = require('./file');
 
 const hotfixSchema = new Schema({

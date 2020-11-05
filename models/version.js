@@ -12,7 +12,6 @@ versionSchema = new Schema({
     version:{
         type: String,
         required: true,
-        unique: true
     },
     description:{
         type: String
@@ -21,7 +20,8 @@ versionSchema = new Schema({
         type: Number
     }
 })
+versionSchema.index({projectId: 1, version: 1}, {unique: true});
 
-const Version = mongoose.model('Version', versionSchema, 'projectVersion');
+const Version = mongoose.model('Version', versionSchema, 'versions');
 
 module.exports = Version;

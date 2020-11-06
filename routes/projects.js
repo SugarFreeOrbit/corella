@@ -4,6 +4,7 @@ const validator = require('../utils/validation/validator');
 const Project = require('../models/project');
 const Issue = require('../models/issue');
 const Hotfix = require('../models/hotfix');
+const Version = require('../models/version');
 const File = require('../models/file');
 const Counter = require('../models/counter');
 const md5 = require('md5');
@@ -206,6 +207,17 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 			if (req.files) {
 				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
+			if(req.body.versionId !== undefined){
+				let versionCount = await Version.countDocuments({_id: req.body.versionId, projectId: req.params.projectId});
+				if(versionCount === 0){
+					res.status(404);
+					res.json("Project version not found");
+					res.end();
+					return;
+				}
+			} else{
+				req.body.versionId = "";
+			}
 			let issueCode = await Counter.getNextSequenceCount();
 			let newIssue = new Issue({
 				projectId: req.params.projectId,
@@ -214,7 +226,8 @@ router.put('/:projectId/issues', [validator.checkParamsForObjectIds(), File.uplo
 				checklist: req.body.checklist,
 				files: files,
 				issueCode: issueCode,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			});
 			await newIssue.save();
 			await Project.findOneAndUpdate({
@@ -331,11 +344,24 @@ router.delete('/:projectId/issues/:issueId', [validator.checkParamsForObjectIds(
 router.patch('/:projectId/issues/:issueId', [validator.checkBody('newIssue'), validator.checkParamsForObjectIds()],  async function (req, res, next) {
 	try {
 		if((await Project.checkEditorPermission(req.params.projectId, req.user._id, req.user.isAdmin))) {
-			let matchedIssuesCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: ObjectId(req.params.projectId)}, {
+
+			if(req.body.versionId !== undefined){
+				let versionCount = await Version.countDocuments({_id: req.body.versionId, projectId: req.params.projectId});
+				if(versionCount === 0){
+					res.status(404);
+					res.json("Project version not found");
+					res.end();
+					return;
+				}
+			} else{
+				req.body.versionId = "";
+			}
+			let matchedIssuesCount = (await Issue.updateOne({_id: ObjectId(req.params.issueId), projectId: req.params.projectId}, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				checklist: req.body.checklist,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			})).n;
 			if(matchedIssuesCount === 0) {
 				res.status(404);
@@ -521,6 +547,17 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 			if (req.files) {
 				files = await Promise.all(req.files.map(File.uploadToGridFS));
 			}
+			if(req.body.versionId !== undefined){
+				let versionCount = await Version.countDocuments({_id: req.body.versionId, projectId: req.params.projectId});
+				if(versionCount === 0){
+					res.status(404);
+					res.json("Project version not found");
+					res.end();
+					return;
+				}
+			} else{
+				req.body.versionId = "";
+			}
 			let hotfixCode = await Counter.getNextSequenceCount();
 			let newHotfix = new Hotfix({
 				title: req.body.title,
@@ -532,7 +569,8 @@ router.put('/:projectId/hotfixes', [validator.checkParamsForObjectIds(), File.up
 				files: files,
 				project: ObjectId(req.params.projectId),
 				hotfixCode: hotfixCode,
-				author: ObjectId(req.user._id)
+				author: ObjectId(req.user._id),
+				versionId: req.body.versionId
 			});
 			await newHotfix.save();
 			websocketService.emitNewHotfix(newHotfix._id, req.params.projectId);
@@ -554,13 +592,25 @@ router.patch('/:projectId/hotfixes/:hotfixId', [validator.checkBody('updateHotfi
 			Hotfix.validateProjectIdAndHotfixId(req.params.projectId, req.params.hotfixId),
 			Project.checkEditHotfixesPermission(req.params.projectId, req.user._id, req.user.isAdmin)]);
 		if((projectPermissionQueries[0] && projectPermissionQueries[1])) {
+			if(req.body.versionId !== undefined){
+				let versionCount = await Version.countDocuments({_id: req.body.versionId, projectId: req.params.projectId});
+				if(versionCount === 0){
+					res.status(404);
+					res.json("Project version not found");
+					res.end();
+					return;
+				}
+			} else{
+				req.body.versionId = "";
+			}
 			await Hotfix.findByIdAndUpdate(req.params.hotfixId, {
 				title: req.body.title,
 				description: (req.body.description) ? req.body.description : "",
 				branch: (req.body.branch) ? req.body.branch : "",
 				priority: req.body.priority,
 				state: req.body.state,
-				author: req.user._id
+				author: req.user._id,
+				versionId: req.body.versionId
 			});
 			websocketService.emitUpdatedHotfix(req.params.hotfixId, req.params.projectId);
 			res.status(200);
@@ -779,5 +829,118 @@ router.patch('/:projectId/:columnId/limit', [validator.checkBody('updateWIPLimit
 		next(e);
 	}
 });
+
+router.put('/:projectId/versions', [validator.checkParamsForObjectIds(), validator.checkBody("createVersion")],
+	async function (req, res, next){
+	try{
+		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			let newVersion = new Version({
+				projectId: req.params.projectId,
+				version: req.body.version,
+				description: req.body.description,
+				dateOfRelease: req.body.dateOfRelease
+			});
+			await newVersion.save();
+			res.status(200);
+			res.end();
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.get('/:projectId/versions', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+	try{
+		if(await Project.checkViewVersion(req.params.projectId, req.user._id, req.user.isAdmin)) {
+			Version.find({projectId: req.params.projectId}).then(versions => {
+				res.status(200);
+				res.json(versions);
+			}).catch((err) => {
+				logger.debug(err.toString());
+				res.status(500);
+				res.end();
+			});
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.get('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+	try{
+		if(await  Project.checkViewVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			Version.find({_id: req.params.versionId}).then(version =>{
+				res.status(200);
+				res.json(version);
+			}).catch((err) => {
+				logger.debug(err.toString());
+				res.status(500);
+				res.end();
+			});
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.patch('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds(), validator.checkBody('editVersion')],
+	async function (req, res, next){
+	try{
+		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+			await Version.findOneAndUpdate({_id: req.params.versionId}, {
+				version: req.body.version,
+				description: req.body.description,
+				dateOfRelease: req.body.dateOfRelease
+			});
+			res.status(200);
+			res.end();
+		}
+		else{
+			res.status(403);
+			res.json("You don't have permission");
+		}
+	}
+	catch (e){
+		next(e);
+	}
+});
+
+router.delete('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+		try{
+			if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
+
+				await Hotfix.update({versionId: ObjectId(req.params.versionId)}, {versionId: ""})
+				await Issue.update({versionId: ObjectId(req.params.versionId)}, {versionId: ""})
+				await Version.findByIdAndRemove(req.params.versionId);
+				res.status(200);
+				res.end();
+			}
+			else{
+				res.status(403);
+				res.json("You don't have permission");
+			}
+		}
+		catch (e) {
+			next(e)
+		}
+	});
 
 module.exports = router;

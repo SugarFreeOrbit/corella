@@ -3,6 +3,7 @@ const Schema = require('mongoose').Schema;
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const User = require('./user');
 const Project = require('./project');
+const Version = require('./version')
 const File = require('./file');
 
 const hotfixSchema = new Schema({
@@ -37,6 +38,9 @@ const hotfixSchema = new Schema({
 		type: ObjectId,
 		ref: Project,
 		required: true
+	},
+	versionId: {
+		type: String,
 	},
 	created: {
 		type: Number

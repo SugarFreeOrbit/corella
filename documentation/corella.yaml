@@ -647,6 +647,24 @@ paths:
           name: issueId
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                "type": "object",
+                "properties":{
+                  "title":{
+                    "type": "string"
+                  },
+                  "description":{
+                    "type": "string"
+                  },
+                  "versionId":{
+                    "type": "string"
+                  }
+                }
+              }
       responses:
         '200':
           description: OK
@@ -764,6 +782,8 @@ paths:
                     - 2
                     - 3
                     - 4
+                versionId:
+                  type: string
                 files:
                   type: file
       responses:
@@ -916,6 +936,8 @@ paths:
                     - 2
                     - 3
                     - 4
+                versionId:
+                  type: string
                 files:
                   type: file
       responses:
@@ -975,6 +997,189 @@ paths:
         '403':
           description: Forbidden
 
+  /projects/{projectId}/versions:
+    put:
+      summary: Create project version
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                "type": "object",
+                "required": ["version"],
+                "properties":{
+                  "version":{
+                    type: "string"
+                  },
+                  "description":{
+                    type: "string"
+                  },
+                  "dateOfRelease":{
+                    type: "number"
+                  }
+                }
+              }
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
+    get:
+      summary:  Retrieves  project versions
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                {
+                  "type": "array",
+                  "items":{
+                    "type": "object",
+                    "properties":{
+                      "_id": {
+                        type: "string"
+                      },
+                      "version": {
+                        type: "string"
+                      },
+                      "description": {
+                        type: "string"
+                      },
+                      "dateOfRelease": {
+                        type: "number"
+                      }
+                    }
+                  }
+                }
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
+  /projects/{projectId}/versions/{versionId}:
+    get:
+      summary:  Retrieves  project version
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: versionId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      type: "string"
+                    },
+                    "version": {
+                      type: "string"
+                    },
+                    "description": {
+                      type: "string"
+                    },
+                    "dateOfRelease": {
+                      type: "number"
+                    }
+                  }
+                }
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
+    patch:
+      summary: Edit version
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: versionId
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                "type": "object",
+                "required": [ "version" ],
+                "properties": {
+                  "version": {
+                    type: "string"
+                  },
+                  "description": {
+                    type: "string"
+                  },
+                  "dateOfRelease": {
+                    type: "number"
+                  }
+                }
+              }
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
+    delete:
+      summary: Delete version
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: versionId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
 components:
   securitySchemes:
     bearerAuth:
@@ -1062,6 +1267,12 @@ components:
                   "type": "boolean"
                 },
                 "editHotfixes": {
+                  "type": "boolean"
+                },
+                "viewVersion": {
+                  "type": "boolean"
+                },
+                "editVersion": {
                   "type": "boolean"
                 },
                 "issueTransitionMatrix": {
@@ -1177,6 +1388,21 @@ components:
             "isEditor": {
               "type": "boolean"
             },
+            "createHotfixes": {
+              "type": "boolean"
+            },
+            "deleteHotfixes": {
+              "type": "boolean"
+            },
+            "editHotfixes": {
+              "type": "boolean"
+            },
+            "viewVersion": {
+              "type": "boolean"
+            },
+            "editVersion": {
+              "type": "boolean"
+            },
             "issueTransitionMatrix": {
               "type": "object"
             },
@@ -1199,6 +1425,9 @@ components:
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "versionId":{
             "type": "string"
           },
           "files": {
@@ -1351,6 +1580,9 @@ components:
                 },
                 "hotfixCode":{
                   "type": "integer"
+                },
+                "versionId":{
+                  "type": "string"
                 }
               }
             }

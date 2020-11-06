@@ -764,6 +764,8 @@ paths:
                     - 2
                     - 3
                     - 4
+                versionId:
+                  type: string
                 files:
                   type: file
       responses:
@@ -916,6 +918,8 @@ paths:
                     - 2
                     - 3
                     - 4
+                versionId:
+                  type: string
                 files:
                   type: file
       responses:
@@ -1390,6 +1394,9 @@ components:
           "description": {
             "type": "string"
           },
+          "versionId":{
+            "type": "string"
+          },
           "files": {
             "type": "array",
             "items": {
@@ -1540,6 +1547,9 @@ components:
                 },
                 "hotfixCode":{
                   "type": "integer"
+                },
+                "versionId":{
+                  "type": "string"
                 }
               }
             }

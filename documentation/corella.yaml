@@ -1370,6 +1370,21 @@ components:
             "isEditor": {
               "type": "boolean"
             },
+            "createHotfixes": {
+              "type": "boolean"
+            },
+            "deleteHotfixes": {
+              "type": "boolean"
+            },
+            "editHotfixes": {
+              "type": "boolean"
+            },
+            "viewVersion": {
+              "type": "boolean"
+            },
+            "editVersion": {
+              "type": "boolean"
+            },
             "issueTransitionMatrix": {
               "type": "object"
             },

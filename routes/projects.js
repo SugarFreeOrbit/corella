@@ -920,7 +920,7 @@ router.patch('/:projectId/versions/:versionId', [validator.checkParamsForObjectI
 	catch (e){
 		next(e);
 	}
-	});
+});
 
 router.delete('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
 	async function (req, res, next){

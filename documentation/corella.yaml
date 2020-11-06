@@ -647,6 +647,24 @@ paths:
           name: issueId
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                "type": "object",
+                "properties":{
+                  "title":{
+                    "type": "string"
+                  },
+                  "description":{
+                    "type": "string"
+                  },
+                  "versionId":{
+                    "type": "string"
+                  }
+                }
+              }
       responses:
         '200':
           description: OK

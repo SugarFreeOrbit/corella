@@ -165,7 +165,7 @@
 </script>
 
 <style lang="scss">
-    .projectBuilder__content__roles__add {
+    .roles__modal_edit {
         .el-dialog__body {
             padding-top: 10px !important;
         }

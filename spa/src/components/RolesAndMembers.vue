@@ -10,15 +10,18 @@
             <div class="roles__role__controls">
                 <el-tooltip placement="bottom" content="View members">
                     <el-button class="default__control-btn" circle type="primary" icon="el-icon-user"
-                               @click="viewMembers(role.name)"></el-button>
+                               @click="viewMembers(role.name)">
+                    </el-button>
                 </el-tooltip>
                 <el-tooltip placement="bottom" content="Edit role">
                     <el-button class="default__control-btn" circle type="primary" icon="el-icon-edit"
-                               @click="showEditModal(role.name)"></el-button>
+                               @click="showEditModal(role.name)">
+                    </el-button>
                 </el-tooltip>
                 <el-tooltip placement="bottom" content="Delete role and it's members">
                     <el-button class="default__control-btn" circle type="danger" icon="el-icon-delete"
-                               @click="deleteRole(role.name)"></el-button>
+                               @click="deleteRole(role.name)">
+                    </el-button>
                 </el-tooltip>
             </div>
         </el-card>
@@ -92,7 +95,8 @@
                     <el-select multiple filterable v-model="viewMembersModal.newMembers"
                                style="margin-right: 10px; width: 500px;">
                         <el-option v-for="user in users" v-bind:key="user._id" :label="user.username" :value="user._id"
-                                   v-if="!userHasRole(user._id)"></el-option>
+                                   v-if="!userHasRole(user._id)">
+                        </el-option>
                     </el-select>
                     <el-button type="primary" @click="addMembers">Add new members</el-button>
                     <el-table :data="members" border class="roles__modal_viewMembers__list">
@@ -100,7 +104,8 @@
                         <el-table-column label="Actions" width="72px">
                             <template slot-scope="props">
                                 <el-button type="danger" icon="el-icon-delete" circle
-                                           @click="removeMember(viewMembersModal.targetRole, props.row._id)"></el-button>
+                                           @click="removeMember(viewMembersModal.targetRole, props.row._id)">
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>

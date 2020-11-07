@@ -1,22 +1,32 @@
 <template>
-    <el-dialog class="add-issue-modal" :visible="true" title="New issue" @close="close">
-        <el-form v-on:submit.native.prevent="createIssue" v-model="issueCreationModal.form"
-                 v-loading="issueCreationModal.inProgress">
-            <el-form-item label="Title">
-                <el-input required v-model="issueCreationModal.form.title"></el-input>
-            </el-form-item>
-            <el-form-item label="Description">
-                <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <file-upload-local v-model="issueCreationModal.form.files"></file-upload-local>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="createIssue">Create</el-button>
-                <el-button @click="close">Cancel</el-button>
-            </el-form-item>
-        </el-form>
-    </el-dialog>
+  <el-dialog class="add-issue-modal" :visible="true" title="New issue" @close="close">
+    <el-form v-on:submit.native.prevent="createIssue" v-model="issueCreationModal.form"
+             v-loading="issueCreationModal.inProgress">
+      <el-form-item label="Title">
+        <el-input required v-model="issueCreationModal.form.title"></el-input>
+      </el-form-item>
+      <el-form-item label="Description">
+        <el-input type="textarea" v-model="issueCreationModal.form.description" :rows="5"></el-input>
+      </el-form-item>
+      <el-form-item class="add-issue-modal__versions" label="Versions">
+        <el-select clearable v-model="selectedVersion" placeholder="Versions">
+          <el-option
+              v-for="item in versions"
+              :key="item._id"
+              :label="item.description"
+              :value="item._id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <file-upload-local v-model="issueCreationModal.form.files"></file-upload-local>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="createIssue">Create</el-button>
+        <el-button @click="close">Cancel</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 
@@ -37,7 +47,7 @@ export default {
     return {
       issueCreationModal: {
         active: true,
-        inProgress: false,
+        inProgress: true,
         form: {
           title: '',
           description: '',
@@ -51,8 +61,13 @@ export default {
         maxFilesize: 10,
         autoProcessQueue: false,
         addRemoveLinks: true
-      }
+      },
+      versions: [],
+      selectedVersion: ''
     }
+  },
+  mounted() {
+    this.getVersions()
   },
   computed: {
     allowedFiles() {
@@ -62,8 +77,8 @@ export default {
   methods: {
     dzRemove: function (param) {
       let i = 0;
-      for(let file of this.issueCreationModal.form.files) {
-        if(file === param) {
+      for (let file of this.issueCreationModal.form.files) {
+        if (file === param) {
           this.issueCreationModal.form.files.splice(i, 1);
           break;
         }
@@ -74,13 +89,17 @@ export default {
       this.handleFilesUpload(param);
     },
     createIssue: async function () {
-      let formData = new FormData();
       this.issueCreationModal.inProgress = true;
+
+      let formData = new FormData();
       formData.append('title', this.issueCreationModal.form.title);
       formData.append('description', this.issueCreationModal.form.description);
+      if (this.selectedVersion) formData.append('versionId', this.selectedVersion)
+
       this.issueCreationModal.form.files.forEach((file, i) => {
         formData.append('files', file);
       });
+
       if (this.$schemaValidators.validateNewIssue(this.issueCreationModal.form)) {
         try {
           let result = await this.$http.put(`/projects/${this.projectId}/issues`,
@@ -93,7 +112,7 @@ export default {
           this.issueCreationModal.title = '';
           this.issueCreationModal.description = '';
         } catch (e) {
-          if(e.response.status === 400) {
+          if (e.response.status === 400) {
             this.$notify.error({
               title: 'Error',
               message: e.response.data
@@ -118,7 +137,7 @@ export default {
       document.getElementById("uploadFiles").click()
     },
     handleFilesUpload(file) {
-      if(this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles) {
+      if (this.issueCreationModal.form.files.length >= this.issueCreationModal.form.limitOfFiles) {
         this.$notify({
           title: 'Error',
           message: `You can\'t upload more than ${this.issueCreationModal.form.limitOfFiles} files`,
@@ -129,13 +148,13 @@ export default {
         return;
       }
       let err = true;
-      for(let j = 0; j < this.allowedFiles.length; ++j) {
-        if(file.name.slice(file.name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
+      for (let j = 0; j < this.allowedFiles.length; ++j) {
+        if (file.name.slice(file.name.length - 5).indexOf(this.allowedFiles[j]) !== -1) {
           err = false;
           break;
         }
       }
-      if(err) {
+      if (err) {
         this.$notify({
           title: 'Error',
           message: 'Unsupported file type',
@@ -163,17 +182,34 @@ export default {
     },
     close: function () {
       this.$emit('close');
+    },
+    getVersions: async function () {
+      try {
+        const response = await this.$http.get('projects/' + this.projectId + '/versions')
+        this.versions = response.data
+
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.issueCreationModal.inProgress = false
+      }
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-
+.add-issue-modal {
+  &__versions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 </style>
 
 <style>
-  .add-issue-modal .dz-progress {
-    display: none!important;
-  }
+.add-issue-modal .dz-progress {
+  display: none !important;
+}
 </style>

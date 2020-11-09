@@ -41,7 +41,11 @@ export default {
   },
   mounted() {
     if (this.cardData.dateOfRelease) {
-      this.dateOfReleaseText = new Date(this.cardData.dateOfRelease).toLocaleDateString("en-GB", {year: 'numeric', month: 'numeric', day: 'numeric'});
+      this.dateOfReleaseText = new Date(this.cardData.dateOfRelease).toLocaleDateString("en-GB", {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+      });
     }
   },
   methods: {

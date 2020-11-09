@@ -12,7 +12,7 @@
         <el-date-picker
             v-model="date"
             type="date"
-            placeholder="Select date and time">
+            placeholder="Select date">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

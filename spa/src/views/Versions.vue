@@ -1,15 +1,18 @@
 <template>
   <div class="versions" v-loading="loading">
-    <div class="versions__content">
+    <div class="versions__content" :style="!versions.length && !loading ? 'height: 100%' : ''">
       <el-button @click="visibleAddVersionModal = true" icon="el-icon-plus" type="primary">
         Create new version
       </el-button>
-      <div class="versions__list">
+      <div v-if="versions.length" class="versions__list">
         <version-card v-for="version in versions" :key="version._id"
                       :card-data="version"
                       @deleteEvent="openDeleteDialog"
                       @editVersion="openEditVersionModal">
         </version-card>
+      </div>
+      <div v-else-if="!versions.length && !loading" class="versions__empty">
+        <span>No Versions</span>
       </div>
     </div>
 
@@ -28,13 +31,13 @@
     <add-version-modal v-if="visibleAddVersionModal"
                        :project-id="currentProject._id"
                        @close="visibleAddVersionModal = false"
-                       @addVersion="getVersions" />
+                       @addVersion="getVersions"/>
 
     <edit-version-modal v-if="visibleEditVersionModal"
                         :project-id="currentProject._id"
                         :version="editVersionData"
                         @close="closeEditModal"
-                        @updateVersion="getVersions" />
+                        @updateVersion="getVersions"/>
 
   </div>
 </template>
@@ -98,7 +101,7 @@ export default {
         this.dialogVisible = false;
         await this.$http.delete(`/projects/${this.currentProject._id}/versions/${this.deleteVersionId}`);
 
-        this.versions.splice(this.versions.findIndex(item => item._id === this.deleteVersionId));
+        this.versions.splice(this.versions.findIndex(item => item._id === this.deleteVersionId), 1);
 
         this.$notify({
           title: 'Success',
@@ -133,6 +136,16 @@ export default {
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
+  }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: auto auto;
+    text-transform: uppercase;
+    font-size: 25px;
+    font-weight: 600;
   }
 }
 

@@ -32,18 +32,19 @@
             </svg>
           </el-tooltip>
         </div>
+        <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('versions') !== -1}"
+             @click="goTo('versions')">
+          <el-tooltip content="Versions" placement="right-start">
+            <i class="el-icon-files"></i>
+          </el-tooltip>
+        </div>
         <div class="project__menu__item" @click="isAddIssueModal = true">
           <el-tooltip content="Add Issue" placement="right-start">
             <i class="el-icon-plus"></i>
           </el-tooltip>
         </div>
-        <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('hotfixes') !== -1}"
-             @click="goTo('versions')">
-          <el-tooltip content="Versions" placement="right-start">
-            <i class="el-icon-plus"></i>
-          </el-tooltip>
-        </div>
       </div>
+
       <router-view/>
 
       <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="closeAddIssueModal"></add-issue-modal>

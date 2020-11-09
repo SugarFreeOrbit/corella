@@ -19,6 +19,7 @@
                       v-bind:issueId="issueId"
                       v-bind:projectId="projectId"
                       v-bind:columnList="columnList"
+                      v-bind:versions="versions"
                       v-bind:currentColumnId="column.id"></issue-card>
         </draggable>
 			</div>
@@ -69,11 +70,15 @@
 					description: '',
 					inProgress: false
 				},
+        versions: [],
 				boardSocket: {},
         saveColumns: null
 			}
 		},
-		async created() {
+    mounted() {
+		  this.getVersions()
+    },
+    async created() {
 			this.loading = true;
 			this.boardSocket = this.$store.state.socket;
 			this.boardSocket.on('newIssue', (message) => {
@@ -109,6 +114,14 @@
             let column = document.getElementsByClassName(key)[0];
             column.classList.remove('no-drop');
           }
+        }
+      },
+      async getVersions() {
+        try {
+          const response = await this.$http.get(`/projects/${this.projectId}/versions`)
+          response.data.forEach(item => this.versions.push(item))
+        } catch (e) {
+          console.log(e)
         }
       },
 		  choose: function (par) {

@@ -1474,6 +1474,9 @@ components:
           "author": {
             "type": "string"
           },
+          "versionId":{
+            "type": "string"
+          },
           "checklist": {
             "type": "object"
           },

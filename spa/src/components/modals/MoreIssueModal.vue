@@ -90,9 +90,6 @@ export default {
     projectId: {
       type: String
     },
-    versions: {
-      type: Array
-    }
   },
   components: {
     AppFile,
@@ -157,6 +154,9 @@ export default {
         let allowedCols = this.$store.state.currentProject.role.issueTransitionMatrix[this.currentColumnId];
         return allowedCols ? this.columnList.filter(col => allowedCols.includes(col.id)) : null;
       }
+    },
+    versions: function () {
+      return this.$store.state.versions
     }
   },
   methods: {

@@ -19,7 +19,6 @@
                       v-bind:issueId="issueId"
                       v-bind:projectId="projectId"
                       v-bind:columnList="columnList"
-                      v-bind:versions="versions"
                       v-bind:currentColumnId="column.id"></issue-card>
         </draggable>
 			</div>
@@ -57,6 +56,9 @@
 					};
 				});
 			},
+      versions: function () {
+        return this.$store.state.versions
+      },
 			columns: function () {
 				return this.$store.state.currentProject.columns;
 			}
@@ -70,13 +72,12 @@
 					description: '',
 					inProgress: false
 				},
-        versions: [],
 				boardSocket: {},
         saveColumns: null
 			}
 		},
     mounted() {
-		  this.getVersions()
+		  //this.getVersions()
     },
     async created() {
 			this.loading = true;
@@ -97,6 +98,7 @@
 				}
 			});
 			try {
+			  await this.$store.dispatch('getVersions')
 				await this.$store.dispatch('syncCurrentProjectBoard');
 				this.loading = false;
 			} catch (e) {
@@ -116,14 +118,14 @@
           }
         }
       },
-      async getVersions() {
+      /*async getVersions() {
         try {
           const response = await this.$http.get(`/projects/${this.projectId}/versions`)
           response.data.forEach(item => this.versions.push(item))
         } catch (e) {
           console.log(e)
         }
-      },
+      },*/
 		  choose: function (par) {
         this.saveColumns = JSON.stringify(this.columns);
 		    let id = par.target.className;

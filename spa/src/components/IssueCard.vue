@@ -16,7 +16,6 @@
                       :issueId="issueId"
                       :currentColumnId="currentColumnId"
                       :projectId="projectId"
-                      :versions="versions"
                       :currentVerion="currentIssue.versionId"
                       @close="closeMoreModal">
     </more-issue-modal>
@@ -33,7 +32,6 @@ export default {
     projectId: String,
     columnList: Array,
     currentColumnId: String,
-    versions: Array
   },
   components: {
     MoreIssueModal
@@ -59,6 +57,9 @@ export default {
   computed: {
     isMoreIssueModal() {
       return this.$route.query.issue === this.currentIssue.issueCode.toString();
+    },
+    versions() {
+      return this.$store.state.versions
     }
   },
   async mounted() {

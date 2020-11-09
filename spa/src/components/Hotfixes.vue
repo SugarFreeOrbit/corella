@@ -146,6 +146,11 @@ export default {
       console.log(e);
     }
   },
+  beforeDestroy() {
+    this.socketHotfix.off('newHotfix');
+    this.socketHotfix.off('updatedHotfix');
+    this.socketHotfix.off('deletedHotfix');
+  },
   mounted() {
   },
   methods: {

@@ -28,15 +28,13 @@
     <add-version-modal v-if="visibleAddVersionModal"
                        :project-id="currentProject._id"
                        @close="visibleAddVersionModal = false"
-                       @addVersion="getVersions">
-    </add-version-modal>
+                       @addVersion="getVersions" />
 
     <edit-version-modal v-if="visibleEditVersionModal"
                         :project-id="currentProject._id"
                         :version="editVersionData"
                         @close="closeEditModal"
-                        @updateVersion="getVersions">
-    </edit-version-modal>
+                        @updateVersion="getVersions" />
 
   </div>
 </template>
@@ -63,7 +61,7 @@ export default {
   },
   computed: {
     currentProject() {
-      return this.$store.state.currentProject
+      return this.$store.state.currentProject;
     }
   },
   mounted() {
@@ -73,54 +71,44 @@ export default {
     async getVersions() {
       try {
         this.loading = true;
-        const response = await this.$http.get(`/projects/${this.currentProject._id}/versions`)
-        this.versions = response.data
+        const response = await this.$http.get(`/projects/${this.currentProject._id}/versions`);
+        this.versions = response.data;
       } catch (e) {
-        console.log(e)
+        console.log(e);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     openDeleteDialog(versionId) {
-      this.deleteVersionId = versionId
-      this.dialogVisible = true
+      this.deleteVersionId = versionId;
+      this.dialogVisible = true;
     },
     openEditVersionModal(versionId) {
-      for (let i = 0; i < this.versions.length; ++i) {
-        if (this.versions[i]._id === versionId) {
-          this.editVersionData = this.versions[i]
-          break
-        }
-      }
-      this.visibleEditVersionModal = true
+      this.editVersionData = this.versions.find(item => item._id === versionId);
+      this.visibleEditVersionModal = true;
     },
     closeEditModal(isEdited) {
-      this.visibleEditVersionModal = false
-      this.editVersionData = null
-      if (isEdited) this.versions.splice(0)
+      this.visibleEditVersionModal = false;
+      this.editVersionData = null;
+      if (isEdited) this.versions.splice(0);
     },
     async deleteVersion() {
       try {
-        this.loading = true
-        this.dialogVisible = false
-        await this.$http.delete(`/projects/${this.currentProject._id}/versions/${this.deleteVersionId}`)
+        this.loading = true;
+        this.dialogVisible = false;
+        await this.$http.delete(`/projects/${this.currentProject._id}/versions/${this.deleteVersionId}`);
 
-        for (let i = 0; i < this.versions.length; ++i) {
-          if (this.versions[i]._id === this.deleteVersionId) {
-            this.versions.splice(i, 1)
-            break
-          }
-        }
+        this.versions.splice(this.versions.findIndex(item => item._od === this.deleteVersionId));
 
         this.$notify({
           title: 'Success',
           message: 'Version removed successfully',
           type: 'success'
-        })
+        });
       } catch (e) {
-        console.log(e)
+        console.log(e);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     }
   }

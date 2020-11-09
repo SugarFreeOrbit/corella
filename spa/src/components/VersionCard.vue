@@ -41,8 +41,7 @@ export default {
   },
   mounted() {
     if (this.cardData.dateOfRelease) {
-      const date = new Date(this.cardData.dateOfRelease)
-      this.dateOfReleaseText = ('0' + date.getDate()).slice(-2) + '.' + ('0' + (date.getMonth() + 1)).slice(-2) + '.' + date.getFullYear();
+      this.dateOfReleaseText = new Date(this.cardData.dateOfRelease).toLocaleDateString("en-GB", {year: 'numeric', month: 'numeric', day: 'numeric'});
     }
   },
   methods: {

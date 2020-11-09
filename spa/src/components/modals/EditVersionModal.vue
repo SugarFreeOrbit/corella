@@ -11,7 +11,7 @@
       <el-form-item class="edit-version-modal__date" label="Date of release">
         <el-date-picker
             v-model="date"
-            type="datetime"
+            type="date"
             placeholder="Select date and time">
         </el-date-picker>
       </el-form-item>

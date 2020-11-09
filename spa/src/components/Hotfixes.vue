@@ -28,6 +28,11 @@
           {{ convertDate(scope.row.created) }}
         </template>
       </el-table-column>
+      <el-table-column label="Version" width="120">
+        <template slot-scope="scope">
+          {{ getVersionName(scope.row.versionId) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="priority" label="Priority" width="120">
         <template slot-scope="scope">
           <span v-if="scope.row.priority === 1" style="color: #8cd681">Low</span>
@@ -56,16 +61,19 @@
         </template>
       </el-table-column>
     </data-tables-server>
+
     <add-hotfix-modal v-if="isHotfixAddModal"
                       :projectId="projectId"
                       :versions="versions"
                       @close="closeAddHotfixModal">
     </add-hotfix-modal>
+
     <more-hotfix-modal v-if="isHotfixMoreModal"
                        :projectId="projectId"
                        :data="currentHotfix"
                        :versions="versions"
-                       @close="closeMoreModal"></more-hotfix-modal>
+                       @close="closeMoreModal">
+    </more-hotfix-modal>
   </div>
 </template>
 
@@ -164,6 +172,12 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+    getVersionName(versionId) {
+      const version = this.versions.find(version => version._id === versionId)
+
+      if(version) return version.version
+      else return 'Not version'
     },
     convertDate: function (timestamp) {
       let date = new Date(timestamp);

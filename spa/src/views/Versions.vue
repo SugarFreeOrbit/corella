@@ -98,7 +98,7 @@ export default {
         this.dialogVisible = false;
         await this.$http.delete(`/projects/${this.currentProject._id}/versions/${this.deleteVersionId}`);
 
-        this.versions.splice(this.versions.findIndex(item => item._od === this.deleteVersionId));
+        this.versions.splice(this.versions.findIndex(item => item._id === this.deleteVersionId));
 
         this.$notify({
           title: 'Success',

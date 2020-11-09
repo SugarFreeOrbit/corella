@@ -37,8 +37,9 @@
             <i class="el-icon-plus"></i>
           </el-tooltip>
         </div>
-        <div class="project__menu__item" @click="isAddVersionModal = true">
-          <el-tooltip content="Add Version" placement="right-start">
+        <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('hotfixes') !== -1}"
+             @click="goTo('versions')">
+          <el-tooltip content="Versions" placement="right-start">
             <i class="el-icon-plus"></i>
           </el-tooltip>
         </div>
@@ -46,7 +47,6 @@
       <router-view/>
 
       <add-issue-modal v-if="isAddIssueModal" :projectId="_id" @close="closeAddIssueModal"></add-issue-modal>
-      <add-version-modal v-if="isAddVersionModal" :project-id="_id" @close="isAddVersionModal = false"></add-version-modal>
     </div>
     <div v-else style="height: 100%" v-loading="projectReady"></div>
   </div>
@@ -59,12 +59,10 @@ import RolesAndMembers from "../components/RolesAndMembers";
 import Hotfixes from "../components/Hotfixes";
 
 import AddIssueModal from "../components/modals/AddIssueModal";
-import AddVersionModal from "@/components/modals/AddVersionModal";
 
 export default {
   name: "Project",
   components: {
-    AddVersionModal,
     Hotfixes,
     RolesAndMembers,
     Board,

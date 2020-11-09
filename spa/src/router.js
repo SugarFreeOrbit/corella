@@ -14,6 +14,7 @@ import Page404 from "@/views/Page404";
 import Setting from "@/components/Setting";
 import ProjectBuilder from "./components/projects/ProjectBuilder";
 import ProjectsList from "./components/projects/ProjectsList";
+import Versions from "@/views/Versions";
 
 Vue.use(Router);
 
@@ -86,6 +87,9 @@ const router = new Router({
             }, {
                 path: 'setting',
                 component: Setting
+            }, {
+                path: 'versions',
+                component: Versions
             }],
             meta: {
                 requiresAuth: true

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog class="add-version-modal" :visible="true" title="New version" @close="close">
+  <el-dialog class="add-version-modal" :visible="true" title="New version" @close="close" :close-on-click-modal="false">
     <el-form v-on:submit.native.prevent="createVersion" v-model="version"
              v-loading="loading">
       <el-form-item label="Title">
@@ -7,6 +7,13 @@
       </el-form-item>
       <el-form-item label="Description">
         <el-input type="textarea" v-model="version.description" :rows="5"></el-input>
+      </el-form-item>
+      <el-form-item class="add-version-modal__date" label="Date of release">
+        <el-date-picker
+            v-model="version.date"
+            type="datetime"
+            placeholder="Select date and time">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="createVersion">Create</el-button>
@@ -29,7 +36,8 @@ export default {
       loading: false,
       version: {
         name: '',
-        description: ''
+        description: '',
+        date: null
       }
     }
   },
@@ -48,10 +56,13 @@ export default {
       try {
         this.loading = true
 
-        await this.$http.put('/projects/' + this.projectId + '/versions', {
+        const data = {
           version: this.version.name,
           description: this.version.description
-        })
+        }
+        if (this.version.date) data.dateOfRelease = this.version.date.getTime()
+
+        await this.$http.put('/projects/' + this.projectId + '/versions', data)
 
         this.$notify({
           title: 'Success',
@@ -59,6 +70,7 @@ export default {
           type: 'success'
         })
 
+        this.$emit('addVersion')
         this.close()
 
       } catch (e) {
@@ -78,6 +90,13 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.add-version-modal {
+  &__date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px !important;
+  }
+}
 </style>

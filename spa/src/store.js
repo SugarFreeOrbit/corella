@@ -167,9 +167,8 @@ const store = new Vuex.Store({
         },
         async getVersions({commit, state}) {
             try {
-                const response = await axios.get(`/projects/${state.currentProject._id}/versions`)
+                const response = await axios.get(`/projects/${state.currentProject._id}/issue-version`)
                 commit('setVersions', response.data)
-                //response.data.forEach(item => this.versions.push(item))
             } catch (e) {
                 console.log(e)
             }

@@ -1,5 +1,5 @@
 <template>
-  <div class="version-card">
+  <div class="version-card" :class="{'version-card--permission--edit': canEditVersion}">
     <div class="version-card__header">
       <div class="version-card__header-content">
         <div class="version-card__title">{{ cardData.version }}</div>
@@ -54,7 +54,10 @@ export default {
     },
     editVersion() {
       this.$emit('editVersion', this.cardData._id)
-    }
+    },
+    canEditVersion: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
+    },
   }
 }
 </script>
@@ -68,13 +71,15 @@ export default {
 
   transition: all .3s;
 
-  &:hover {
-    cursor: pointer;
-    transform: scale(1.1);
+  &--permission--edit {
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.1);
 
-    .version-card__options {
-      right: -30px;
-      opacity: 1;
+      .version-card__options {
+        right: -30px;
+        opacity: 1;
+      }
     }
   }
 

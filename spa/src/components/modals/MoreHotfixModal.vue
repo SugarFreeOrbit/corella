@@ -57,7 +57,7 @@
           </div>
         </el-form-item>
         <el-form-item class="issue__versions" label="Version">
-          <el-select clearable v-model="selectedVersion" placeholder="Versions">
+          <el-select clearable :disabled="!canEditVersion" v-model="selectedVersion" placeholder="Versions">
             <el-option
                 v-for="item in versions"
                 :key="item._id"
@@ -164,6 +164,9 @@ export default {
     },
     canDeleteHotfixes: function () {
       return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.deleteHotfixes;
+    },
+    canEditVersion: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
     },
   },
   methods: {

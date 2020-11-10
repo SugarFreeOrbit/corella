@@ -26,7 +26,7 @@
         </div>
       </el-form-item>
       <el-form-item class="add-hotfix-modal__versions" label="Version">
-        <el-select clearable v-model="selectedVersion" placeholder="Versions">
+        <el-select clearable :disabled="!canEditVersion" v-model="selectedVersion" placeholder="Versions">
           <el-option
               v-for="item in versions"
               :key="item._id"
@@ -99,7 +99,10 @@ export default {
   computed: {
     allowedFiles() {
       return this.$store.state.allowedFiles;
-    }
+    },
+    canEditVersion: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
+    },
   },
   methods: {
     createIssue: async function () {

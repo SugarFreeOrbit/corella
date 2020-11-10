@@ -87,6 +87,17 @@
               <el-switch v-model="newRoleData.deleteHotfixes"></el-switch>
             </div>
           </div>
+          <div class="switch-group__group">
+            <label>Version</label>
+            <div class="switch-group__item">
+              <label>View</label>
+              <el-switch v-model="newRoleData.viewVersion"></el-switch>
+            </div>
+            <div class="switch-group__item">
+              <label>Edit</label>
+              <el-switch v-model="newRoleData.editVersion"></el-switch>
+            </div>
+          </div>
         </div>
       </el-form-item>
       <el-form-item v-for="startingColumn in projectBuilder.columns"
@@ -129,6 +140,8 @@ export default {
         createHotfixes: false,
         editHotfixes: false,
         deleteHotfixes: false,
+        viewVersion: false,
+        editVersion: false,
         itm: {},
         columns: []
       }
@@ -152,6 +165,8 @@ export default {
           createHotfixes: this.newRoleData.createHotfixes,
           editHotfixes: this.newRoleData.editHotfixes,
           deleteHotfixes: this.newRoleData.deleteHotfixes,
+          editVersion: this.newRoleData.editVersion,
+          viewVersion: this.newRoleData.viewVersion,
           issueTransitionMatrix: this.newRoleData.itm
         });
         this.closeModal()
@@ -178,7 +193,7 @@ export default {
   justify-content: center;
 
   &__group {
-    width: 33%;
+    width: 25%;
 
     > label {
       display: block;

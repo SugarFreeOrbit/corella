@@ -171,7 +171,7 @@ export default {
     },
     getVersions: async function () {
       try {
-        const response = await this.$http.get('projects/' + this.projectId + '/versions')
+        const response = await this.$http.get('projects/' + this.projectId + '/issue-version')
         return response.data
 
       } catch (e) {

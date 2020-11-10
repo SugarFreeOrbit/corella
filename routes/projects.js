@@ -885,6 +885,23 @@ router.get('/:projectId/versions', [validator.checkParamsForObjectIds()],
 	}
 });
 
+router.get('/:projectId/issue-version', [validator.checkParamsForObjectIds()],
+	async function (req, res, next){
+		try{
+				Version.find({projectId: req.params.projectId}).then(versions => {
+					res.status(200);
+					res.json(versions);
+				}).catch((err) => {
+					logger.debug(err.toString());
+					res.status(500);
+					res.end();
+				});
+		}
+		catch (e){
+			next(e);
+		}
+	});
+
 router.get('/:projectId/versions/:versionId', [validator.checkParamsForObjectIds()],
 	async function (req, res, next){
 	try{

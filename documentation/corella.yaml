@@ -1180,6 +1180,49 @@ paths:
           description: ValidationError
         '403':
           description: Forbidden
+
+  /projects/{projectId}/issue-version:
+    get:
+      summary: Retrieves  project versions
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          required: true
+          name: projectId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        type: "string"
+                      },
+                      "version": {
+                        type: "string"
+                      },
+                      "description": {
+                        type: "string"
+                      },
+                      "dateOfRelease": {
+                        type: "number"
+                      }
+                    }
+                  }
+                }
+        '400':
+          description: ValidationError
+        '403':
+          description: Forbidden
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1371,7 +1414,8 @@ components:
       }
 
     roles:
-      {   "type": "object",
+      {
+        "type": "object",
           "properties": {
             "name": {
               "type": "string"

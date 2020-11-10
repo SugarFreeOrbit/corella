@@ -840,7 +840,15 @@ router.put('/:projectId/versions', [validator.checkParamsForObjectIds(), validat
 				description: req.body.description,
 				dateOfRelease: req.body.dateOfRelease
 			});
-			await newVersion.save();
+			try{
+				await newVersion.save();
+			}
+			catch (e){
+				res.status(400);
+				res.json("Version name must be unique");
+				res.end();
+				return
+			}
 			res.status(200);
 			res.end();
 		}
@@ -904,11 +912,19 @@ router.patch('/:projectId/versions/:versionId', [validator.checkParamsForObjectI
 	async function (req, res, next){
 	try{
 		if(await Project.checkUpdateVersion(req.params.projectId, req.user._id, req.user.isAdmin)){
-			await Version.findOneAndUpdate({_id: req.params.versionId}, {
-				version: req.body.version,
-				description: req.body.description,
-				dateOfRelease: req.body.dateOfRelease
-			});
+			try{
+				await Version.findOneAndUpdate({_id: req.params.versionId}, {
+					version: req.body.version,
+					description: req.body.description,
+					dateOfRelease: req.body.dateOfRelease
+				});
+			}
+			catch (e){
+				res.status(400);
+				res.json("Version name must be unique");
+				res.end();
+				return
+			}
 			res.status(200);
 			res.end();
 		}

@@ -13,7 +13,7 @@
           <el-option
               v-for="item in versions"
               :key="item._id"
-              :label="item.description"
+              :label="item.version"
               :value="item._id">
           </el-option>
         </el-select>

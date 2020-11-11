@@ -65,12 +65,10 @@ const newProject = {
 						required: true
 					},
 					viewVersion:{
-						type: "boolean",
-						required: true
+						type: "boolean"
 					},
 					editVersion:{
-						type: "boolean",
-						required: true
+						type: "boolean"
 					},
 					issueTransitionMatrix: {
 						type: "object"
@@ -158,12 +156,10 @@ const roles = {
 				required: true
 			},
 			viewVersion:{
-				type: "boolean",
-				required: true
+				type: "boolean"
 			},
 			editVersion:{
-				type: "boolean",
-				required: true
+				type: "boolean"
 			},
 			issueTransitionMatrix: {
 				type: "object"

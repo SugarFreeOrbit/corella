@@ -4,17 +4,19 @@
 			<b-col>
 				<div class="login__form">
 					<div class="login__form__logo"> </div>
-					<el-form :model="loginForm">
-						<el-form-item label="Username">
-							<el-input v-model="loginForm.username"></el-input>
-						</el-form-item>
-						<el-form-item label="Password">
-							<el-input v-model="loginForm.password" show-password></el-input>
-						</el-form-item>
-						<el-form-item>
-							<el-button type="primary" @click="login">Log in</el-button>
-						</el-form-item>
-					</el-form>
+          <form @submit.prevent="login">
+            <div class="form-group">
+              <label>Username</label>
+              <el-input v-model="loginForm.username"></el-input>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <el-input v-model="loginForm.password" show-password></el-input>
+            </div>
+            <div class="btn-wrapper">
+              <button type="submit">Log in</button>
+            </div>
+          </form>
 				</div>
 			</b-col>
 		</b-row>
@@ -32,7 +34,13 @@
 				}
 			}
 		},
-		methods: {
+    mounted() {
+		  document.addEventListener('keyup', this.keyUp);
+    },
+    beforeDestroy() {
+		  document.removeEventListener('keyup', this.keyUp);
+    },
+    methods: {
 			login: async function () {
 				try {
 					let res = await this.$http.post("/login", {
@@ -104,4 +112,28 @@
 		outline: none;
 		color: #000000;
 	}
+
+  .form-group {
+    > label {
+      text-align: left;
+      float: left;
+      margin-bottom: 2px;
+      color: #666666;
+    }
+  }
+
+  .btn-wrapper {
+    > button {
+      background-color: #FFE059;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 5px;
+      font-weight: bold;
+
+      transition: 0.3s;
+
+      &:hover { background-color: #CFB24F }
+
+    }
+  }
 </style>

@@ -101,16 +101,6 @@ const router = new Router({
             name: 'page404',
             component: Page404
         },
-        // {
-        // 	path: '/about',
-        // 	name: 'about',
-        // 	// route level code-splitting
-        // 	// this generates a separate chunk (about.[hash].js) for this route
-        // 	// which is lazy-loaded when the route is visited.
-        // 	component: function () {
-        // 		return import(/* webpackChunkName: "about" */ './views/About.vue')
-        // 	}
-        // }
     ]
 });
 
@@ -121,10 +111,7 @@ router.beforeEach((to, from, next) => {
                 if (store.state.user.isAdmin) {
                     next();
                 } else {
-                    next({
-                        path: '/login',
-                        query: {redirect: to.fullPath}
-                    });
+                    next({ path: '/' });
                 }
             } else {
                 next();

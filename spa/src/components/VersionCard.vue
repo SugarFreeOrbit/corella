@@ -39,6 +39,11 @@ export default {
       dateOfReleaseText: ''
     }
   },
+  computed: {
+    canEditVersion: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
+    },
+  },
   mounted() {
     if (this.cardData.dateOfRelease) {
       this.dateOfReleaseText = new Date(this.cardData.dateOfRelease).toLocaleDateString("en-GB", {
@@ -55,10 +60,7 @@ export default {
     editVersion() {
       this.$emit('editVersion', this.cardData._id)
     },
-    canEditVersion: function () {
-      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
-    },
-  }
+  },
 }
 </script>
 

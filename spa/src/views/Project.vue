@@ -33,7 +33,7 @@
           </el-tooltip>
         </div>
         <div class="project__menu__item" v-bind:class="{active: $route.path.indexOf('versions') !== -1}"
-             v-if="canViewVersion"
+             v-if="canViewVersion || canEditVersion"
              @click="goTo('versions')">
           <el-tooltip content="Versions" placement="right-start">
             <i class="el-icon-files"></i>
@@ -101,6 +101,9 @@ export default {
     },
     canViewVersion: function () {
       return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.viewVersion;
+    },
+    canEditVersion: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
     },
     canEditIssues: function () {
       return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isEditor;

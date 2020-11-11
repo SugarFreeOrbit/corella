@@ -5,6 +5,7 @@ import router from "./router";
 import axios from 'axios';
 import io from 'socket.io-client';
 import ro from "element-ui/src/locale/lang/ro";
+import fa from "element-ui/src/locale/lang/fa";
 
 Vue.use(Vuex);
 
@@ -104,7 +105,7 @@ const store = new Vuex.Store({
         unsetCurrentProject(state) {
             state.currentProject = {};
         },
-        syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, createHotfixes, editHotfixes, deleteHotfixes, issueTransitionMatrix}) {
+        syncCurrentProjectRole(state, {isManager, isEditor, isCreator, isDestroyer, createHotfixes, editHotfixes, deleteHotfixes, editVersion, viewVersion, issueTransitionMatrix}) {
             state.currentProject.role = {
                 isManager,
                 isEditor,
@@ -113,6 +114,8 @@ const store = new Vuex.Store({
                 createHotfixes,
                 editHotfixes,
                 deleteHotfixes,
+                editVersion,
+                viewVersion,
                 issueTransitionMatrix
             }
         },

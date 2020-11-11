@@ -34,7 +34,7 @@
           <el-input type="textarea" :rows="6" v-model="currentIssue.description"></el-input>
         </el-form-item>
         <el-form-item class="issue__versions" label="Version">
-          <el-select clearable :disabled="!canEditVersion" v-model="selectedVersion" placeholder="Versions">
+          <el-select clearable v-model="selectedVersion" placeholder="Versions">
             <el-option
                 v-for="item in versions"
                 :key="item._id"
@@ -146,9 +146,6 @@ export default {
     },
     canDeleteIssues: function () {
       return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.isDestroyer;
-    },
-    canEditVersion: function () {
-      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion;
     },
     availableTransitions: function () {
       if (this.$store.state.user.isAdmin) {

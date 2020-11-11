@@ -34,11 +34,14 @@
 				}
 			}
 		},
-    mounted() {
-		  document.addEventListener('keyup', this.keyUp);
+    computed: {
+      loggedIn() {
+        return this.$store.state.user.loggedIn;
+      }
     },
-    beforeDestroy() {
-		  document.removeEventListener('keyup', this.keyUp);
+    mounted() {
+		  if(this.loggedIn)
+		    this.$router.push('/');
     },
     methods: {
 			login: async function () {

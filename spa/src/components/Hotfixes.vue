@@ -182,7 +182,7 @@ export default {
       const version = this.versions.find(version => version._id === versionId)
 
       if(version) return version.version
-      else return 'Not version'
+      else return '-'
     },
     convertDate: function (timestamp) {
       let date = new Date(timestamp);

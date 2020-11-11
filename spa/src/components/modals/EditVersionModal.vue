@@ -77,8 +77,6 @@ export default {
           type: 'error'
         })
 
-        this.close()
-
       } finally {
         this.loading = false;
       }

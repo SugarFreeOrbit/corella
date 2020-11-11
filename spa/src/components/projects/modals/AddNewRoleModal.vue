@@ -147,6 +147,14 @@ export default {
       }
     }
   },
+  computed: {
+    newRoleEditVersion() {
+      return this.newRoleData.editVersion
+    },
+    newRoleViewVersion() {
+      return this.newRoleData.viewVersion
+    }
+  },
   methods: {
     addRole: function () {
       if (this.projectBuilder.roles.find(role => role.name === this.newRoleData.name) || this.newRoleData.name.length === 0) {
@@ -174,6 +182,14 @@ export default {
     },
     closeModal() {
       this.$emit('close')
+    }
+  },
+  watch: {
+    newRoleEditVersion(value) {
+      if (value) this.newRoleData.viewVersion = true
+    },
+    newRoleViewVersion(value) {
+      if (!value && this.newRoleData.editVersion) this.newRoleData.editVersion = false
     }
   }
 }

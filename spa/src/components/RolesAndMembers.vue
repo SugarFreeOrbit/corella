@@ -261,6 +261,18 @@ export default {
       } else {
         return null;
       }
+    },
+    editRoleEditVersion: function () {
+      return this.editRoleModal.editVersion
+    },
+    editRoleViewVersion: function () {
+      return this.editRoleModal.viewVersion
+    },
+    addRoleEditVersion: function () {
+      return this.addRoleModal.editVersion
+    },
+    addRoleViewVersion: function () {
+      return this.addRoleModal.viewVersion
     }
   },
   async created() {
@@ -439,6 +451,20 @@ export default {
         });
         console.log(e);
       }
+    }
+  },
+  watch: {
+    editRoleEditVersion(value) {
+      if (value) this.editRoleModal.viewVersion = true
+    },
+    editRoleViewVersion(value) {
+      if (!value && this.editRoleModal.editVersion) this.editRoleModal.editVersion = false
+    },
+    addRoleEditVersion(value) {
+      if (value) this.addRoleModal.viewVersion = true
+    },
+    addRoleViewVersion(value) {
+      if (!value && this.addRoleModal.editVersion) this.addRoleModal.editVersion = false
     }
   }
 }

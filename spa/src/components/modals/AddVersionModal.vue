@@ -76,7 +76,7 @@ export default {
       } catch (e) {
         this.$notify({
           title: 'Error',
-          message: 'Something went wrong',
+          message: e.response.data || 'Something went wrong',
           type: 'error'
         })
       } finally {

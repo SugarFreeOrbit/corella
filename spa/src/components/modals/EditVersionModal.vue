@@ -3,10 +3,10 @@
              :close-on-click-modal="false">
     <el-form v-model="version" v-loading="loading">
       <el-form-item label="Title">
-        <el-input required v-model="version.version"></el-input>
+        <el-input required v-model="versionTmp.version"></el-input>
       </el-form-item>
       <el-form-item label="Description">
-        <el-input type="textarea" v-model="version.description" :rows="5"></el-input>
+        <el-input type="textarea" v-model="versionTmp.description" :rows="5"></el-input>
       </el-form-item>
       <el-form-item class="edit-version-modal__date" label="Date of release">
         <el-date-picker
@@ -37,11 +37,15 @@ export default {
   data() {
     return {
       loading: false,
-      date: null
+      date: null,
+      versionTmp: null
     }
   },
   mounted() {
     if (this.version.dateOfRelease) this.date = new Date(this.version.dateOfRelease)
+  },
+  created() {
+    this.versionTmp = {...this.version}
   },
   methods: {
     async updateVersion() {
@@ -49,8 +53,8 @@ export default {
         this.loading = true;
 
         const requestData = {
-          version: this.version.version,
-          description: this.version.description
+          version: this.versionTmp.version,
+          description: this.versionTmp.description
         }
         if (this.date) requestData.dateOfRelease = this.date.getTime()
         else requestData.dateOfRelease = 0
@@ -69,7 +73,7 @@ export default {
       } catch (e) {
         this.$notify({
           title: 'Error',
-          message: 'Failed to update this version',
+          message: e.response.data || 'Something went wrong',
           type: 'error'
         })
 

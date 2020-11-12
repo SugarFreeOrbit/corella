@@ -30,7 +30,7 @@ const fileFilter = function(req, file, cb) {
     }
 }
 
-fs.mkdirSync("../tmp");
+fs.mkdir("../tmp", () => {});
 
 const upload = multer({
     dest: '../tmp',

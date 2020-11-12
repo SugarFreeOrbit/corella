@@ -227,7 +227,7 @@ projectSchema.statics.checkViewVersion = async function (projectId, userId, isAd
 	return await this.checkPermission(projectId, userId, 'viewVersion', isAdmin);
 }
 projectSchema.statics.checkUpdateVersion = async function (projectId, userId, isAdmin){
-	return await this.checkPermission(projectId, userId, 'updateVersion', isAdmin);
+	return await this.checkPermission(projectId, userId, 'editVersion', isAdmin);
 }
 
 projectSchema.statics.checkReaderPermission = async function (projectId, userId, isAdmin) {

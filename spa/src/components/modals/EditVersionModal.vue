@@ -56,6 +56,8 @@ export default {
           version: this.versionTmp.version,
           description: this.versionTmp.description
         }
+
+        console.log(this.versionTmp.description)
         if (this.date) requestData.dateOfRelease = this.date.getTime()
         else requestData.dateOfRelease = 0
 

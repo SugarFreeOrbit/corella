@@ -17,9 +17,7 @@
       </div>
     </div>
     <div class="version-card__body">
-      <span class="version-card__description">
-        {{ cardData.description }}
-      </span>
+      <span class="version-card__description">{{ cardData.description }}</span>
     </div>
   </div>
 </template>
@@ -71,6 +69,7 @@ export default {
   min-height: 150px;
   border-radius: 4px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  height: max-content;
 
   transition: all .3s;
 
@@ -100,7 +99,9 @@ export default {
   }
 
   &__description {
+    width: 100%;
     word-wrap: break-word;
+    white-space: pre-wrap;
   }
 
   &__body {

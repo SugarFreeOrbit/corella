@@ -1,7 +1,7 @@
 <template>
   <div class="versions" v-loading="loading">
     <div class="versions__content" :style="!versions.length && !loading ? 'height: 100%' : ''">
-      <el-button @click="visibleAddVersionModal = true" icon="el-icon-plus" type="primary">
+      <el-button v-if="canEditVersion" @click="visibleAddVersionModal = true" icon="el-icon-plus" type="primary">
         Create new version
       </el-button>
       <div v-if="versions.length" class="versions__list">
@@ -65,6 +65,9 @@ export default {
   computed: {
     currentProject() {
       return this.$store.state.currentProject;
+    },
+    canEditVersion() {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager || this.$store.state.currentProject.role.editVersion
     }
   },
   mounted() {

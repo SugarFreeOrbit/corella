@@ -273,9 +273,16 @@ export default {
     },
     addRoleViewVersion: function () {
       return this.addRoleModal.viewVersion
-    }
+    },
+    canAccessRoles: function () {
+      return this.$store.state.user.isAdmin || this.$store.state.currentProject.role.isManager;
+    },
   },
   async created() {
+    if(!this.canAccessRoles) {
+      this.$router.push('/not-found');
+      return;
+    }
     this.loading = true;
     let getRoles = await this.$http.get(`/projects/${this.projectId}/roles`);
     this.roles = getRoles.data.roles;

@@ -14,7 +14,9 @@
            :href="src"
            target="_blank"
            :download="file.name">
-            <span>{{ file.name }}</span>
+          <span v-if="file.name !== null && file.name !== undefined">{{ file.name }}</span>
+          <span v-else-if="file.filename !== null && file.filename !== undefined">{{ file.filename }}</span>
+          <span v-else>Error: name not found</span>
         </a>
         <div v-else :style="`width: ${width}px;height: ${height}px;`" v-loading="true"></div>
     </div>

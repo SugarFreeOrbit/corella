@@ -1,24 +1,25 @@
 <template>
-  <div class="version-card" :class="{'version-card--permission--edit': canEditVersion}">
+  <div class="version-card">
     <div class="version-card__header">
       <div class="version-card__header-content">
         <div class="version-card__title">{{ cardData.version }}</div>
-        <div class="version-card__date" v-if="dateOfReleaseText">{{ dateOfReleaseText }}</div>
-        <div class="version-card__date" v-else>No date</div>
+        <div class="version-card__date">
+          {{dateOfReleaseText || 'No date' }}
+        </div>
+      </div>
+      <div v-if="canEditVersion" class="version-card__options">
+        <el-tooltip class="item" effect="dark" content="Edit" placement="right">
+          <el-button @click="editVersion" size="mini" type="primary" icon="el-icon-edit" circle></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="dark" content="Delete" placement="right">
+          <el-button @click="deleteVersion" size="mini" type="danger" icon="el-icon-delete" circle></el-button>
+        </el-tooltip>
       </div>
     </div>
     <div class="version-card__body">
       <span class="version-card__description">
         {{ cardData.description }}
       </span>
-      <div class="version-card__options">
-        <el-tooltip class="item" effect="dark" content="Edit" placement="left">
-          <el-button @click="editVersion" size="mini" type="primary" icon="el-icon-edit" circle></el-button>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="Delete" placement="left">
-          <el-button @click="deleteVersion" size="mini" type="danger" icon="el-icon-delete" circle></el-button>
-        </el-tooltip>
-      </div>
     </div>
   </div>
 </template>
@@ -73,19 +74,8 @@ export default {
 
   transition: all .3s;
 
-  &--permission--edit {
-    &:hover {
-      cursor: pointer;
-      transform: scale(1.1);
-
-      .version-card__options {
-        right: -30px;
-        opacity: 1;
-      }
-    }
-  }
-
   &__header {
+    position: relative;
     border-bottom: 1px solid #87A330;
 
     &-content {
@@ -114,7 +104,6 @@ export default {
   }
 
   &__body {
-    position: relative;
     padding: 10px;
     height: calc(100% - 45px);
   }
@@ -123,9 +112,8 @@ export default {
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
+    right: -33px;
     width: 30px;
-    opacity: 0;
 
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;

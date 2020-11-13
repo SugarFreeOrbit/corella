@@ -137,7 +137,7 @@ export default {
   mounted() {
     if (this.data.versionId) {
       const version = this.versions.find(version => version._id === this.data.versionId)
-      if (version) this.selectedVersion = version.version
+      if (version) this.selectedVersion = version._id
     }
   },
   computed: {

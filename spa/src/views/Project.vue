@@ -39,7 +39,8 @@
             <i class="el-icon-files"></i>
           </el-tooltip>
         </div>
-        <div class="project__menu__item" @click="isAddIssueModal = true">
+        <div class="project__menu__item" @click="isAddIssueModal = true"
+             v-if="canCreateIssues">
           <el-tooltip content="Add Issue" placement="right-start">
             <i class="el-icon-plus"></i>
           </el-tooltip>

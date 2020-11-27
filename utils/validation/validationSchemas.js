@@ -64,6 +64,12 @@ const newProject = {
 						type: "boolean",
 						required: true
 					},
+					viewVersion:{
+						type: "boolean"
+					},
+					editVersion:{
+						type: "boolean"
+					},
 					issueTransitionMatrix: {
 						type: "object"
 					}
@@ -149,6 +155,12 @@ const roles = {
 				type: "boolean",
 				required: true
 			},
+			viewVersion:{
+				type: "boolean"
+			},
+			editVersion:{
+				type: "boolean"
+			},
 			issueTransitionMatrix: {
 				type: "object"
 			},
@@ -172,6 +184,10 @@ const newIssue = {
 		},
 		description: {
 			type: "string"
+		},
+		versionId:{
+			type: "string",
+			required: false
 		},
 		checklist: {
 			type: "array",
@@ -261,6 +277,9 @@ const newHotfix = {
 			type: "string",
 			enum: ['1', '2', '3', '4'],
 			required: true
+		},
+		versionId:{
+			type: "string"
 		}
 	}
 };
@@ -287,6 +306,9 @@ const updateHotfix = {
 		state: {
 			type: "number",
 			required: true
+		},
+		versionId:{
+			type: "string"
 		}
 	}
 };
@@ -351,6 +373,39 @@ const globalConfig = {
 	}
 }
 
+const createVersion = {
+	type: 'object',
+	properties: {
+		version: {
+			type: 'string',
+			required: true,
+			unique: true
+		},
+		description: {
+			type: 'string'
+		},
+		dateOfRelease:{
+			type: 'number'
+		}
+	}
+}
+
+const editVersion = {
+	type: 'object',
+	properties: {
+		version: {
+			type: 'string',
+			required: true
+		},
+		description: {
+			type: 'string'
+		},
+		dateOfRelease:{
+			type: 'number'
+		}
+	}
+}
+
 Object.assign(getHotfixesQuery.properties, paginationQuery.properties);
 
-module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig, updateWIPLimit};
+module.exports = {newProject, roles, newIssue, moveOperation, updateUser, newUser, newHotfix, paginationQuery, getHotfixesQuery, updateHotfix, globalConfig, updateWIPLimit, createVersion, editVersion};

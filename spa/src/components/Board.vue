@@ -56,6 +56,9 @@
 					};
 				});
 			},
+      versions: function () {
+        return this.$store.state.versions
+      },
 			columns: function () {
 				return this.$store.state.currentProject.columns;
 			}
@@ -73,7 +76,10 @@
         saveColumns: null
 			}
 		},
-		async created() {
+    mounted() {
+		  //this.getVersions()
+    },
+    async created() {
 			this.loading = true;
 			this.boardSocket = this.$store.state.socket;
 			this.boardSocket.on('newIssue', (message) => {
@@ -92,6 +98,7 @@
 				}
 			});
 			try {
+			  await this.$store.dispatch('getVersions')
 				await this.$store.dispatch('syncCurrentProjectBoard');
 				this.loading = false;
 			} catch (e) {
@@ -111,6 +118,14 @@
           }
         }
       },
+      /*async getVersions() {
+        try {
+          const response = await this.$http.get(`/projects/${this.projectId}/versions`)
+          response.data.forEach(item => this.versions.push(item))
+        } catch (e) {
+          console.log(e)
+        }
+      },*/
 		  choose: function (par) {
         this.saveColumns = JSON.stringify(this.columns);
 		    let id = par.target.className;

@@ -125,6 +125,14 @@ const projectRoleSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
+	viewVersion:{
+		type: Boolean,
+		required: true
+	},
+	editVersion:{
+		type: Boolean,
+		required: true
+	},
 	members: [{
 		type: ObjectId,
 		ref: User
@@ -215,6 +223,13 @@ projectSchema.statics.checkEditHotfixesPermission = async function (projectId, u
 projectSchema.statics.checkDeleteHotfixesPermission = async function (projectId, userId, isAdmin) {
 	return await this.checkPermission(projectId, userId, 'deleteHotfixes', isAdmin);
 };
+projectSchema.statics.checkViewVersion = async function (projectId, userId, isAdmin){
+	return await this.checkPermission(projectId, userId, 'viewVersion', isAdmin);
+}
+projectSchema.statics.checkUpdateVersion = async function (projectId, userId, isAdmin){
+	return await this.checkPermission(projectId, userId, 'editVersion', isAdmin);
+}
+
 projectSchema.statics.checkReaderPermission = async function (projectId, userId, isAdmin) {
 	let permissionTest = await this.findOne({
 		_id: projectId,

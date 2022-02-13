@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"dependencies": {
-		"ajv": "~6.10.2",
+		"ajv": "~6.12.3",
 		"bcrypt": "^3.0.8",
 		"body-parser": "~1.19.0",
 		"content-disposition": "^0.5.3",
